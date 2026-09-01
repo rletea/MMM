@@ -99,10 +99,11 @@ export async function saveWizardAndGenerate(
   userId: string,
   state: WizardFormState,
   apiKey?: string,
-  provider?: "builtin" | "openai" | "gemini"
+  provider?: "builtin" | "openai" | "gemini",
+  language: string = "en"
 ): Promise<FullProfilePayload> {
   const bviBreakdown = calculateBVI(state);
-  const { strategy, contents } = await generateMarketingStrategy(state, apiKey, provider);
+  const { strategy, contents } = await generateMarketingStrategy(state, apiKey, provider, language);
 
   const payload: FullProfilePayload = {
     businessProfile: {

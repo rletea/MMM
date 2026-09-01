@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
     const wizardState = body.wizardState as WizardFormState;
     const apiKey = body.apiKey as string | undefined;
     const provider = body.provider as "builtin" | "openai" | "gemini" | undefined;
+    const language = (body.language as string) || "en";
 
     if (!wizardState || !wizardState.business || !wizardState.ikigai) {
       return NextResponse.json(
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const payload = await saveWizardAndGenerate(userId, wizardState, apiKey, provider);
+    const payload = await saveWizardAndGenerate(userId, wizardState, apiKey, provider, language);
 
     return NextResponse.json({
       success: true,

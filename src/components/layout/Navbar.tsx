@@ -17,11 +17,14 @@ import {
   X,
 } from "lucide-react";
 import { useToast } from "../ui/Toast";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { LanguageSelector } from "../ui/LanguageSelector";
 
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -44,11 +47,11 @@ export function Navbar() {
   };
 
   const navLinks = [
-    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/studio", label: "Content Studio", icon: Calendar },
-    { href: "/strategy", label: "Strategy Hub", icon: Layers },
-    { href: "/wizard", label: "Diagnostic Wizard", icon: Compass },
-    { href: "/settings", label: "Settings", icon: Settings },
+    { href: "/dashboard", label: t("nav.dashboard"), icon: LayoutDashboard },
+    { href: "/studio", label: t("nav.studio"), icon: Calendar },
+    { href: "/strategy", label: t("nav.strategy"), icon: Layers },
+    { href: "/wizard", label: t("nav.wizard"), icon: Compass },
+    { href: "/settings", label: t("nav.settings"), icon: Settings },
   ];
 
   return (
@@ -92,14 +95,17 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* User Profile / Auth State */}
+          {/* User Profile / Language / Auth State */}
           <div className="hidden md:flex items-center gap-3">
+            {/* Language Switcher Dropdown */}
+            <LanguageSelector />
+
             {currentUser ? (
               <div className="flex items-center gap-2">
                 {currentUser.isDemo && (
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300/50">
                     <Zap className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                    Demo Mode
+                    {t("nav.demo_mode")}
                   </span>
                 )}
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-700 dark:text-slate-300">
@@ -120,13 +126,13 @@ export function Navbar() {
                   href="/login"
                   className="px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
                 >
-                  Log In
+                  {t("nav.login")}
                 </Link>
                 <Link
                   href="/wizard"
                   className="px-4 py-1.5 rounded-lg text-sm font-semibold text-white gradient-brand shadow-sm hover:opacity-95 transition-opacity"
                 >
-                  Start Diagnostic
+                  {t("nav.start_diagnostic")}
                 </Link>
               </div>
             )}

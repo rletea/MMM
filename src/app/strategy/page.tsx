@@ -18,11 +18,13 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { exportStrategyToMarkdown, downloadBlobFile } from "@/lib/export-utils";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function StrategyPage() {
   const [profile, setProfile] = useState<FullProfilePayload | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   useEffect(() => {
     fetch("/api/profile")
@@ -63,40 +65,44 @@ export default function StrategyPage() {
     );
     downloadBlobFile(
       md,
-      `${businessProfile.businessName}-Marketing-Strategy.md`,
+      `${businessProfile.businessName.toLowerCase().replace(/\s+/g, "-")}-strategy.md`,
       "text/markdown"
     );
-    toast("Strategy markdown document downloaded!", "success");
+    toast("Strategy markdown downloaded!", "success");
   };
 
   return (
-    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-10 animate-fade-in">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-200/80 dark:border-slate-800/80">
+    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-8 animate-fade-in">
+      {/* Top Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200/80 dark:border-slate-800/80">
         <div>
           <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-wider">
-            <Layers className="w-4 h-4" /> Strategy & Positioning Hub
+            <Sparkles className="w-4 h-4" /> {t("nav.strategy")}
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
-            {businessProfile.businessName} Strategic Foundation
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1">
+            {businessProfile.businessName} • {t("strategy.title")}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Derived directly from your Ikigai parameters, competitive moat, and target audience diagnostic.
+            {t("strategy.subtitle")}
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={handleCopyManifesto}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 border border-slate-200 dark:border-slate-800 transition-colors"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 shadow-xs transition-colors"
           >
-            <Copy className="w-3.5 h-3.5" /> Copy Manifesto
+            <Copy className="w-3.5 h-3.5 text-indigo-500" />
+            {t("strategy.copy_manifesto")}
           </button>
           <button
+            type="button"
             onClick={handleDownloadStrategy}
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white gradient-brand shadow-sm hover:opacity-95 transition-opacity"
           >
-            <Download className="w-3.5 h-3.5" /> Download Strategy (.MD)
+            <Download className="w-3.5 h-3.5" />
+            {t("strategy.download_md")}
           </button>
         </div>
       </div>

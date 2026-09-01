@@ -19,11 +19,13 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function DashboardPage() {
   const [profile, setProfile] = useState<FullProfilePayload | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const fetchProfile = async () => {
     try {
@@ -60,35 +62,34 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8 animate-fade-in">
-      {/* Top Header & Actions */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-200/80 dark:border-slate-800/80">
+      {/* Top Bar / Profile Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200/80 dark:border-slate-800/80">
         <div>
           <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-wider">
-            <Sparkles className="w-4 h-4" /> CMO Command Center
+            <Sparkles className="w-4 h-4" /> {t("dash.cmo_command")}
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
-            {businessProfile.businessName} Overview
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1">
+            {businessProfile?.businessName || "Your Brand"} {t("dash.overview")}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            {businessProfile.businessModel.replace(/_/g, " ")} • {businessProfile.industry} • {businessProfile.geoScope}
+            {businessProfile?.industry} • {businessProfile?.businessModel} • {businessProfile?.geoScope}
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <Link
             href="/wizard"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-200 transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 shadow-xs transition-colors"
           >
-            <Compass className="w-4 h-4 text-indigo-500" />
-            Recalculate Diagnostic
+            <RefreshCw className="w-3.5 h-3.5" />
+            {t("dash.recalculate")}
           </Link>
-
           <Link
             href="/studio"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white gradient-brand shadow-md shadow-indigo-500/20 hover:opacity-95 transition-opacity"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white gradient-brand shadow-sm hover:opacity-95 transition-opacity"
           >
-            <Calendar className="w-4 h-4" />
-            Open Content Studio
+            <Calendar className="w-3.5 h-3.5" />
+            {t("dash.open_studio")}
             <ArrowRight className="w-3.5 h-3.5 ml-1" />
           </Link>
         </div>

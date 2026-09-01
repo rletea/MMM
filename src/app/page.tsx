@@ -17,7 +17,11 @@ import {
   TrendingUp,
 } from "lucide-react";
 
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+
 export default function LandingPage() {
+  const { t } = useLanguage();
+
   return (
     <div className="space-y-24 pb-20 animate-fade-in overflow-hidden">
       {/* Hero Section */}
@@ -28,18 +32,18 @@ export default function LandingPage() {
         {/* Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/80 shadow-sm animate-pulse-subtle">
           <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-          <span>The Next-Generation AI Marketing Command Center</span>
+          <span>{t("landing.hero_badge")}</span>
         </div>
 
         {/* Main Headline */}
         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-slate-900 dark:text-white max-w-4xl mx-auto leading-[1.1]">
-          Your Full-Stack CMO. <br />
-          <span className="gradient-text">Powered by Ikigai & BVI.</span>
+          {t("landing.hero_title_1")} <br />
+          <span className="gradient-text">{t("landing.hero_title_2")}</span>
         </h1>
 
         {/* Subtitle */}
         <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
-          Stop publishing shallow, robotic AI noise. Onboard through our deep 6-step diagnostic, calculate your mathematical Business Viability Index, and generate 30 days of high-converting multi-channel content anchored in your authentic founder moat.
+          {t("landing.hero_subtitle")}
         </p>
 
         {/* Hero CTA Buttons */}
@@ -49,7 +53,7 @@ export default function LandingPage() {
             className="w-full sm:w-auto px-8 py-4 rounded-2xl text-sm font-bold text-white gradient-brand shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
           >
             <Compass className="w-5 h-5" />
-            Launch 6-Step Diagnostic Wizard
+            {t("landing.hero_cta_wizard")}
             <ArrowRight className="w-4 h-4 ml-1" />
           </Link>
 
@@ -58,23 +62,23 @@ export default function LandingPage() {
             className="w-full sm:w-auto px-6 py-4 rounded-2xl text-sm font-bold text-slate-800 dark:text-slate-200 bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 shadow-sm transition-all flex items-center justify-center gap-2"
           >
             <Zap className="w-4 h-4 text-amber-500" />
-            Explore Pre-Loaded Demo Sandbox
+            {t("landing.hero_cta_demo")}
           </Link>
         </div>
 
         {/* Trust Badges */}
         <div className="pt-6 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs font-semibold text-slate-500">
           <div className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Mathematical BVI Algorithm
+            <CheckCircle2 className="w-4 h-4 text-emerald-500" /> {t("landing.trust_bvi")}
           </div>
           <div className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" /> 5-Platform Multi-Channel Studio
+            <CheckCircle2 className="w-4 h-4 text-emerald-500" /> {t("landing.trust_studio")}
           </div>
           <div className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Buffer & Hootsuite CSV Export
+            <CheckCircle2 className="w-4 h-4 text-emerald-500" /> {t("landing.trust_export")}
           </div>
           <div className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Zero API Key Required
+            <CheckCircle2 className="w-4 h-4 text-emerald-500" /> {t("landing.trust_nokey")}
           </div>
         </div>
       </section>

@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ToastProvider } from "@/components/ui/Toast";
+import { LanguageProvider } from "@/lib/i18n/LanguageContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -36,11 +37,13 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${inter.className} min-h-screen flex flex-col justify-between`}>
-        <ToastProvider>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </ToastProvider>
+        <LanguageProvider>
+          <ToastProvider>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </ToastProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

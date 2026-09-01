@@ -6,6 +6,7 @@ import { calculateBVI } from "@/lib/bvi-calculator";
 import { useRouter } from "next/navigation";
 import { useToast } from "../ui/Toast";
 import confetti from "canvas-confetti";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 import {
   Sparkles,
   Award,
@@ -26,6 +27,7 @@ export function Step5Review() {
   const state = useWizardStore();
   const router = useRouter();
   const { toast } = useToast();
+  const { language, t } = useLanguage();
   const [isGenerating, setIsGenerating] = useState(false);
   const [apiKey, setApiKey] = useState("");
   const [useOpenAI, setUseOpenAI] = useState(false);
@@ -50,6 +52,7 @@ export function Step5Review() {
           wizardState: state,
           apiKey: useOpenAI ? apiKey : undefined,
           provider: useOpenAI ? "openai" : "builtin",
+          language: language,
         }),
       });
 
@@ -72,13 +75,13 @@ export function Step5Review() {
     <div className="space-y-8 animate-fade-in">
       <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
         <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold text-xs tracking-wider uppercase">
-          <Sparkles className="w-4 h-4" /> Step 5 • Review & Calculate BVI
+          <Sparkles className="w-4 h-4" /> {t("step5.badge")}
         </div>
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
-          Review Diagnostic & Generate Master Strategy
+          {t("step5.title")}
         </h2>
         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-          Review your estimated Business Viability Index (BVI) and launch the AI marketing generation engine.
+          {t("step5.desc")}
         </p>
       </div>
 

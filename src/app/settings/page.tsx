@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/Toast";
 import { useWizardStore } from "@/store/wizard-store";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { SUPPORTED_LANGUAGES, LanguageCode } from "@/lib/i18n/types";
 import {
   Settings as SettingsIcon,
   Cpu,
@@ -15,11 +17,14 @@ import {
   Download,
   Building2,
   User,
+  Globe,
+  Check,
 } from "lucide-react";
 
 export default function SettingsPage() {
   const { toast } = useToast();
   const { loadDemoData, resetWizard } = useWizardStore();
+  const { language, setLanguage, t } = useLanguage();
 
   const [aiProvider, setAiProvider] = useState("builtin");
   const [openaiKey, setOpenaiKey] = useState("");
@@ -53,7 +58,7 @@ export default function SettingsPage() {
     localStorage.setItem("mmm_openai_key", openaiKey);
     localStorage.setItem("mmm_gemini_key", geminiKey);
     localStorage.setItem("mmm_anthropic_key", anthropicKey);
-    toast("AI settings and API keys updated!", "success");
+    toast(t("settings.saved_toast"), "success");
   };
 
   const handleResetData = () => {
@@ -76,14 +81,61 @@ export default function SettingsPage() {
       {/* Header */}
       <div className="pb-4 border-b border-slate-200/80 dark:border-slate-800/80">
         <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-wider">
-          <SettingsIcon className="w-4 h-4" /> Platform Settings
+          <SettingsIcon className="w-4 h-4" /> {t("nav.settings")}
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
-          Settings & AI Configuration
+          {t("settings.title")}
         </h1>
         <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-          Configure external LLM providers, manage session credentials, and control data backups.
+          {t("settings.subtitle")}
         </p>
+      </div>
+
+      {/* Language Preference Card */}
+      <div className="p-6 sm:p-8 rounded-3xl glass-card border border-slate-200/80 dark:border-slate-800 shadow-xl space-y-4">
+        <div className="flex items-center gap-2.5 pb-4 border-b border-slate-100 dark:border-slate-800">
+          <Globe className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+          <div>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white">
+              {t("settings.language")}
+            </h2>
+            <p className="text-xs text-slate-500">
+              {t("settings.language_desc")}
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {SUPPORTED_LANGUAGES.map((lang) => {
+            const isSelected = language === lang.code;
+            return (
+              <button
+                key={lang.code}
+                type="button"
+                onClick={() => {
+                  setLanguage(lang.code);
+                  toast(`Language switched to ${lang.nativeName}`, "success");
+                }}
+                className={`p-3.5 rounded-2xl text-left border transition-all flex items-center justify-between ${
+                  isSelected
+                    ? "bg-indigo-50/90 dark:bg-indigo-950/60 border-indigo-500 shadow-md ring-2 ring-indigo-500/20"
+                    : "bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 opacity-70 hover:opacity-100"
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="text-xl">{lang.flag}</span>
+                  <div>
+                    <div className="font-bold text-xs text-slate-900 dark:text-white">
+                      {lang.nativeName}
+                    </div>
+                    <div className="text-[10px] text-slate-400">{lang.name}</div>
+                  </div>
+                </div>
+                {isSelected && <Check className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* AI Provider & API Keys Form */}
@@ -95,7 +147,7 @@ export default function SettingsPage() {
           <Cpu className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
           <div>
             <h2 className="text-base font-bold text-slate-900 dark:text-white">
-              AI Generation Engine
+              {t("settings.ai_engine")}
             </h2>
             <p className="text-xs text-slate-500">
               Select between the offline high-leverage synthesizer or live AI model completions.

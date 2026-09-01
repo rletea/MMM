@@ -15,8 +15,20 @@ export interface AIStrategyGenerationResult {
 export async function generateMarketingStrategy(
   formState: WizardFormState,
   apiKey?: string,
-  provider: "builtin" | "openai" | "gemini" = "builtin"
+  provider: "builtin" | "openai" | "gemini" = "builtin",
+  language: string = "en"
 ): Promise<AIStrategyGenerationResult> {
+  const langNameMap: Record<string, string> = {
+    en: "English",
+    de: "German (Deutsch)",
+    fr: "French (Français)",
+    it: "Italian (Italiano)",
+    pl: "Polish (Polski)",
+    ro: "Romanian (Română)",
+    es: "Spanish (Español)",
+  };
+  const targetLanguage = langNameMap[language] || "English";
+
   // If OpenAI API key is supplied, we can attempt live generation
   if (apiKey && provider === "openai") {
     try {
@@ -31,12 +43,11 @@ export async function generateMarketingStrategy(
           messages: [
             {
               role: "system",
-              content:
-                "You are an elite CMO and Brand Strategist. Return a comprehensive marketing strategy and 30-day content calendar in valid JSON matching the requested schema.",
+              content: `You are an elite CMO and Brand Strategist. Return a comprehensive marketing strategy and 30-day content calendar in valid JSON matching the requested schema. All output content (brand manifesto, positioning document, content pillars, weekly distribution matrix, hooks, posts, video scripts) MUST be written fluently in ${targetLanguage}.`,
             },
             {
               role: "user",
-              content: `Generate a brand manifesto, positioning doc, 4 content pillars, weekly distribution matrix, and 30 unique multi-channel content posts for:
+              content: `Generate a brand manifesto, positioning doc, 4 content pillars, weekly distribution matrix, and 30 unique multi-channel content posts in ${targetLanguage} for:
 Business: ${JSON.stringify(formState.business)}
 Ikigai: ${JSON.stringify(formState.ikigai)}
 Competitive: ${JSON.stringify(formState.competitive)}

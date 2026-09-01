@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useWizardStore } from "@/store/wizard-store";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { ArchetypeType } from "@/lib/types";
 import {
   Heart,
@@ -69,103 +70,99 @@ const ARCHETYPES: {
 
 const SUGGESTED_VALUES = [
   "Radical Transparency",
-  "Asymmetric Leverage",
-  "Craftsmanship",
-  "Unapologetic Focus",
+  "Design Elegance",
+  "Speed & Agility",
+  "Zero Fluff / High Signal",
   "Customer Obsession",
-  "Speed of Execution",
-  "Integrity",
-  "Simplicity",
-  "Innovation",
-  "Authenticity",
-  "Long-term Thinking",
-  "Empathy",
+  "Data-Driven Rigor",
+  "Contrarian Innovation",
+  "Uncompromising Quality",
+  "Ethical Stewardship",
+  "Community Empowerment",
 ];
 
 export function Step0Ikigai() {
   const { ikigai, updateIkigai, toggleCoreValue } = useWizardStore();
+  const { t } = useLanguage();
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
-        <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold text-xs tracking-wider uppercase">
-          <Sparkles className="w-4 h-4" /> Step 0 • Ikigai Core Engine
-        </div>
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
-          Uncover Your Brand&apos;s Center of Gravity
+      {/* Header */}
+      <div>
+        <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+          {t("step0.badge")}
+        </span>
+        <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1">
+          {t("step0.title")}
         </h2>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-          Ikigai integrates your authentic founder drive with real commercial demand. This anchors all AI positioning and prevents robotic, generic marketing copy.
+        <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl leading-relaxed">
+          {t("step0.desc")}
         </p>
       </div>
 
-      {/* 4 Pillars of Ikigai */}
+      {/* 4 Ikigai Core Dimensions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Passion */}
-        <div className="p-5 rounded-2xl glass-card border border-indigo-100/60 dark:border-indigo-900/40 hover:border-indigo-400/50 transition-all space-y-2">
-          <div className="flex items-center gap-2 text-rose-500 dark:text-rose-400 font-semibold text-sm">
-            <Heart className="w-4 h-4" /> 1. Passion (What You Love)
+        <div className="p-5 rounded-2xl bg-white/50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800 space-y-2">
+          <div className="flex items-center gap-2 text-pink-600 dark:text-pink-400 font-bold text-sm">
+            <Heart className="w-4 h-4" />
+            <span>{t("step0.passion")}</span>
           </div>
-          <p className="text-xs text-slate-500">
-            What topics or challenges energize you so much that you would explore them even without compensation?
-          </p>
+          <p className="text-[11px] text-slate-500">{t("step0.passion_desc")}</p>
           <textarea
+            rows={3}
             value={ikigai.passion}
             onChange={(e) => updateIkigai({ passion: e.target.value })}
-            placeholder="e.g. Designing transformative systems that give creators and founders true operational leverage..."
-            rows={3}
-            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+            placeholder="e.g. Building intuitive developer tools, simplifying complex enterprise systems..."
+            className="w-full text-xs rounded-xl p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 outline-hidden transition-all"
           />
         </div>
 
         {/* Vocation */}
-        <div className="p-5 rounded-2xl glass-card border border-indigo-100/60 dark:border-indigo-900/40 hover:border-indigo-400/50 transition-all space-y-2">
-          <div className="flex items-center gap-2 text-sky-500 dark:text-sky-400 font-semibold text-sm">
-            <Globe className="w-4 h-4" /> 2. Vocation (What the World Needs)
+        <div className="p-5 rounded-2xl bg-white/50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800 space-y-2">
+          <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-sm">
+            <Globe className="w-4 h-4" />
+            <span>{t("step0.vocation")}</span>
           </div>
-          <p className="text-xs text-slate-500">
-            What critical gap or acute pain in the market is begging for a better, more intelligent solution?
-          </p>
+          <p className="text-[11px] text-slate-500">{t("step0.vocation_desc")}</p>
           <textarea
+            rows={3}
             value={ikigai.vocation}
             onChange={(e) => updateIkigai({ vocation: e.target.value })}
-            placeholder="e.g. Strategic growth advisory and automated multi-channel marketing architecture without agency bloat..."
-            rows={3}
-            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+            placeholder="e.g. Businesses are overwhelmed by disconnected marketing data and lack strategic clarity..."
+            className="w-full text-xs rounded-xl p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-hidden transition-all"
           />
         </div>
 
         {/* Mission */}
-        <div className="p-5 rounded-2xl glass-card border border-indigo-100/60 dark:border-indigo-900/40 hover:border-indigo-400/50 transition-all space-y-2">
-          <div className="flex items-center gap-2 text-amber-500 dark:text-amber-400 font-semibold text-sm">
-            <Sparkles className="w-4 h-4" /> 3. Mission (Why You Fight)
+        <div className="p-5 rounded-2xl bg-white/50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800 space-y-2">
+          <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-bold text-sm">
+            <Sparkles className="w-4 h-4" />
+            <span>{t("step0.mission")}</span>
           </div>
-          <p className="text-xs text-slate-500">
-            What is the ultimate transformation or legacy you want your brand to be remembered for?
-          </p>
+          <p className="text-[11px] text-slate-500">{t("step0.mission_desc")}</p>
           <textarea
+            rows={3}
             value={ikigai.mission}
             onChange={(e) => updateIkigai({ mission: e.target.value })}
-            placeholder="e.g. Democratize elite CMO-level positioning and make marketing execution effortless for operators..."
-            rows={3}
-            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+            placeholder="e.g. Democratizing tier-one CMO level strategy so every ambitious founder can scale profitably..."
+            className="w-full text-xs rounded-xl p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-hidden transition-all"
           />
         </div>
 
         {/* Profession */}
-        <div className="p-5 rounded-2xl glass-card border border-indigo-100/60 dark:border-indigo-900/40 hover:border-indigo-400/50 transition-all space-y-2">
-          <div className="flex items-center gap-2 text-emerald-500 dark:text-emerald-400 font-semibold text-sm">
-            <Briefcase className="w-4 h-4" /> 4. Profession (What You Are Paid For)
+        <div className="p-5 rounded-2xl bg-white/50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800 space-y-2">
+          <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-sm">
+            <Briefcase className="w-4 h-4" />
+            <span>{t("step0.profession")}</span>
           </div>
-          <p className="text-xs text-slate-500">
-            What is your core commercial deliverable, technical skill, or high-value offer?
-          </p>
+          <p className="text-[11px] text-slate-500">{t("step0.profession_desc")}</p>
           <textarea
+            rows={3}
             value={ikigai.profession}
             onChange={(e) => updateIkigai({ profession: e.target.value })}
-            placeholder="e.g. End-to-end B2B marketing systems, conversion architecture, and high-ticket customer acquisition..."
-            rows={3}
-            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+            placeholder="e.g. High-ticket B2B consulting, AI SaaS automation software, technical audits..."
+            className="w-full text-xs rounded-xl p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-hidden transition-all"
           />
         </div>
       </div>
