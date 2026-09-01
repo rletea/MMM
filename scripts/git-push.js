@@ -2,6 +2,20 @@ const git = require("isomorphic-git");
 const http = require("isomorphic-git/http/node");
 const fs = require("fs");
 const path = require("path");
+const readline = require("readline");
+
+function askQuestion(query) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  return new Promise((resolve) =>
+    rl.question(query, (ans) => {
+      rl.close();
+      resolve(ans.trim());
+    })
+  );
+}
 
 async function main() {
   const dir = path.resolve(__dirname, "..");
@@ -10,9 +24,8 @@ async function main() {
   // Initialize git repo if not already
   try {
     await git.init({ fs, dir });
-    console.log("Initialized git repository.");
   } catch (err) {
-    console.log("Git repo already exists or init note:", err.message);
+    // Ignore if exists
   }
 
   // Scan all files in workspace respecting .gitignore
@@ -40,44 +53,51 @@ async function main() {
   }
 
   scan(dir);
-  console.log(`Found ${files.length} project files to stage.`);
-
   for (const file of files) {
     await git.add({ fs, dir, filepath: file });
   }
-  console.log("Staged all files.");
 
-  const sha = await git.commit({
-    fs,
-    dir,
-    message: "Initial release: My Marketing Manager (MMM) Platform",
-    author: {
-      name: "rletea",
-      email: "rletea@users.noreply.github.com",
-    },
-  });
-  console.log("Committed with SHA:", sha);
+  try {
+    const sha = await git.commit({
+      fs,
+      dir,
+      message: "Initial release: My Marketing Manager (MMM) Platform",
+      author: {
+        name: "rletea",
+        email: "rletea@users.noreply.github.com",
+      },
+    });
+    console.log("Committed:", sha);
+  } catch (err) {
+    // Already committed
+  }
 
-  // Set remote
   const remoteUrl = "https://github.com/rletea/MMM.git";
   try {
     await git.addRemote({ fs, dir, remote: "origin", url: remoteUrl });
-    console.log("Added remote origin:", remoteUrl);
   } catch (err) {
-    console.log("Remote origin note:", err.message);
+    // Remote already exists
   }
 
-  console.log("Branch:", "main");
   try {
     await git.branch({ fs, dir, ref: "main", checkout: true });
   } catch (err) {
-    console.log("Branch set note:", err.message);
+    // Branch exists
   }
 
-  console.log("\nReady to push. Attempting push to", remoteUrl);
-  const cliToken = process.argv[2];
-  const token = cliToken || process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+  let token = process.argv[2] || process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+  if (!token) {
+    token = await askQuestion(
+      "\nEnter your GitHub Personal Access Token (or paste token): "
+    );
+  }
 
+  // Strip any accidental brackets or quotes
+  if (token) {
+    token = token.replace(/^[<"']|[>"']$/g, "").trim();
+  }
+
+  console.log("\nPushing to", remoteUrl, "on branch main...");
   try {
     const pushResult = await git.push({
       fs,
@@ -92,11 +112,13 @@ async function main() {
         return {};
       },
     });
-    console.log("Push result: SUCCESS!", pushResult);
+    console.log("\n🚀 PUSH SUCCESSFUL! Your code is live on GitHub:", remoteUrl);
   } catch (pushErr) {
-    console.log("Push notice:", pushErr.message);
-    if (pushErr.message.includes("401") || pushErr.message.includes("Unauthorized") || pushErr.message.includes("auth")) {
-      console.log("\nAuthentication required: You can push by running:\n  node scripts/git-push.js <YOUR_GITHUB_TOKEN>\nor by using standard git:\n  git push -u origin main");
+    console.error("\nPush error:", pushErr.message);
+    if (pushErr.message.includes("401") || pushErr.message.includes("Unauthorized")) {
+      console.log(
+        "\nAuthentication failed. Ensure your GitHub Personal Access Token has 'repo' permissions."
+      );
     }
   }
 }
