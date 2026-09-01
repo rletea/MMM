@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { FullProfilePayload, GeneratedPostItem, ContentStatusType } from "@/lib/types";
 import { KanbanBoard } from "@/components/studio/KanbanBoard";
 import { CalendarView } from "@/components/studio/CalendarView";
@@ -8,7 +8,7 @@ import { ExportToolbar } from "@/components/studio/ExportToolbar";
 import { PostDetailModal } from "@/components/studio/PostDetailModal";
 import { useToast } from "@/components/ui/Toast";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-import { Calendar, Loader2, Sparkles, Plus, RefreshCw } from "lucide-react";
+import { Loader2, Sparkles, RefreshCw } from "lucide-react";
 import Link from "next/link";
 
 export default function StudioPage() {
@@ -19,12 +19,12 @@ export default function StudioPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeModalPost, setActiveModalPost] = useState<GeneratedPostItem | null>(null);
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/profile");
+      const res = await fetch(`/api/profile?lang=${language}`);
       const data = await res.json();
       if (data.data) {
         setProfile(data.data);
@@ -34,11 +34,11 @@ export default function StudioPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [language]);
 
   useEffect(() => {
     fetchProfile();
-  }, []);
+  }, [fetchProfile]);
 
   const handleUpdateStatus = async (id: string, newStatus: ContentStatusType) => {
     if (!profile) return;
@@ -93,7 +93,7 @@ export default function StudioPage() {
 
   const handleQuickCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast("Post copy copied to clipboard!", "success");
+    toast(t("studio.copied_toast"), "success");
   };
 
   // Filtered post list
@@ -102,11 +102,13 @@ export default function StudioPage() {
     return profile.contents.filter((post) => {
       const matchChannel =
         selectedChannel === "ALL" || post.channel === selectedChannel;
+      const body = post.body || (post as any).bodyContent || "";
+      const topic = post.topic || (post as any).pillar || "";
       const matchSearch =
         searchQuery.trim() === "" ||
         post.hook.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        post.bodyContent.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        post.pillar.toLowerCase().includes(searchQuery.toLowerCase());
+        body.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        topic.toLowerCase().includes(searchQuery.toLowerCase());
       return matchChannel && matchSearch;
     });
   }, [profile, selectedChannel, searchQuery]);
@@ -116,7 +118,7 @@ export default function StudioPage() {
       <div className="min-h-[70vh] flex flex-col items-center justify-center gap-3">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
         <span className="text-sm font-semibold text-slate-500">
-          Loading Multi-Channel Content Studio...
+          {t("studio.loading")}
         </span>
       </div>
     );

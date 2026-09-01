@@ -104,10 +104,11 @@ export const useWizardStore = create<WizardStore>()(
 
       toggleCoreValue: (val) =>
         set((s) => {
-          const exists = s.ikigai.coreValues.includes(val);
+          const current = s.ikigai.coreValues || [];
+          const exists = current.includes(val);
           const next = exists
-            ? s.ikigai.coreValues.filter((v) => v !== val)
-            : [...s.ikigai.coreValues, val];
+            ? current.filter((v) => v !== val)
+            : [...current, val];
           return { ikigai: { ...s.ikigai, coreValues: next } };
         }),
 

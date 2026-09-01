@@ -9,12 +9,11 @@ import {
   Mail,
   Video,
   Copy,
-  CheckCircle2,
-  Calendar,
   ChevronRight,
   ChevronLeft,
   Eye,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface KanbanBoardProps {
   posts: GeneratedPostItem[];
@@ -23,47 +22,49 @@ interface KanbanBoardProps {
   onQuickCopy: (text: string) => void;
 }
 
-const COLUMNS: {
-  id: ContentStatusType;
-  title: string;
-  badgeColor: string;
-  nextStatus?: ContentStatusType;
-  prevStatus?: ContentStatusType;
-}[] = [
-  {
-    id: "DRAFT",
-    title: "Drafts",
-    badgeColor: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-    nextStatus: "SCHEDULED",
-  },
-  {
-    id: "SCHEDULED",
-    title: "Scheduled",
-    badgeColor: "bg-indigo-100 text-indigo-800 dark:bg-indigo-950/80 dark:text-indigo-300",
-    prevStatus: "DRAFT",
-    nextStatus: "COPIED",
-  },
-  {
-    id: "COPIED",
-    title: "Copied / Queued",
-    badgeColor: "bg-sky-100 text-sky-800 dark:bg-sky-950/80 dark:text-sky-300",
-    prevStatus: "SCHEDULED",
-    nextStatus: "PUBLISHED",
-  },
-  {
-    id: "PUBLISHED",
-    title: "Published",
-    badgeColor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300",
-    prevStatus: "COPIED",
-  },
-];
-
 export function KanbanBoard({
   posts,
   onSelectPost,
   onUpdateStatus,
   onQuickCopy,
 }: KanbanBoardProps) {
+  const { t } = useLanguage();
+
+  const columns: {
+    id: ContentStatusType;
+    title: string;
+    badgeColor: string;
+    nextStatus?: ContentStatusType;
+    prevStatus?: ContentStatusType;
+  }[] = [
+    {
+      id: "DRAFT",
+      title: t("studio.col_drafts"),
+      badgeColor: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+      nextStatus: "SCHEDULED",
+    },
+    {
+      id: "SCHEDULED",
+      title: t("studio.col_scheduled"),
+      badgeColor: "bg-indigo-100 text-indigo-800 dark:bg-indigo-950/80 dark:text-indigo-300",
+      prevStatus: "DRAFT",
+      nextStatus: "COPIED",
+    },
+    {
+      id: "COPIED",
+      title: t("studio.col_copied"),
+      badgeColor: "bg-sky-100 text-sky-800 dark:bg-sky-950/80 dark:text-sky-300",
+      prevStatus: "SCHEDULED",
+      nextStatus: "PUBLISHED",
+    },
+    {
+      id: "PUBLISHED",
+      title: t("studio.col_published"),
+      badgeColor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300",
+      prevStatus: "COPIED",
+    },
+  ];
+
   const getChannelIcon = (channel: string) => {
     switch (channel) {
       case "LINKEDIN":
@@ -83,7 +84,7 @@ export function KanbanBoard({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 items-start">
-      {COLUMNS.map((col) => {
+      {columns.map((col) => {
         const columnPosts = posts.filter((p) => p.status === col.id);
         return (
           <div
@@ -104,91 +105,89 @@ export function KanbanBoard({
 
             {/* Post Cards */}
             <div className="space-y-3">
-              {columnPosts.map((post) => (
-                <div
-                  key={post.id}
-                  className="p-4 rounded-2xl glass-card border border-slate-200/80 dark:border-slate-800 hover:border-indigo-400/60 transition-all duration-200 shadow-sm space-y-2.5 group relative"
-                >
-                  {/* Card Header */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5">
-                      <div className="p-1 rounded-md bg-slate-100 dark:bg-slate-800">
+              {columnPosts.length > 0 ? (
+                columnPosts.map((post) => (
+                  <div
+                    key={post.id}
+                    className="p-4 rounded-2xl glass-card border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-all space-y-3 group"
+                  >
+                    {/* Card Top Meta */}
+                    <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300">
                         {getChannelIcon(post.channel)}
+                        <span className="text-[11px] font-extrabold text-indigo-600 dark:text-indigo-400">
+                          {t("studio.day")} {post.dayNumber}
+                        </span>
                       </div>
-                      <span className="text-[10px] font-bold uppercase text-slate-500">
-                        Day {post.dayNumber}
+                      <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                        {post.format || (post as any).contentType}
                       </span>
                     </div>
 
-                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500">
-                      {post.contentType}
-                    </span>
-                  </div>
+                    {/* Hook Headline */}
+                    <h4
+                      onClick={() => onSelectPost(post)}
+                      className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white line-clamp-2 cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                    >
+                      {post.hook}
+                    </h4>
 
-                  {/* Hook preview */}
-                  <h4
-                    onClick={() => onSelectPost(post)}
-                    className="text-xs font-bold text-slate-900 dark:text-white line-clamp-2 cursor-pointer hover:text-indigo-600 transition-colors"
-                  >
-                    {post.hook}
-                  </h4>
+                    {/* Body Snippet */}
+                    <p
+                      onClick={() => onSelectPost(post)}
+                      className="text-xs text-slate-500 line-clamp-3 leading-relaxed cursor-pointer font-sans"
+                    >
+                      {post.body || (post as any).bodyContent}
+                    </p>
 
-                  {/* Body Snippet */}
-                  <p
-                    onClick={() => onSelectPost(post)}
-                    className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 cursor-pointer"
-                  >
-                    {post.bodyContent}
-                  </p>
-
-                  {/* Actions footer */}
-                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800/80">
-                    <div className="flex items-center gap-1">
+                    {/* Card Actions Footer */}
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-1">
                       <button
-                        onClick={() => onSelectPost(post)}
-                        title="View Full Post"
-                        className="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-indigo-600 transition-colors"
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() => onQuickCopy(post.bodyContent)}
-                        title="Quick Copy"
-                        className="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-indigo-600 transition-colors"
+                        type="button"
+                        onClick={() => onQuickCopy(post.body || (post as any).bodyContent)}
+                        className="flex items-center gap-1 text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+                        title={t("studio.copy_post")}
                       >
                         <Copy className="w-3.5 h-3.5" />
+                        <span>{t("studio.copy_post")}</span>
                       </button>
-                    </div>
 
-                    {/* Column Shift buttons */}
-                    <div className="flex items-center gap-1">
-                      {col.prevStatus && (
+                      <div className="flex items-center gap-1">
+                        {col.prevStatus && (
+                          <button
+                            type="button"
+                            onClick={() => onUpdateStatus(post.id, col.prevStatus!)}
+                            className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+                            title={`Move to ${col.prevStatus}`}
+                          >
+                            <ChevronLeft className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                         <button
-                          onClick={() => onUpdateStatus(post.id, col.prevStatus!)}
-                          title={`Move back to ${col.prevStatus}`}
-                          className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
+                          type="button"
+                          onClick={() => onSelectPost(post)}
+                          className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-indigo-600 transition-colors"
+                          title="Inspect Details"
                         >
-                          <ChevronLeft className="w-3.5 h-3.5" />
+                          <Eye className="w-3.5 h-3.5" />
                         </button>
-                      )}
-                      {col.nextStatus && (
-                        <button
-                          onClick={() => onUpdateStatus(post.id, col.nextStatus!)}
-                          title={`Move to ${col.nextStatus}`}
-                          className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 flex items-center gap-0.5"
-                        >
-                          <span>{col.nextStatus}</span>
-                          <ChevronRight className="w-3 h-3" />
-                        </button>
-                      )}
+                        {col.nextStatus && (
+                          <button
+                            type="button"
+                            onClick={() => onUpdateStatus(post.id, col.nextStatus!)}
+                            className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+                            title={`Move to ${col.nextStatus}`}
+                          >
+                            <ChevronRight className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-
-              {columnPosts.length === 0 && (
-                <div className="text-center py-12 text-xs text-slate-400 italic">
-                  No posts in {col.title.toLowerCase()}
+                ))
+              ) : (
+                <div className="p-6 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400">
+                  {t("studio.no_posts")}
                 </div>
               )}
             </div>

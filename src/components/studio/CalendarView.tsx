@@ -10,6 +10,7 @@ import {
   Video,
   CheckCircle2,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface CalendarViewProps {
   posts: GeneratedPostItem[];
@@ -17,6 +18,8 @@ interface CalendarViewProps {
 }
 
 export function CalendarView({ posts, onSelectPost }: CalendarViewProps) {
+  const { t } = useLanguage();
+
   const getChannelBadge = (channel: string) => {
     switch (channel) {
       case "LINKEDIN":
@@ -66,7 +69,7 @@ export function CalendarView({ posts, onSelectPost }: CalendarViewProps) {
               {/* Top Row: Day & Channel */}
               <div className="flex items-center justify-between">
                 <span className="text-xs font-black text-slate-900 dark:text-white">
-                  Day {post.dayNumber}
+                  {t("studio.day")} {post.dayNumber}
                 </span>
                 <div className="flex items-center gap-1">
                   <div className="p-1 rounded bg-white dark:bg-slate-900 shadow-xs">
@@ -81,7 +84,7 @@ export function CalendarView({ posts, onSelectPost }: CalendarViewProps) {
               {/* Hook text */}
               <div className="space-y-1">
                 <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">
-                  {post.contentType}
+                  {post.format || (post as any).contentType}
                 </div>
                 <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 line-clamp-3 leading-snug group-hover:text-indigo-600 transition-colors">
                   {post.hook}
@@ -101,8 +104,8 @@ export function CalendarView({ posts, onSelectPost }: CalendarViewProps) {
                 >
                   {post.status}
                 </span>
-                <span className="text-[9px] text-slate-400 font-medium">
-                  {post.pillar.split(":")[0] || "Pillar"}
+                <span className="text-[10px] text-indigo-600 font-bold group-hover:underline">
+                  {t("studio.day")} #{post.dayNumber}
                 </span>
               </div>
             </div>

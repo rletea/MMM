@@ -24,10 +24,11 @@ export default function StrategyPage() {
   const [profile, setProfile] = useState<FullProfilePayload | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
 
   useEffect(() => {
-    fetch("/api/profile")
+    setLoading(true);
+    fetch(`/api/profile?lang=${language}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.data) {
@@ -36,14 +37,14 @@ export default function StrategyPage() {
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
-  }, []);
+  }, [language]);
 
   if (loading || !profile) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center gap-3">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
         <span className="text-sm font-semibold text-slate-500">
-          Loading Strategy Hub...
+          {t("strategy.loading")}
         </span>
       </div>
     );
@@ -53,7 +54,7 @@ export default function StrategyPage() {
 
   const handleCopyManifesto = () => {
     navigator.clipboard.writeText(strategy.brandManifesto || strategy.positioningDoc);
-    toast("Brand Manifesto copied to clipboard!", "success");
+    toast(t("studio.copied_toast"), "success");
   };
 
   const handleDownloadStrategy = () => {
@@ -70,6 +71,9 @@ export default function StrategyPage() {
     );
     toast("Strategy markdown downloaded!", "success");
   };
+
+  const archetypeKey = `archetype.${ikigai.archetype}` as any;
+  const localizedArchetype = t(archetypeKey) || ikigai.archetype?.replace(/_/g, " ");
 
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-8 animate-fade-in">
@@ -111,10 +115,10 @@ export default function StrategyPage() {
       <div className="p-8 sm:p-10 rounded-3xl gradient-card-glow glass-card border border-indigo-200/60 dark:border-indigo-950/60 shadow-2xl space-y-6 relative overflow-hidden">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs font-extrabold tracking-widest text-indigo-600 dark:text-indigo-400 uppercase">
-            <Sparkles className="w-4 h-4" /> Official Brand Manifesto
+            <Sparkles className="w-4 h-4" /> {t("strategy.manifesto_badge")}
           </div>
           <div className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-            Archetype: {ikigai.archetype?.replace(/_/g, " ")}
+            {t("strategy.archetype_label")} {localizedArchetype}
           </div>
         </div>
 
@@ -123,7 +127,7 @@ export default function StrategyPage() {
         </div>
 
         <div className="pt-4 border-t border-slate-200/60 dark:border-slate-800/60 flex flex-wrap items-center gap-2">
-          <span className="text-xs font-bold text-slate-400 uppercase mr-2">Core Values:</span>
+          <span className="text-xs font-bold text-slate-400 uppercase mr-2">{t("strategy.core_values_label")}</span>
           {ikigai.coreValues?.map((val) => (
             <span
               key={val}
@@ -138,7 +142,7 @@ export default function StrategyPage() {
       {/* Core Positioning Document */}
       <div className="p-6 sm:p-8 rounded-3xl glass-card border border-slate-200/80 dark:border-slate-800 shadow-xl space-y-4">
         <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">
-          <Award className="w-4 h-4" /> Core Value Proposition & Positioning Document
+          <Award className="w-4 h-4" /> {t("strategy.positioning_badge")}
         </div>
         <div className="p-6 rounded-2xl bg-slate-50/70 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/80 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap font-sans">
           {strategy.positioningDoc}
@@ -149,10 +153,10 @@ export default function StrategyPage() {
       <div className="space-y-4">
         <div>
           <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-            Strategic Content Pillars
+            {t("strategy.pillars")}
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Balanced to build category authority, solve acute pains, showcase founder craft, and drive direct lead conversions.
+            {t("strategy.pillars_desc")}
           </p>
         </div>
 
@@ -165,10 +169,10 @@ export default function StrategyPage() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-extrabold uppercase px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
-                    Pillar {idx + 1}
+                    {t("strategy.pillar_num")} {idx + 1}
                   </span>
                   <span className="text-xs font-bold text-slate-400">
-                    {pillar.frequencyPerWeek}x / week
+                    {pillar.frequencyPerWeek} {t("strategy.per_week")}
                   </span>
                 </div>
 
@@ -186,19 +190,21 @@ export default function StrategyPage() {
               </div>
 
               {/* Sample Hooks */}
-              <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 space-y-1.5">
-                <div className="text-[10px] font-bold text-slate-400 uppercase">
-                  Sample Proven Hooks:
-                </div>
-                {pillar.sampleHooks?.map((h, hIdx) => (
-                  <div
-                    key={hIdx}
-                    className="text-xs font-medium text-slate-800 dark:text-slate-200 italic"
-                  >
-                    &ldquo;{h}&rdquo;
+              {pillar.sampleHooks && pillar.sampleHooks.length > 0 && (
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 space-y-1.5">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase">
+                    Sample Proven Hooks:
                   </div>
-                ))}
-              </div>
+                  {pillar.sampleHooks.map((h, hIdx) => (
+                    <div
+                      key={hIdx}
+                      className="text-xs font-medium text-slate-800 dark:text-slate-200 italic"
+                    >
+                      &ldquo;{h}&rdquo;
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -209,10 +215,10 @@ export default function StrategyPage() {
         <div className="p-6 sm:p-8 rounded-3xl glass-card border border-slate-200/80 dark:border-slate-800 shadow-xl space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">
-              <Calendar className="w-4 h-4" /> Weekly Distribution Matrix
+              <Calendar className="w-4 h-4" /> {t("strategy.matrix")}
             </div>
             <span className="text-xs font-semibold text-slate-400">
-              {strategy.reviewCadence} Strategic Cadence
+              {t("strategy.matrix_desc")}
             </span>
           </div>
 
@@ -220,11 +226,10 @@ export default function StrategyPage() {
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-400 font-bold uppercase tracking-wider">
-                  <th className="py-3 px-3">Day</th>
-                  <th className="py-3 px-3">Platform</th>
-                  <th className="py-3 px-3">Format</th>
-                  <th className="py-3 px-3">Strategic Goal</th>
-                  <th className="py-3 px-3">Pillar Focus</th>
+                  <th className="py-3 px-3">{t("strategy.matrix_day")}</th>
+                  <th className="py-3 px-3">{t("strategy.matrix_channel")}</th>
+                  <th className="py-3 px-3">{t("strategy.matrix_format")}</th>
+                  <th className="py-3 px-3">{t("strategy.matrix_theme")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
@@ -236,11 +241,10 @@ export default function StrategyPage() {
                     <td className="py-3.5 px-3 font-semibold text-indigo-600 dark:text-indigo-400">
                       {row.channel}
                     </td>
-                    <td className="py-3.5 px-3">{row.contentType}</td>
-                    <td className="py-3.5 px-3 text-emerald-600 dark:text-emerald-400 font-medium">
-                      {row.strategicGoal}
+                    <td className="py-3.5 px-3">{row.format || (row as any).contentType}</td>
+                    <td className="py-3.5 px-3 font-medium text-slate-800 dark:text-slate-200 truncate max-w-xs">
+                      {row.strategicTheme || (row as any).pillarFocus}
                     </td>
-                    <td className="py-3.5 px-3 truncate max-w-xs">{row.pillarFocus}</td>
                   </tr>
                 ))}
               </tbody>
@@ -248,6 +252,24 @@ export default function StrategyPage() {
           </div>
         </div>
       )}
+
+      {/* Bottom CTA to Studio */}
+      <div className="p-8 rounded-3xl gradient-brand text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+        <div className="space-y-1 text-center sm:text-left">
+          <h3 className="text-xl font-bold">
+            {t("dash.open_studio")}
+          </h3>
+          <p className="text-xs text-indigo-100 max-w-xl">
+            {t("studio.subtitle")}
+          </p>
+        </div>
+        <Link
+          href="/studio"
+          className="px-6 py-3 rounded-2xl bg-white text-indigo-700 font-extrabold text-sm hover:bg-indigo-50 shadow-lg transition-all flex items-center gap-2 whitespace-nowrap"
+        >
+          {t("dash.open_studio")} <ArrowRight className="w-4 h-4" />
+        </Link>
+      </div>
     </div>
   );
 }

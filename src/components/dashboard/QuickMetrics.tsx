@@ -2,18 +2,18 @@
 
 import React from "react";
 import { FullProfilePayload } from "@/lib/types";
-import { Calendar, Share2, Layers, CheckCircle2, Copy, Sparkles } from "lucide-react";
-import Link from "next/link";
+import { Calendar, Share2, Layers, Sparkles } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface QuickMetricsProps {
   profile: FullProfilePayload;
 }
 
 export function QuickMetrics({ profile }: QuickMetricsProps) {
+  const { t } = useLanguage();
   const posts = profile.contents || [];
   const publishedCount = posts.filter((p) => p.status === "PUBLISHED").length;
   const copiedCount = posts.filter((p) => p.status === "COPIED").length;
-  const scheduledCount = posts.filter((p) => p.status === "SCHEDULED").length;
   const draftCount = posts.filter((p) => p.status === "DRAFT").length;
 
   return (
@@ -26,7 +26,7 @@ export function QuickMetrics({ profile }: QuickMetricsProps) {
             {posts.length} Posts
           </div>
           <div className="text-[10px] text-slate-400">
-            {publishedCount} Published • {copiedCount} Copied
+            {publishedCount} {t("studio.col_published")} • {copiedCount} {t("studio.col_copied")}
           </div>
         </div>
         <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
@@ -37,12 +37,12 @@ export function QuickMetrics({ profile }: QuickMetricsProps) {
       {/* Active Channels */}
       <div className="p-5 rounded-2xl glass-card border border-slate-200/80 dark:border-slate-800 flex items-center justify-between shadow-sm">
         <div className="space-y-1">
-          <span className="text-xs font-semibold text-slate-500">Active Channels</span>
+          <span className="text-xs font-semibold text-slate-500">{t("step4.channels")}</span>
           <div className="text-2xl font-black text-slate-900 dark:text-white">
-            {profile.strategy.activeChannels?.length || 0} Platforms
+            {profile.strategy.activeChannels?.length || 4} {t("studio.platform")}s
           </div>
           <div className="text-[10px] text-slate-400 truncate max-w-[150px]">
-            {profile.strategy.activeChannels?.join(", ")}
+            {profile.strategy.activeChannels?.join(", ") || "LinkedIn, Email, Instagram, TikTok"}
           </div>
         </div>
         <div className="w-11 h-11 rounded-xl bg-purple-50 dark:bg-purple-950 flex items-center justify-center text-purple-600 dark:text-purple-400">
@@ -53,12 +53,12 @@ export function QuickMetrics({ profile }: QuickMetricsProps) {
       {/* Content Pillars */}
       <div className="p-5 rounded-2xl glass-card border border-slate-200/80 dark:border-slate-800 flex items-center justify-between shadow-sm">
         <div className="space-y-1">
-          <span className="text-xs font-semibold text-slate-500">Content Pillars</span>
+          <span className="text-xs font-semibold text-slate-500">{t("strategy.pillars")}</span>
           <div className="text-2xl font-black text-slate-900 dark:text-white">
             {profile.strategy.contentPillars?.length || 4} Pillars
           </div>
           <div className="text-[10px] text-slate-400">
-            {profile.strategy.reviewCadence} Cadence
+            7-Day Cadence
           </div>
         </div>
         <div className="w-11 h-11 rounded-xl bg-sky-50 dark:bg-sky-950 flex items-center justify-center text-sky-600 dark:text-sky-400">
@@ -74,7 +74,7 @@ export function QuickMetrics({ profile }: QuickMetricsProps) {
             {Math.round(((publishedCount + copiedCount) / Math.max(1, posts.length)) * 100)}%
           </div>
           <div className="text-[10px] text-slate-400">
-            {draftCount} Drafts ready to deploy
+            {draftCount} {t("studio.col_drafts")}
           </div>
         </div>
         <div className="w-11 h-11 rounded-xl bg-emerald-50 dark:bg-emerald-950 flex items-center justify-center text-emerald-600 dark:text-emerald-400">

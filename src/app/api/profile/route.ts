@@ -7,8 +7,9 @@ export async function GET(req: NextRequest) {
     const token = req.cookies.get(COOKIE_NAME)?.value;
     const session = token ? verifyToken(token) : null;
     const userId = session ? session.id : "demo-user-01";
+    const lang = req.nextUrl.searchParams.get("lang") || "en";
 
-    const profile = await getOrCreateUserProfile(userId);
+    const profile = await getOrCreateUserProfile(userId, lang);
     return NextResponse.json({ success: true, data: profile });
   } catch (error: any) {
     return NextResponse.json(

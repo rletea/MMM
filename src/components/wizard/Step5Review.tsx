@@ -10,17 +10,11 @@ import { useLanguage } from "@/lib/i18n/LanguageContext";
 import {
   Sparkles,
   Award,
-  TrendingUp,
-  ShieldAlert,
-  CheckCircle2,
   Cpu,
   Layers,
-  Users,
-  Target,
   ArrowRight,
   Loader2,
   Key,
-  Flame,
 } from "lucide-react";
 
 export function Step5Review() {
@@ -32,8 +26,8 @@ export function Step5Review() {
   const [apiKey, setApiKey] = useState("");
   const [useOpenAI, setUseOpenAI] = useState(false);
 
-  // Calculate live BVI
-  const bvi = useMemo(() => calculateBVI(state), [state]);
+  // Calculate live BVI with active language
+  const bvi = useMemo(() => calculateBVI(state, language), [state, language]);
 
   const handleGenerate = async () => {
     setIsGenerating(true);
@@ -117,7 +111,7 @@ export function Step5Review() {
             <div className="text-center z-10">
               <span className="text-3xl font-extrabold tracking-tight">{bvi.totalScore}</span>
               <span className="text-[10px] block text-slate-400 font-semibold uppercase -mt-1">
-                BVI Score
+                {t("step5.bvi_score")}
               </span>
             </div>
           </div>
@@ -128,10 +122,10 @@ export function Step5Review() {
               {bvi.tierLabel}
             </div>
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-              {state.business.businessName || "Your Brand"} Viability Index
+              {state.business.businessName || "Your Brand"} • {t("scorecard.bvi_title")}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md">
-              Evaluated across market saturation, founder capacity, ICP alignment, and channel synergy.
+              {t("scorecard.health_rating")}
             </p>
           </div>
         </div>
@@ -139,19 +133,19 @@ export function Step5Review() {
         {/* Subscore metric mini-bars */}
         <div className="grid grid-cols-2 gap-3 w-full md:w-auto min-w-[280px]">
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800">
-            <div className="text-[10px] font-semibold text-slate-500 uppercase">Market Viability</div>
+            <div className="text-[10px] font-semibold text-slate-500 uppercase">{t("scorecard.market_viability")}</div>
             <div className="text-sm font-bold text-slate-900 dark:text-white">{bvi.marketViability}%</div>
           </div>
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800">
-            <div className="text-[10px] font-semibold text-slate-500 uppercase">PM Alignment</div>
+            <div className="text-[10px] font-semibold text-slate-500 uppercase">{t("scorecard.pm_alignment")}</div>
             <div className="text-sm font-bold text-slate-900 dark:text-white">{bvi.productMarketAlignment}%</div>
           </div>
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800">
-            <div className="text-[10px] font-semibold text-slate-500 uppercase">Execution Capacity</div>
+            <div className="text-[10px] font-semibold text-slate-500 uppercase">{t("scorecard.execution_capacity")}</div>
             <div className="text-sm font-bold text-slate-900 dark:text-white">{bvi.executionCapacity}%</div>
           </div>
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800">
-            <div className="text-[10px] font-semibold text-slate-500 uppercase">Ikigai Alignment</div>
+            <div className="text-[10px] font-semibold text-slate-500 uppercase">{t("scorecard.ikigai_congruence")}</div>
             <div className="text-sm font-bold text-slate-900 dark:text-white">{bvi.ikigaiCongruence}%</div>
           </div>
         </div>
@@ -162,7 +156,7 @@ export function Step5Review() {
         {/* Ikigai Summary */}
         <div className="p-4 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 space-y-2">
           <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">
-            <Sparkles className="w-3.5 h-3.5" /> Ikigai & Archetype
+            <Sparkles className="w-3.5 h-3.5" /> {t("wizard.step0_tab")}
           </div>
           <div className="text-sm font-semibold text-slate-900 dark:text-white">
             {state.ikigai.archetype?.replace(/_/g, " ")}
@@ -171,7 +165,7 @@ export function Step5Review() {
             <strong>Mission:</strong> {state.ikigai.mission || "Not specified"}
           </p>
           <div className="flex flex-wrap gap-1 pt-1">
-            {state.ikigai.coreValues.map((v) => (
+            {state.ikigai.coreValues?.map((v) => (
               <span key={v} className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                 {v}
               </span>
@@ -182,7 +176,7 @@ export function Step5Review() {
         {/* Commercial Summary */}
         <div className="p-4 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 space-y-2">
           <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">
-            <Layers className="w-3.5 h-3.5" /> Business & Channels
+            <Layers className="w-3.5 h-3.5" /> {t("wizard.step1_tab")}
           </div>
           <div className="text-sm font-semibold text-slate-900 dark:text-white">
             {state.business.businessModel?.replace(/_/g, " ")} • {state.business.industry || "General"}
@@ -207,7 +201,7 @@ export function Step5Review() {
             <Cpu className="w-5 h-5 text-indigo-600" />
             <div>
               <div className="text-sm font-bold text-slate-900 dark:text-white">
-                AI Generation Engine
+                {t("settings.ai_engine")}
               </div>
               <div className="text-xs text-slate-500">
                 {useOpenAI
@@ -244,7 +238,7 @@ export function Step5Review() {
       {/* Submit Action Button */}
       <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="text-xs text-slate-500">
-          Clicking generate will calculate your official BVI score, create your Brand Manifesto, 4 Content Pillars, and generate a 30-day multi-channel calendar.
+          {t("step5.desc")}
         </div>
         <button
           type="button"
@@ -255,12 +249,12 @@ export function Step5Review() {
           {isGenerating ? (
             <>
               <Loader2 className="w-5 h-5 animate-spin" />
-              Synthesizing 30-Day Strategy...
+              {t("step5.generating")}
             </>
           ) : (
             <>
               <Sparkles className="w-5 h-5" />
-              Generate Marketing Strategy & Calendar
+              {t("step5.generate_btn")}
               <ArrowRight className="w-4 h-4 ml-1" />
             </>
           )}

@@ -1,22 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { FullProfilePayload } from "@/lib/types";
 import { BVIScorecard } from "@/components/dashboard/BVIScorecard";
 import { ActionDirectives } from "@/components/dashboard/ActionDirectives";
 import { QuickMetrics } from "@/components/dashboard/QuickMetrics";
 import Link from "next/link";
 import {
-  Compass,
   Calendar,
   Layers,
   Sparkles,
   ArrowRight,
-  Download,
-  Share2,
   RefreshCw,
   Loader2,
-  CheckCircle2,
 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
@@ -25,12 +21,12 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<FullProfilePayload | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/profile");
+      const res = await fetch(`/api/profile?lang=${language}`);
       const data = await res.json();
       if (data.data) {
         setProfile(data.data);
@@ -40,18 +36,18 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [language]);
 
   useEffect(() => {
     fetchProfile();
-  }, []);
+  }, [fetchProfile]);
 
   if (loading || !profile) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center gap-3">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
         <span className="text-sm font-semibold text-slate-500">
-          Loading Viability Dashboard...
+          {t("dash.loading")}
         </span>
       </div>
     );
@@ -69,7 +65,7 @@ export default function DashboardPage() {
             <Sparkles className="w-4 h-4" /> {t("dash.cmo_command")}
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1">
-            {businessProfile?.businessName || "Your Brand"} {t("dash.overview")}
+            {businessProfile?.businessName || "Your Brand"} • {t("dash.overview")}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             {businessProfile?.industry} • {businessProfile?.businessModel} • {businessProfile?.geoScope}
@@ -116,10 +112,10 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
-                    Day 1 Next Up • {todayPost.channel}
+                    {t("dash.next_post")} • {todayPost.channel}
                   </span>
                   <span className="text-xs text-slate-400 font-medium">
-                    {todayPost.contentType}
+                    {todayPost.format || (todayPost as any).contentType}
                   </span>
                 </div>
                 <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">
@@ -131,7 +127,7 @@ export default function DashboardPage() {
                 {todayPost.hook}
               </h3>
               <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-4 leading-relaxed font-sans whitespace-pre-line bg-slate-50/50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-200/40 dark:border-slate-800/40">
-                {todayPost.bodyContent}
+                {todayPost.body || (todayPost as any).bodyContent}
               </p>
             </div>
 
@@ -139,18 +135,18 @@ export default function DashboardPage() {
               <button
                 type="button"
                 onClick={() => {
-                  navigator.clipboard.writeText(todayPost.bodyContent);
-                  toast("Post copy copied to clipboard!", "success");
+                  navigator.clipboard.writeText(todayPost.body || (todayPost as any).bodyContent);
+                  toast(t("studio.copied_toast"), "success");
                 }}
                 className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
               >
-                Copy Post Text
+                {t("studio.copy_post")}
               </button>
               <Link
                 href="/studio"
                 className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center gap-1"
               >
-                View in Kanban Studio <ArrowRight className="w-3.5 h-3.5" />
+                {t("dash.open_studio")} <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           </div>
@@ -160,10 +156,10 @@ export default function DashboardPage() {
         <div className="p-6 rounded-3xl glass-card border border-slate-200/80 dark:border-slate-800 space-y-4 shadow-lg flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider mb-2">
-              <Layers className="w-4 h-4" /> Brand Positioning Core
+              <Layers className="w-4 h-4" /> {t("dash.brand_core")}
             </div>
             <h3 className="font-bold text-base text-slate-900 dark:text-white mb-2">
-              {businessProfile.businessName} Manifesto & Moat
+              {businessProfile.businessName} {t("strategy.manifesto_badge")}
             </h3>
             <div className="text-xs text-slate-600 dark:text-slate-400 line-clamp-5 leading-relaxed bg-slate-50/50 dark:bg-slate-900/40 p-3.5 rounded-xl border border-slate-200/40 dark:border-slate-800/40">
               {strategy.brandManifesto || strategy.positioningDoc}
@@ -172,13 +168,13 @@ export default function DashboardPage() {
 
           <div className="pt-4 flex items-center justify-between border-t border-slate-200/60 dark:border-slate-800/60">
             <span className="text-xs text-slate-400 font-medium">
-              4 Pillars Active • {strategy.reviewCadence} Cadence
+              4 {t("strategy.pillars")}
             </span>
             <Link
               href="/strategy"
               className="text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1 hover:underline"
             >
-              Read Full Manifesto & Pillars <ArrowRight className="w-3.5 h-3.5" />
+              {t("nav.strategy")} <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>

@@ -85,6 +85,8 @@ export function Step0Ikigai() {
   const { ikigai, updateIkigai, toggleCoreValue } = useWizardStore();
   const { t } = useLanguage();
 
+  const coreValuesList = ikigai.coreValues || [];
+
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Header */}
@@ -172,10 +174,10 @@ export function Step0Ikigai() {
         <div>
           <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Compass className="w-5 h-5 text-indigo-600" />
-            Select Your Brand Archetype
+            {t("step0.archetype_title")}
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
-            This dictates the tone of voice, hook frameworks, and narrative structure generated across your campaigns.
+            {t("step0.archetype_desc")}
           </p>
         </div>
 
@@ -183,6 +185,7 @@ export function Step0Ikigai() {
           {ARCHETYPES.map((arch) => {
             const Icon = arch.icon;
             const isSelected = ikigai.archetype === arch.id;
+            const localizedArchTitle = t(`archetype.${arch.id}` as any) || arch.title;
             return (
               <button
                 key={arch.id}
@@ -208,7 +211,7 @@ export function Step0Ikigai() {
                     <Icon className="w-5 h-5" />
                   </div>
                   <span className="font-bold text-sm text-slate-900 dark:text-white">
-                    {arch.title}
+                    {localizedArchTitle}
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-3">
@@ -226,15 +229,15 @@ export function Step0Ikigai() {
       {/* Core Values Multi-Select */}
       <div className="space-y-3">
         <h3 className="text-base font-bold text-slate-900 dark:text-white">
-          Brand Core Values (Pick 3–5)
+          {t("step0.values_title")}
         </h3>
         <p className="text-xs text-slate-500">
-          These principles will be woven into your Brand Manifesto and counter-intuitive thought leadership angles.
+          {t("step0.values_desc")}
         </p>
 
         <div className="flex flex-wrap gap-2 pt-1">
           {SUGGESTED_VALUES.map((val) => {
-            const isSelected = ikigai.coreValues.includes(val);
+            const isSelected = coreValuesList.includes(val);
             return (
               <button
                 key={val}

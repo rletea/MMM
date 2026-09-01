@@ -48,9 +48,9 @@ export const defaultDemoWizardState: WizardFormState = {
   },
 };
 
-export function getDemoFullProfile(): FullProfilePayload {
-  const bviBreakdown = calculateBVI(defaultDemoWizardState);
-  const { strategy, contents } = synthesizeStrategyAndContent(defaultDemoWizardState);
+export function getDemoFullProfile(language: string = "en"): FullProfilePayload {
+  const bviBreakdown = calculateBVI(defaultDemoWizardState, language);
+  const { strategy, contents } = synthesizeStrategyAndContent(defaultDemoWizardState, language);
 
   return {
     businessProfile: {

@@ -2,7 +2,8 @@
 
 import React from "react";
 import { BVIScoreBreakdown } from "@/lib/types";
-import { Award, ShieldAlert, CheckCircle2, TrendingUp, Sparkles, Activity } from "lucide-react";
+import { Award } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface BVIScorecardProps {
   scoreBreakdown: BVIScoreBreakdown;
@@ -10,35 +11,37 @@ interface BVIScorecardProps {
 }
 
 export function BVIScorecard({ scoreBreakdown, businessName }: BVIScorecardProps) {
+  const { t } = useLanguage();
+
   const metrics = [
     {
-      label: "Market Viability",
+      label: t("scorecard.market_viability"),
       score: scoreBreakdown.marketViability,
-      desc: "Saturation & Moat Defense",
+      desc: t("scorecard.market_desc"),
       color: "bg-indigo-500",
     },
     {
-      label: "PM Alignment",
+      label: t("scorecard.pm_alignment"),
       score: scoreBreakdown.productMarketAlignment,
-      desc: "ICP Pain-to-Solution Fit",
+      desc: t("scorecard.pm_desc"),
       color: "bg-sky-500",
     },
     {
-      label: "Execution Capacity",
+      label: t("scorecard.execution_capacity"),
       score: scoreBreakdown.executionCapacity,
-      desc: "Budget & Founder Time Ratio",
+      desc: t("scorecard.execution_desc"),
       color: "bg-emerald-500",
     },
     {
-      label: "Ikigai Congruence",
+      label: t("scorecard.ikigai_congruence"),
       score: scoreBreakdown.ikigaiCongruence,
-      desc: "Mission & Founder Archetype",
+      desc: t("scorecard.ikigai_desc"),
       color: "bg-purple-500",
     },
     {
-      label: "Channel Readiness",
+      label: t("scorecard.channel_readiness"),
       score: scoreBreakdown.channelReadiness,
-      desc: "Format & Distribution Fit",
+      desc: t("scorecard.channel_desc"),
       color: "bg-pink-500",
     },
   ];
@@ -87,10 +90,10 @@ export function BVIScorecard({ scoreBreakdown, businessName }: BVIScorecardProps
               {scoreBreakdown.tierLabel}
             </div>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-              {businessName} Scorecard
+              {businessName} • {t("dash.scorecard")}
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md leading-relaxed">
-              Calculated using the deterministic Business Viability Index algorithm across 5 core growth dimensions.
+              {t("scorecard.bvi_title")}
             </p>
           </div>
         </div>
@@ -98,7 +101,7 @@ export function BVIScorecard({ scoreBreakdown, businessName }: BVIScorecardProps
         {/* Quick Status Tag */}
         <div className="flex flex-col items-center lg:items-end gap-1">
           <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-            Risk Tier Status
+            {t("scorecard.health_rating")}
           </span>
           <span
             className="text-base font-extrabold px-4 py-1.5 rounded-xl border"
@@ -108,7 +111,7 @@ export function BVIScorecard({ scoreBreakdown, businessName }: BVIScorecardProps
               backgroundColor: `${scoreBreakdown.tierColor}15`,
             }}
           >
-            {scoreBreakdown.riskTier.replace(/_/g, " ")}
+            {scoreBreakdown.tierLabel}
           </span>
         </div>
       </div>

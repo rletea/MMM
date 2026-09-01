@@ -7,9 +7,15 @@ import { getDemoFullProfile, defaultDemoWizardState } from "./mock-data";
 // Fallback in-memory store for instant zero-config dev
 const fallbackStore = new Map<string, FullProfilePayload>();
 
-export async function getOrCreateUserProfile(userId: string): Promise<FullProfilePayload> {
-  // Check if we have data in memory store
-  if (fallbackStore.has(userId)) {
+export async function getOrCreateUserProfile(
+  userId: string,
+  language: string = "en"
+): Promise<FullProfilePayload> {
+  // If demo user or fallback request
+  if (fallbackStore.has(`${userId}_${language}`)) {
+    return fallbackStore.get(`${userId}_${language}`)!;
+  }
+  if (fallbackStore.has(userId) && language === "en") {
     return fallbackStore.get(userId)!;
   }
 
@@ -58,39 +64,41 @@ export async function getOrCreateUserProfile(userId: string): Promise<FullProfil
               : (biz.diagnostic.scoreBreakdown as any),
         },
         strategy: {
+          brandManifesto: (biz.strategy as any).brandManifesto || biz.strategy.positioningDoc,
           positioningDoc: biz.strategy.positioningDoc,
-          brandManifesto: (biz.strategy as any).brandManifesto || "",
           contentPillars:
             typeof biz.strategy.contentPillars === "string"
               ? JSON.parse(biz.strategy.contentPillars)
               : (biz.strategy.contentPillars as any),
-          weeklyCadence: [],
-          reviewCadence: biz.strategy.reviewCadence as any,
-          activeChannels: biz.strategy.activeChannels as any,
+          weeklyCadence:
+            typeof (biz.strategy as any).weeklyCadence === "string"
+              ? JSON.parse((biz.strategy as any).weeklyCadence)
+              : ((biz.strategy as any).weeklyCadence || []),
         },
-        contents: biz.contents.map((c, i) => ({
+        contents: biz.contents.map((c, idx) => ({
           id: c.id,
-          dayNumber: i + 1,
+          dayNumber: (c as any).dayNumber || idx + 1,
           channel: c.channel as any,
-          contentType: c.contentType as any,
+          format: ((c as any).format || (c as any).contentType) as any,
+          topic: (c as any).topic || (c as any).pillar || "",
           hook: c.hook,
-          bodyContent: c.bodyContent,
+          body: (c as any).body || (c as any).bodyContent || "",
           visualPrompt: c.visualPrompt || undefined,
+          videoScript: (c as any).videoScript || undefined,
           status: c.status as any,
-          pillar: "Core Strategic Pillar",
-          scheduledDate: c.scheduledDate?.toISOString(),
+          scheduledFor: (c as any).scheduledFor ? (c as any).scheduledFor.toISOString() : undefined,
+          publishedAt: (c as any).publishedAt ? (c as any).publishedAt.toISOString() : undefined,
         })),
       };
-
-      fallbackStore.set(userId, payload);
       return payload;
     }
   } catch (err) {
-    console.warn("Prisma query skipped/failed, using fallback store:", err);
+    // Database connection note in zero-config dev
   }
 
-  // If no existing profile, initialize with Demo profile
-  const demoProfile = getDemoFullProfile();
+  // Initialize with localized Demo profile
+  const demoProfile = getDemoFullProfile(language);
+  fallbackStore.set(`${userId}_${language}`, demoProfile);
   fallbackStore.set(userId, demoProfile);
   return demoProfile;
 }
@@ -163,16 +171,16 @@ export async function saveWizardAndGenerate(
           vocation: state.ikigai.vocation,
           mission: state.ikigai.mission,
           profession: state.ikigai.profession,
-          archetype: state.ikigai.archetype,
-          coreValues: state.ikigai.coreValues,
+          archetype: state.ikigai.archetype || "VISIONARY_DISRUPTOR",
+          coreValues: state.ikigai.coreValues || [],
         },
         update: {
           passion: state.ikigai.passion,
           vocation: state.ikigai.vocation,
           mission: state.ikigai.mission,
           profession: state.ikigai.profession,
-          archetype: state.ikigai.archetype,
-          coreValues: state.ikigai.coreValues,
+          archetype: state.ikigai.archetype || "VISIONARY_DISRUPTOR",
+          coreValues: state.ikigai.coreValues || [],
         },
       });
 
@@ -201,14 +209,14 @@ export async function saveWizardAndGenerate(
           businessProfileId: bizId,
           positioningDoc: strategy.positioningDoc,
           contentPillars: strategy.contentPillars as any,
-          reviewCadence: strategy.reviewCadence,
-          activeChannels: strategy.activeChannels,
+          reviewCadence: strategy.reviewCadence || state.scope.reviewCadence || "MONTHLY",
+          activeChannels: strategy.activeChannels || state.scope.activeChannels || ["LINKEDIN"],
         },
         update: {
           positioningDoc: strategy.positioningDoc,
           contentPillars: strategy.contentPillars as any,
-          reviewCadence: strategy.reviewCadence,
-          activeChannels: strategy.activeChannels,
+          reviewCadence: strategy.reviewCadence || state.scope.reviewCadence || "MONTHLY",
+          activeChannels: strategy.activeChannels || state.scope.activeChannels || ["LINKEDIN"],
         },
       });
 
@@ -221,9 +229,9 @@ export async function saveWizardAndGenerate(
         data: contents.map((c) => ({
           businessProfileId: bizId,
           channel: c.channel,
-          contentType: c.contentType,
+          contentType: (c.contentType || c.format || "POST") as string,
           hook: c.hook,
-          bodyContent: c.bodyContent,
+          bodyContent: (c.bodyContent || c.body || "") as string,
           visualPrompt: c.visualPrompt,
           status: c.status,
           scheduledDate: c.scheduledDate ? new Date(c.scheduledDate) : null,

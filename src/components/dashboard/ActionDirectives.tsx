@@ -2,21 +2,24 @@
 
 import React from "react";
 import { BVIScoreBreakdown } from "@/lib/types";
-import { ShieldCheck, AlertTriangle, ArrowRight, Zap, Target } from "lucide-react";
+import { ShieldCheck, AlertTriangle, ArrowRight, Zap } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface ActionDirectivesProps {
   scoreBreakdown: BVIScoreBreakdown;
 }
 
 export function ActionDirectives({ scoreBreakdown }: ActionDirectivesProps) {
+  const { t } = useLanguage();
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Strengths */}
       <div className="p-6 rounded-3xl glass-card border border-emerald-200/50 dark:border-emerald-950/40 space-y-4 shadow-lg">
         <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-sm">
           <ShieldCheck className="w-5 h-5" />
-          <span>Core Strategic Strengths</span>
+          <span>{t("directives.strengths_title")}</span>
         </div>
         <div className="space-y-3">
           {scoreBreakdown.strengths.map((s, idx) => (
@@ -34,7 +37,7 @@ export function ActionDirectives({ scoreBreakdown }: ActionDirectivesProps) {
       <div className="p-6 rounded-3xl glass-card border border-amber-200/50 dark:border-amber-950/40 space-y-4 shadow-lg">
         <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-bold text-sm">
           <AlertTriangle className="w-5 h-5" />
-          <span>Identified Bottlenecks & Risks</span>
+          <span>{t("directives.risks_title")}</span>
         </div>
         <div className="space-y-3">
           {scoreBreakdown.risks.length > 0 ? (
@@ -48,7 +51,7 @@ export function ActionDirectives({ scoreBreakdown }: ActionDirectivesProps) {
             ))
           ) : (
             <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 text-xs text-slate-500">
-              No critical bottlenecks detected. Continue consistent execution.
+              {t("directives.no_risks")}
             </div>
           )}
         </div>
@@ -59,7 +62,7 @@ export function ActionDirectives({ scoreBreakdown }: ActionDirectivesProps) {
         <div>
           <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-sm mb-4">
             <Zap className="w-5 h-5" />
-            <span>Recommended Action Directives</span>
+            <span>{t("directives.directives_title")}</span>
           </div>
           <div className="space-y-3">
             {scoreBreakdown.actionDirectives.map((d, idx) => (
@@ -77,7 +80,7 @@ export function ActionDirectives({ scoreBreakdown }: ActionDirectivesProps) {
           href="/studio"
           className="mt-4 w-full py-3 rounded-xl text-xs font-bold text-white gradient-brand shadow-md shadow-indigo-500/20 hover:opacity-95 transition-opacity flex items-center justify-center gap-1.5"
         >
-          Execute in Content Studio <ArrowRight className="w-4 h-4" />
+          {t("dash.open_studio")} <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
     </div>

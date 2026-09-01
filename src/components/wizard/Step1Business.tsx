@@ -14,6 +14,7 @@ import {
   Clock,
   TrendingUp,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 const BUSINESS_MODELS: {
   id: BusinessModelType;
@@ -62,18 +63,19 @@ const STAGES = [
 
 export function Step1Business() {
   const { business, updateBusiness } = useWizardStore();
+  const { t } = useLanguage();
 
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
         <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold text-xs tracking-wider uppercase">
-          <Building2 className="w-4 h-4" /> Step 1 • Business Profile & Model
+          <Building2 className="w-4 h-4" /> {t("step1.badge")}
         </div>
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
-          Define Your Commercial Structure
+          {t("step1.title")}
         </h2>
         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-          Marketing channels and cadence must precisely match your business model and operational capacity.
+          {t("step1.desc")}
         </p>
       </div>
 
@@ -81,7 +83,7 @@ export function Step1Business() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-            Business / Brand Name *
+            {t("step1.biz_name")}
           </label>
           <input
             type="text"
@@ -94,7 +96,7 @@ export function Step1Business() {
 
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-            Website URL (Optional)
+            {t("step1.biz_url")}
           </label>
           <input
             type="text"
@@ -109,7 +111,7 @@ export function Step1Business() {
       {/* Business Model Cards */}
       <div className="space-y-3">
         <label className="text-sm font-bold text-slate-900 dark:text-white">
-          Select Primary Business Model *
+          {t("step1.model_title")}
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
           {BUSINESS_MODELS.map((model) => {
@@ -153,20 +155,20 @@ export function Step1Business() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-            Industry & Niche Focus *
+            {t("step1.industry")}
           </label>
           <input
             type="text"
             value={business.industry}
             onChange={(e) => updateBusiness({ industry: e.target.value })}
-            placeholder="e.g. AI Workflow Automation, Fintech Advisory, Luxury Sustainable Apparel..."
+            placeholder="e.g. AI Workflow Automation, Fintech Advisory..."
             className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
 
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-            Geographic Market Scope
+            {t("step1.geo")}
           </label>
           <select
             value={business.geoScope}
@@ -186,7 +188,7 @@ export function Step1Business() {
       {/* Stage */}
       <div className="space-y-2">
         <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-          <TrendingUp className="w-4 h-4 text-indigo-500" /> Current Business Stage
+          <TrendingUp className="w-4 h-4 text-indigo-500" /> {t("step1.stage")}
         </label>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           {STAGES.map((st) => {
@@ -214,7 +216,7 @@ export function Step1Business() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <DollarSign className="w-4 h-4 text-emerald-500" /> Monthly Marketing Budget
+              <DollarSign className="w-4 h-4 text-emerald-500" /> {t("step1.budget")}
             </label>
             <span className="text-sm font-extrabold text-indigo-600 dark:text-indigo-400">
               ${business.monthlyBudget.toLocaleString()} / mo
@@ -230,7 +232,7 @@ export function Step1Business() {
             className="w-full accent-indigo-600 cursor-pointer"
           />
           <div className="flex justify-between text-[10px] text-slate-400 font-medium">
-            <span>$0 (Organic Only)</span>
+            <span>$0</span>
             <span>$5,000</span>
             <span>$15,000+</span>
           </div>
@@ -239,7 +241,7 @@ export function Step1Business() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-indigo-500" /> Founder / Team Weekly Marketing Time
+              <Clock className="w-4 h-4 text-indigo-500" /> {t("step1.hours")}
             </label>
             <span className="text-sm font-extrabold text-indigo-600 dark:text-indigo-400">
               {business.weeklyHours} hours / week
@@ -255,9 +257,9 @@ export function Step1Business() {
             className="w-full accent-indigo-600 cursor-pointer"
           />
           <div className="flex justify-between text-[10px] text-slate-400 font-medium">
-            <span>1 hr (Low Capacity)</span>
-            <span>15 hrs (Balanced)</span>
-            <span>40 hrs (Full Throttle)</span>
+            <span>1 hr</span>
+            <span>15 hrs</span>
+            <span>40 hrs</span>
           </div>
         </div>
       </div>

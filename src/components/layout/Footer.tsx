@@ -1,8 +1,13 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
-import { Sparkles, Shield, Rocket, Github } from "lucide-react";
+import { Sparkles, Github } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="border-t border-slate-200/80 dark:border-slate-800/80 bg-white/40 dark:bg-slate-950/40 backdrop-blur-md mt-20 py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -16,28 +21,28 @@ export function Footer() {
                 My Marketing Manager (MMM)
               </span>
               <span className="text-xs text-slate-500">
-                Ikigai & Business Viability Engine
+                {t("footer.tagline")}
               </span>
             </div>
           </div>
 
           <div className="flex items-center gap-6 text-xs text-slate-600 dark:text-slate-400">
             <Link href="/dashboard" className="hover:text-indigo-600 transition-colors">
-              Dashboard
+              {t("nav.dashboard")}
             </Link>
             <Link href="/studio" className="hover:text-indigo-600 transition-colors">
-              Content Studio
+              {t("nav.studio")}
             </Link>
             <Link href="/strategy" className="hover:text-indigo-600 transition-colors">
-              Strategy Hub
+              {t("nav.strategy")}
             </Link>
             <Link href="/wizard" className="hover:text-indigo-600 transition-colors">
-              Diagnostic Wizard
+              {t("nav.wizard")}
             </Link>
           </div>
 
           <div className="flex items-center gap-4 text-xs text-slate-500">
-            <span>Production-ready Railway & PostgreSQL deploy</span>
+            <span>© {new Date().getFullYear()} MMM. {t("footer.rights")}</span>
             <a
               href="https://github.com/rletea/MMM.git"
               target="_blank"

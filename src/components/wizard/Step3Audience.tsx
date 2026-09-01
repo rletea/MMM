@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useWizardStore } from "@/store/wizard-store";
 import { Users, Target, AlertCircle, HelpCircle, Layers, Plus } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 const COMMON_PAIN_TRIGGERS = [
   "Inconsistent lead pipeline",
@@ -27,6 +28,7 @@ const COMMON_OBJECTIONS = [
 export function Step3Audience() {
   const { audience, updateAudience, togglePainTrigger } = useWizardStore();
   const [customPain, setCustomPain] = useState("");
+  const { t } = useLanguage();
 
   const handleAddCustomPain = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,43 +42,42 @@ export function Step3Audience() {
     <div className="space-y-8 animate-fade-in">
       <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
         <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold text-xs tracking-wider uppercase">
-          <Target className="w-4 h-4" /> Step 3 • Audience & Resources
+          <Target className="w-4 h-4" /> {t("step3.badge")}
         </div>
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
-          Laser-Target Your Ideal Customer Profile
+          {t("step3.title")}
         </h2>
         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-          High-converting hooks speak directly to the urgent pains and silent buying objections of your specific economic buyers.
+          {t("step3.desc")}
         </p>
       </div>
 
       {/* ICP Demographics */}
       <div className="p-5 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 space-y-2">
         <label className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-          <Users className="w-4 h-4 text-indigo-500" /> ICP Demographics & Economic Buyer Profile *
+          <Users className="w-4 h-4 text-indigo-500" /> {t("step3.icp")}
         </label>
-        <p className="text-xs text-slate-500">
-          Who holds the purchasing power? Include job title, company size, revenue stage, or core motivation.
-        </p>
         <textarea
+          rows={2}
           value={audience.icpDemographics}
           onChange={(e) => updateAudience({ icpDemographics: e.target.value })}
-          rows={3}
-          placeholder="e.g. B2B founders, agency owners, and high-ticket service providers generating $20k-$100k/mo seeking predictable authority without hiring a 5-person marketing team..."
-          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          placeholder="e.g. Founders, CMOs, Agency owners managing 10+ employees with $50k+ MRR seeking predictable authority..."
+          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-sans leading-relaxed"
         />
       </div>
 
-      {/* Pain Triggers */}
+      {/* Primary Pain Triggers */}
       <div className="space-y-3">
-        <label className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-          <AlertCircle className="w-4 h-4 text-rose-500" /> Primary Pain Triggers (Pick 2–4)
-        </label>
-        <p className="text-xs text-slate-500">
-          These form the psychological tension in your daily hooks.
-        </p>
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+            <AlertCircle className="w-4 h-4 text-rose-500" /> {t("step3.pain")}
+          </label>
+          <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">
+            {audience.painTriggers.length} selected
+          </span>
+        </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           {COMMON_PAIN_TRIGGERS.map((pain) => {
             const isSelected = audience.painTriggers.includes(pain);
             return (
@@ -84,20 +85,21 @@ export function Step3Audience() {
                 key={pain}
                 type="button"
                 onClick={() => togglePainTrigger(pain)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+                className={`p-3 rounded-xl text-left text-xs font-medium border transition-all ${
                   isSelected
-                    ? "bg-rose-500 text-white border-rose-500 shadow-sm scale-105"
-                    : "bg-slate-100/80 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-slate-400"
+                    ? "bg-rose-50 dark:bg-rose-950/40 border-rose-400 text-rose-900 dark:text-rose-200 shadow-xs font-bold"
+                    : "bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-300"
                 }`}
               >
-                {isSelected ? `✓ ${pain}` : `+ ${pain}`}
+                {isSelected ? "✓ " : "+ "}
+                {pain}
               </button>
             );
           })}
         </div>
 
-        {/* Custom Pain Trigger Input */}
-        <form onSubmit={handleAddCustomPain} className="flex gap-2 pt-2">
+        {/* Custom Pain Trigger Form */}
+        <form onSubmit={handleAddCustomPain} className="flex gap-2 pt-1">
           <input
             type="text"
             value={customPain}
@@ -107,9 +109,9 @@ export function Step3Audience() {
           />
           <button
             type="submit"
-            className="px-3.5 py-2 rounded-xl bg-slate-800 text-white text-xs font-semibold hover:bg-slate-700 flex items-center gap-1"
+            className="px-3.5 py-2 rounded-xl text-xs font-bold text-white gradient-brand shadow-sm hover:opacity-95 transition-opacity flex items-center gap-1"
           >
-            <Plus className="w-3.5 h-3.5" /> Add Pain
+            <Plus className="w-3.5 h-3.5" /> Add
           </button>
         </form>
       </div>
@@ -117,13 +119,9 @@ export function Step3Audience() {
       {/* Buying Objections */}
       <div className="space-y-3">
         <label className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-          <HelpCircle className="w-4 h-4 text-amber-500" /> Core Buying Objections
+          <HelpCircle className="w-4 h-4 text-amber-500" /> {t("step3.objections")}
         </label>
-        <p className="text-xs text-slate-500">
-          Select the hesitations your prospects have before converting.
-        </p>
-
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           {COMMON_OBJECTIONS.map((obj) => {
             const isSelected = audience.buyingObjections.includes(obj);
             return (
@@ -132,18 +130,20 @@ export function Step3Audience() {
                 type="button"
                 onClick={() => {
                   const exists = audience.buyingObjections.includes(obj);
-                  const next = exists
-                    ? audience.buyingObjections.filter((o) => o !== obj)
-                    : [...audience.buyingObjections, obj];
-                  updateAudience({ buyingObjections: next });
+                  updateAudience({
+                    buyingObjections: exists
+                      ? audience.buyingObjections.filter((x) => x !== obj)
+                      : [...audience.buyingObjections, obj],
+                  });
                 }}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+                className={`p-3 rounded-xl text-left text-xs font-medium border transition-all ${
                   isSelected
-                    ? "bg-amber-600 text-white border-amber-600 shadow-sm scale-105"
-                    : "bg-slate-100/80 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-slate-400"
+                    ? "bg-amber-50 dark:bg-amber-950/40 border-amber-400 text-amber-900 dark:text-amber-200 shadow-xs font-bold"
+                    : "bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-300"
                 }`}
               >
-                {isSelected ? `✓ ${obj}` : `+ ${obj}`}
+                {isSelected ? "✓ " : "+ "}
+                {obj}
               </button>
             );
           })}
@@ -153,13 +153,13 @@ export function Step3Audience() {
       {/* Existing Assets */}
       <div className="space-y-1.5">
         <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-          <Layers className="w-4 h-4 text-indigo-500" /> Existing Marketing Assets (Optional)
+          <Layers className="w-4 h-4 text-indigo-500" /> {t("step3.assets")}
         </label>
         <input
           type="text"
-          value={audience.existingAssets}
+          value={audience.existingAssets || ""}
           onChange={(e) => updateAudience({ existingAssets: e.target.value })}
-          placeholder="e.g. Email list of 2,400 subscribers, 5k LinkedIn connections, 20 podcast episodes..."
+          placeholder="e.g. Email newsletter (1,200 subs), 4,500 LinkedIn connections, YouTube channel (500 subs)..."
           className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
       </div>

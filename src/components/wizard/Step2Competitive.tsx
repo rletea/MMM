@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import { useWizardStore } from "@/store/wizard-store";
 import { MarketSaturationType } from "@/lib/types";
-import { Shield, AlertTriangle, Plus, X, Award, Flame, Activity } from "lucide-react";
+import { Shield, Plus, X } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 const SATURATION_TIERS: {
   id: MarketSaturationType;
@@ -40,6 +41,7 @@ const SATURATION_TIERS: {
 export function Step2Competitive() {
   const { competitive, updateCompetitive, addCompetitor, removeCompetitor } = useWizardStore();
   const [newComp, setNewComp] = useState("");
+  const { t } = useLanguage();
 
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,37 +55,42 @@ export function Step2Competitive() {
     <div className="space-y-8 animate-fade-in">
       <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
         <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold text-xs tracking-wider uppercase">
-          <Shield className="w-4 h-4" /> Step 2 • Competitive Diagnostic
+          <Shield className="w-4 h-4" /> {t("step2.badge")}
         </div>
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
-          Map Your Moat and Category Landscape
+          {t("step2.title")}
         </h2>
         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-          Understanding competitor noise ensures our AI positioning attacks their blind spots rather than echoing tired tropes.
+          {t("step2.desc")}
         </p>
       </div>
 
-      {/* Core Differentiator */}
-      <div className="p-5 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 space-y-2">
-        <label className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-          <Award className="w-4 h-4 text-amber-500" /> What is your #1 Unfair Advantage or Differentiator? *
-        </label>
-        <p className="text-xs text-slate-500">
-          Why do clients pick you over alternatives? (e.g. proprietary algorithm, speed guarantee, specialized vertical focus, founder background...)
+      {/* Differentiator Input */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-bold text-slate-900 dark:text-white">
+            {t("step2.differentiator")}
+          </label>
+          <span className="text-xs text-slate-400">
+            {competitive.differentiator.length} characters
+          </span>
+        </div>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          {t("step2.differentiator_desc")}
         </p>
         <textarea
+          rows={3}
           value={competitive.differentiator}
           onChange={(e) => updateCompetitive({ differentiator: e.target.value })}
-          rows={3}
-          placeholder="e.g. An integrated Ikigai-driven diagnostic engine combined with automated multi-channel campaign architectures that eliminates 90% of content production overhead..."
-          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          placeholder="e.g. We have a proprietary Ikigai + BVI algorithm that synthesizes hyper-authentic content..."
+          className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed font-sans"
         />
       </div>
 
-      {/* Market Saturation Picker */}
+      {/* Market Saturation Tiers */}
       <div className="space-y-3">
-        <label className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-          <Flame className="w-4 h-4 text-rose-500" /> Market Saturation Level
+        <label className="text-sm font-bold text-slate-900 dark:text-white">
+          {t("step2.saturation")}
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           {SATURATION_TIERS.map((tier) => {
@@ -103,7 +110,7 @@ export function Step2Competitive() {
                   <span className="font-bold text-xs text-slate-900 dark:text-white">
                     {tier.title}
                   </span>
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold border ${tier.badgeColor}`}>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${tier.badgeColor}`}>
                     {tier.id}
                   </span>
                 </div>
@@ -116,22 +123,22 @@ export function Step2Competitive() {
         </div>
       </div>
 
-      {/* Competitors List Tag Input */}
+      {/* Competitors List */}
       <div className="space-y-3">
-        <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-          Key Competitors or Direct Alternatives (Add 2–5)
+        <label className="text-sm font-bold text-slate-900 dark:text-white">
+          {t("step2.competitors")}
         </label>
         <form onSubmit={handleAdd} className="flex gap-2">
           <input
             type="text"
             value={newComp}
             onChange={(e) => setNewComp(e.target.value)}
-            placeholder="e.g. Traditional Marketing Agencies, HubSpot, Freelancers..."
-            className="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="Add competitor name or alternative (e.g. Generic Agency, Tool X)..."
+            className="flex-1 px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
           <button
             type="submit"
-            className="px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold flex items-center gap-1 hover:bg-indigo-700 transition-colors shrink-0"
+            className="px-4 py-2.5 rounded-xl text-xs font-bold text-white gradient-brand shadow-sm hover:opacity-95 transition-opacity flex items-center gap-1"
           >
             <Plus className="w-4 h-4" /> Add
           </button>
@@ -141,38 +148,35 @@ export function Step2Competitive() {
           {competitive.competitors.map((comp, idx) => (
             <span
               key={idx}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 shadow-xs"
             >
               {comp}
               <button
                 type="button"
                 onClick={() => removeCompetitor(idx)}
-                className="hover:text-rose-500 transition-colors p-0.5"
+                className="text-slate-400 hover:text-rose-500 transition-colors"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
             </span>
           ))}
-          {competitive.competitors.length === 0 && (
-            <p className="text-xs text-slate-400 italic">No competitors added yet.</p>
-          )}
         </div>
       </div>
 
       {/* Retention Rate */}
       <div className="space-y-1.5">
-        <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-          <Activity className="w-4 h-4 text-indigo-500" /> Estimated Client Retention / Repeat Rate
+        <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+          {t("step2.retention")}
         </label>
         <select
-          value={competitive.retentionRate || "85%"}
+          value={competitive.retentionRate || "80%+"}
           onChange={(e) => updateCompetitive({ retentionRate: e.target.value })}
-          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full sm:w-72 px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
-          <option value="95%+ (World-Class Retention)">95%+ (World-Class Retention / Low Churn)</option>
-          <option value="85% - 94% (Solid)">85% - 94% (Healthy & Predictable)</option>
-          <option value="70% - 84% (Moderate Churn)">70% - 84% (Moderate Churn)</option>
-          <option value="Under 70% (High Churn / Leaky Bucket)">Under 70% (High Churn / Leaky Bucket)</option>
+          <option value="90%+ (Exceptional LTV / Recurring)">90%+ (Exceptional LTV / Recurring)</option>
+          <option value="75%–90% (Healthy Retention)">75%–90% (Healthy Retention)</option>
+          <option value="50%–75% (Moderate Churn)">50%–75% (Moderate Churn)</option>
+          <option value="<50% (High Churn / One-off Transactional)">&lt;50% (High Churn / One-off Transactional)</option>
         </select>
       </div>
     </div>

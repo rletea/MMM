@@ -21,13 +21,13 @@ export function exportPostsToCSV(posts: GeneratedPostItem[]): string {
 
   const rows = posts.map((p) => [
     p.dayNumber,
-    escapeCSV(p.scheduledDate || ""),
+    escapeCSV(p.scheduledFor || (p as any).scheduledDate || ""),
     escapeCSV(p.channel),
-    escapeCSV(p.contentType),
+    escapeCSV(p.format || (p as any).contentType),
     escapeCSV(p.status),
-    escapeCSV(p.pillar),
+    escapeCSV(p.topic || (p as any).pillar),
     escapeCSV(p.hook),
-    escapeCSV(p.bodyContent),
+    escapeCSV(p.body || (p as any).bodyContent),
     escapeCSV(p.visualPrompt || ""),
   ]);
 
@@ -88,17 +88,17 @@ ${p.sampleHooks.map((h) => `  * "${h}"`).join("\n")}`
 
 ${posts
   .map(
-    (p) => `### Day ${p.dayNumber} [${p.channel}] - ${p.contentType}
-**Pillar:** ${p.pillar} | **Status:** ${p.status}
+    (p) => `### Day ${p.dayNumber} [${p.channel}] - ${p.format || (p as any).contentType}
+**Topic:** ${p.topic || (p as any).pillar} | **Status:** ${p.status}
 **Hook:** ${p.hook}
 
-${p.bodyContent}
+${p.body || (p as any).bodyContent}
 
-${p.visualPrompt ? `*Visual/Video Prompt:* \`${p.visualPrompt}\`` : ""}
+${p.visualPrompt ? `*Visual AI Prompt:* \`${p.visualPrompt}\`` : ""}
+${p.videoScript ? `*Video Script:* \`${typeof p.videoScript === "string" ? p.videoScript : JSON.stringify(p.videoScript)}\`` : ""}
 ---`
   )
-  .join("\n\n")}
-`;
+  .join("\n\n")}`;
 
   return md;
 }
@@ -106,11 +106,11 @@ ${p.visualPrompt ? `*Visual/Video Prompt:* \`${p.visualPrompt}\`` : ""}
 export function downloadBlobFile(content: string, filename: string, mimeType: string) {
   const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }

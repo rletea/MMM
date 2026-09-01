@@ -14,6 +14,7 @@ import {
   Calendar,
   Zap,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 const CHANNELS_CONFIG: {
   id: ChannelType;
@@ -58,151 +59,166 @@ const CHANNELS_CONFIG: {
     desc: "Viral 3-second hook scripts, scene directions, audio cues, and direct CTAs.",
     icon: Video,
     colorClass: "text-cyan-400",
-    activeBorder: "border-cyan-500 bg-cyan-50/50 dark:bg-cyan-950/40",
+    activeBorder: "border-cyan-400 bg-cyan-50/50 dark:bg-cyan-950/40",
   },
   {
     id: "FACEBOOK",
     name: "Facebook",
-    format: "Community Discussion Prompts",
-    desc: "Organic group discussions, social proof storytelling, and retargeting content.",
+    format: "Long-Form Value & Direct Response",
+    desc: "Community group discussions, organic brand authority, and direct conversion copy.",
     icon: Facebook,
     colorClass: "text-[#1877f2]",
     activeBorder: "border-[#1877f2] bg-indigo-50/50 dark:bg-indigo-950/40",
   },
 ];
 
-const STRATEGY_GOALS = [
-  "Establish Category Authority",
-  "Generate 15+ Inbound Qualified Inquiries / mo",
-  "Build 30-Day Automated Content Distribution",
-  "Nurture Existing Email List to Higher LTV",
-  "Accelerate Short-Form Video Growth",
-  "Scale Organic Reach Without Paid Ads",
+const STRATEGIC_GOALS = [
+  "Establish Brand Category Authority",
+  "Generate High-Ticket Inbound Leads",
+  "Nurture Existing Audience Retention",
+  "Drive Direct E-Commerce Sales",
+  "Build Automated 30-Day Distribution",
+  "Accelerate Community & Word of Mouth",
 ];
 
-const CADENCES: { id: ReviewCadenceType; label: string; desc: string }[] = [
-  { id: "BIWEEKLY", label: "Bi-Weekly (Sprint Velocity)", desc: "Recalibrate strategy every 14 days for rapid experiments." },
-  { id: "MONTHLY", label: "Monthly (Recommended)", desc: "Standard 30-day rhythm balancing consistency and data review." },
-  { id: "QUARTERLY", label: "Quarterly (Macro Strategic)", desc: "Deep quarterly overhauls for established long-cycle products." },
+const REVIEW_CADENCES: { id: ReviewCadenceType; label: string; desc: string }[] = [
+  { id: "WEEKLY", label: "Weekly Rapid Iteration", desc: "Agile sprints, daily monitoring, rapid hook testing." },
+  { id: "BI_WEEKLY", label: "Bi-Weekly Review", desc: "Balanced pacing for teams with 5–15 hrs/wk capacity." },
+  { id: "MONTHLY", label: "Monthly Strategic Overhaul", desc: "High-level macro adjustments and campaign reviews." },
+  { id: "QUARTERLY", label: "Quarterly Deep Diagnostic", desc: "Long-range positioning pivots and asset restructuring." },
 ];
 
 export function Step4Scope() {
-  const { scope, updateScope, toggleChannel, toggleGoal } = useWizardStore();
+  const { scope, updateScope, toggleChannel } = useWizardStore();
+  const { t } = useLanguage();
 
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
         <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold text-xs tracking-wider uppercase">
-          <Share2 className="w-4 h-4" /> Step 4 • Scope & Channels
+          <Share2 className="w-4 h-4" /> {t("step4.badge")}
         </div>
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
-          Select Your Active Distribution Channels
+          {t("step4.title")}
         </h2>
         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-          Choose where your audience spends attention. The AI engine will tailor format, hook styles, and visual prompts for each chosen channel.
+          {t("step4.desc")}
         </p>
       </div>
 
-      {/* Active Channels Grid */}
+      {/* Channel Selector Cards */}
       <div className="space-y-3">
-        <label className="text-sm font-bold text-slate-900 dark:text-white flex items-center justify-between">
-          <span>Active Channels (Select at least 1) *</span>
-          <span className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">
-            {scope.activeChannels.length} Channels Active
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-bold text-slate-900 dark:text-white">
+            {t("step4.channels")}
+          </label>
+          <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">
+            {scope.activeChannels.length} active
           </span>
-        </label>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-          {CHANNELS_CONFIG.map((ch) => {
-            const Icon = ch.icon;
-            const isSelected = scope.activeChannels.includes(ch.id);
+          {CHANNELS_CONFIG.map((channel) => {
+            const Icon = channel.icon;
+            const isSelected = scope.activeChannels.includes(channel.id);
             return (
               <button
-                key={ch.id}
+                key={channel.id}
                 type="button"
-                onClick={() => toggleChannel(ch.id)}
-                className={`p-4 rounded-2xl text-left transition-all duration-200 border relative ${
+                onClick={() => toggleChannel(channel.id)}
+                className={`p-4 rounded-2xl text-left transition-all duration-200 border flex flex-col justify-between ${
                   isSelected
-                    ? `${ch.activeBorder} shadow-md ring-2 ring-indigo-500/20`
-                    : "glass-card border-slate-200/80 dark:border-slate-800 opacity-60 hover:opacity-100 hover:border-slate-400"
+                    ? `${channel.activeBorder} shadow-md ring-2 ring-indigo-500/20`
+                    : "glass-card border-slate-200/80 dark:border-slate-800 hover:border-slate-300"
                 }`}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2.5">
-                    <div className={`p-2 rounded-xl bg-white dark:bg-slate-900 shadow-sm ${ch.colorClass}`}>
-                      <Icon className="w-5 h-5" />
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-2 rounded-xl bg-white dark:bg-slate-900 shadow-xs">
+                        <Icon className={`w-4 h-4 ${channel.colorClass}`} />
+                      </div>
+                      <span className="font-bold text-xs text-slate-900 dark:text-white">
+                        {channel.name}
+                      </span>
                     </div>
-                    <span className="font-bold text-sm text-slate-900 dark:text-white">
-                      {ch.name}
-                    </span>
+                    {isSelected && (
+                      <CheckCircle2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                    )}
                   </div>
-                  {isSelected && (
-                    <CheckCircle2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                  )}
+                  <div className="text-[10px] font-extrabold uppercase tracking-wide text-indigo-600 dark:text-indigo-400 mb-1">
+                    {channel.format}
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
+                    {channel.desc}
+                  </p>
                 </div>
-                <div className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 mb-1">
-                  Format: {ch.format}
-                </div>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
-                  {ch.desc}
-                </p>
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Primary Strategic Goals */}
+      {/* Primary Goals */}
       <div className="space-y-3">
         <label className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-          <Zap className="w-4 h-4 text-amber-500" /> Primary Marketing Goals (Select 2–3)
+          <Zap className="w-4 h-4 text-amber-500" /> {t("step4.goals")}
         </label>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          {STRATEGY_GOALS.map((goal) => {
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+          {STRATEGIC_GOALS.map((goal) => {
             const isSelected = scope.primaryGoals.includes(goal);
             return (
               <button
                 key={goal}
                 type="button"
-                onClick={() => toggleGoal(goal)}
-                className={`p-3 rounded-xl text-xs font-semibold text-left border transition-all flex items-center justify-between ${
+                onClick={() => {
+                  const exists = scope.primaryGoals.includes(goal);
+                  updateScope({
+                    primaryGoals: exists
+                      ? scope.primaryGoals.filter((g) => g !== goal)
+                      : [...scope.primaryGoals, goal],
+                  });
+                }}
+                className={`p-3 rounded-xl text-left text-xs font-semibold border transition-all ${
                   isSelected
-                    ? "bg-indigo-600 text-white border-indigo-600 shadow-sm"
-                    : "bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-slate-400"
+                    ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-500 text-indigo-950 dark:text-indigo-200 shadow-xs"
+                    : "bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-300"
                 }`}
               >
-                <span>{goal}</span>
-                {isSelected && <CheckCircle2 className="w-4 h-4 shrink-0" />}
+                {isSelected ? "✓ " : "+ "}
+                {goal}
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Review Cadence */}
+      {/* Strategy Review Cadence */}
       <div className="space-y-3">
         <label className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-          <Calendar className="w-4 h-4 text-indigo-500" /> Strategy Recalibration Cadence
+          <Calendar className="w-4 h-4 text-indigo-500" /> {t("step4.cadence")}
         </label>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {CADENCES.map((cad) => {
-            const isSelected = scope.reviewCadence === cad.id;
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {REVIEW_CADENCES.map((cadence) => {
+            const isSelected = scope.reviewCadence === cadence.id;
             return (
               <button
-                key={cad.id}
+                key={cadence.id}
                 type="button"
-                onClick={() => updateScope({ reviewCadence: cad.id })}
-                className={`p-3.5 rounded-xl text-left border transition-all ${
+                onClick={() => updateScope({ reviewCadence: cadence.id })}
+                className={`p-3.5 rounded-2xl text-left border transition-all ${
                   isSelected
-                    ? "bg-indigo-50/90 dark:bg-indigo-950/60 border-indigo-500 shadow-sm ring-1 ring-indigo-500"
-                    : "glass-card border-slate-200/80 dark:border-slate-800 hover:border-slate-400"
+                    ? "bg-indigo-600 text-white border-indigo-600 shadow-md"
+                    : "bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-slate-400"
                 }`}
               >
-                <div className="font-bold text-xs text-slate-900 dark:text-white mb-1">
-                  {cad.label}
-                </div>
-                <div className="text-[10px] text-slate-500 leading-snug">
-                  {cad.desc}
+                <div className="font-bold text-xs mb-1">{cadence.label}</div>
+                <div
+                  className={`text-[10px] leading-snug ${
+                    isSelected ? "text-indigo-100" : "text-slate-400"
+                  }`}
+                >
+                  {cadence.desc}
                 </div>
               </button>
             );
