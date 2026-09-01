@@ -1,0 +1,86 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id               String            @id @default(cuid())
+  email            String            @unique
+  passwordHash     String
+  name             String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  businessProfiles BusinessProfile[]
+}
+
+model BusinessProfile {
+  id              String            @id @default(cuid())
+  userId          String
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName    String
+  websiteUrl      String?
+  businessModel   String            // B2B_SERVICE, B2B_SAAS, B2C_ECOM, B2C_LOCAL, CREATOR
+  industry        String
+  geoScope        String
+  currentStage    String
+  monthlyBudget   Float             @default(0)
+  weeklyHours     Int               @default(5)
+  ikigai          IkigaiProfile?
+  diagnostic      DiagnosticData?
+  strategy        StrategyPlan?
+  contents        GeneratedContent[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model IkigaiProfile {
+  id                String          @id @default(cuid())
+  businessProfileId String          @unique
+  businessProfile   BusinessProfile @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
+  passion           String
+  vocation          String
+  mission           String
+  profession        String
+  archetype         String
+  coreValues        String          // JSON array string
+}
+
+model DiagnosticData {
+  id                String          @id @default(cuid())
+  businessProfileId String          @unique
+  businessProfile   BusinessProfile @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
+  differentiator    String
+  competitors       String          // JSON array string
+  marketSaturation  String          // LOW, MEDIUM, HIGH, RED_OCEAN
+  viabilityScore    Float
+  scoreBreakdown    String          // JSON string
+}
+
+model StrategyPlan {
+  id                String          @id @default(cuid())
+  businessProfileId String          @unique
+  businessProfile   BusinessProfile @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
+  positioningDoc    String
+  contentPillars    String          // JSON string
+  reviewCadence     String          // BIWEEKLY, MONTHLY, QUARTERLY
+  activeChannels    String          // JSON array string
+  createdAt         DateTime        @default(now())
+}
+
+model GeneratedContent {
+  id                String          @id @default(cuid())
+  businessProfileId String
+  businessProfile   BusinessProfile @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
+  channel           String          // LINKEDIN, FACEBOOK, INSTAGRAM, TIKTOK, EMAIL
+  contentType       String          // POST, REEL_SCRIPT, CAROUSEL, NEWSLETTER
+  scheduledDate     DateTime?
+  hook              String
+  bodyContent       String
+  visualPrompt      String?
+  status            String          @default("DRAFT") // DRAFT, COPIED, PUBLISHED, SCHEDULED
+  createdAt         DateTime        @default(now())
+}
