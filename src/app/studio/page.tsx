@@ -10,9 +10,11 @@ import { useToast } from "@/components/ui/Toast";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { Loader2, Sparkles, RefreshCw } from "lucide-react";
 import Link from "next/link";
+import { NewUserOnboarding } from "@/components/dashboard/NewUserOnboarding";
 
 export default function StudioPage() {
   const [profile, setProfile] = useState<FullProfilePayload | null>(null);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"kanban" | "calendar">("kanban");
   const [selectedChannel, setSelectedChannel] = useState("ALL");
@@ -28,6 +30,11 @@ export default function StudioPage() {
       const data = await res.json();
       if (data.data) {
         setProfile(data.data);
+      } else {
+        setProfile(null);
+      }
+      if (data.user) {
+        setCurrentUser(data.user);
       }
     } catch (err) {
       console.error("Studio profile fetch error:", err);
@@ -113,7 +120,7 @@ export default function StudioPage() {
     });
   }, [profile, selectedChannel, searchQuery]);
 
-  if (loading || !profile) {
+  if (loading) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center gap-3">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
@@ -122,6 +129,10 @@ export default function StudioPage() {
         </span>
       </div>
     );
+  }
+
+  if (!profile) {
+    return <NewUserOnboarding userName={currentUser?.name} />;
   }
 
   return (

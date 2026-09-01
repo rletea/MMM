@@ -20,8 +20,11 @@ import Link from "next/link";
 import { exportStrategyToMarkdown, downloadBlobFile } from "@/lib/export-utils";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
+import { NewUserOnboarding } from "@/components/dashboard/NewUserOnboarding";
+
 export default function StrategyPage() {
   const [profile, setProfile] = useState<FullProfilePayload | null>(null);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const { language, t } = useLanguage();
@@ -33,13 +36,18 @@ export default function StrategyPage() {
       .then((data) => {
         if (data.data) {
           setProfile(data.data);
+        } else {
+          setProfile(null);
+        }
+        if (data.user) {
+          setCurrentUser(data.user);
         }
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, [language]);
 
-  if (loading || !profile) {
+  if (loading) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center gap-3">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
@@ -48,6 +56,10 @@ export default function StrategyPage() {
         </span>
       </div>
     );
+  }
+
+  if (!profile) {
+    return <NewUserOnboarding userName={currentUser?.name} />;
   }
 
   const { businessProfile, ikigai, diagnostic, strategy, contents } = profile;

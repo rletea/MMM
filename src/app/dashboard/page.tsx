@@ -5,6 +5,7 @@ import { FullProfilePayload } from "@/lib/types";
 import { BVIScorecard } from "@/components/dashboard/BVIScorecard";
 import { ActionDirectives } from "@/components/dashboard/ActionDirectives";
 import { QuickMetrics } from "@/components/dashboard/QuickMetrics";
+import { NewUserOnboarding } from "@/components/dashboard/NewUserOnboarding";
 import Link from "next/link";
 import {
   Calendar,
@@ -19,6 +20,7 @@ import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function DashboardPage() {
   const [profile, setProfile] = useState<FullProfilePayload | null>(null);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const { language, t } = useLanguage();
@@ -30,6 +32,11 @@ export default function DashboardPage() {
       const data = await res.json();
       if (data.data) {
         setProfile(data.data);
+      } else {
+        setProfile(null);
+      }
+      if (data.user) {
+        setCurrentUser(data.user);
       }
     } catch (err) {
       console.error("Dashboard fetch error:", err);
@@ -42,7 +49,7 @@ export default function DashboardPage() {
     fetchProfile();
   }, [fetchProfile]);
 
-  if (loading || !profile) {
+  if (loading) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center gap-3">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
@@ -51,6 +58,11 @@ export default function DashboardPage() {
         </span>
       </div>
     );
+  }
+
+  // If new user with no profile yet: render clean Fresh Start Onboarding
+  if (!profile) {
+    return <NewUserOnboarding userName={currentUser?.name} />;
   }
 
   const { businessProfile, diagnostic, strategy, contents } = profile;
@@ -91,93 +103,64 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Quick Stats Grid */}
+      {/* Quick Metrics Bar */}
       <QuickMetrics profile={profile} />
 
-      {/* Viability Scorecard */}
+      {/* BVI Scorecard Section */}
       <BVIScorecard
-        scoreBreakdown={diagnostic.scoreBreakdown}
-        businessName={businessProfile.businessName}
+        scoreBreakdown={diagnostic?.scoreBreakdown || {
+          marketViability: 70,
+          productMarketAlignment: 70,
+          executionCapacity: 70,
+          ikigaiCongruence: 70,
+          channelSynergy: 70,
+          totalScore: 70,
+          tier: "HIGH_POTENTIAL",
+          tierLabel: "High Potential",
+          tierColor: "#4f46e5",
+          strengths: [],
+          bottlenecks: [],
+          directives: [],
+        }}
+        businessName={businessProfile?.businessName || "Your Brand"}
       />
 
-      {/* Action Directives & Risk Insights */}
-      <ActionDirectives scoreBreakdown={diagnostic.scoreBreakdown} />
+      {/* Action Directives & Risk Mitigation */}
+      <ActionDirectives
+        scoreBreakdown={diagnostic?.scoreBreakdown || {
+          marketViability: 70,
+          productMarketAlignment: 70,
+          executionCapacity: 70,
+          ikigaiCongruence: 70,
+          channelSynergy: 70,
+          totalScore: 70,
+          tier: "HIGH_POTENTIAL",
+          tierLabel: "High Potential",
+          tierColor: "#4f46e5",
+          strengths: [],
+          bottlenecks: [],
+          directives: [],
+        }}
+      />
 
-      {/* Highlights: Today's Scheduled Post & Positioning Snapshot */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Next Scheduled Action Post */}
-        {todayPost && (
-          <div className="p-6 rounded-3xl glass-card border border-slate-200/80 dark:border-slate-800 space-y-4 shadow-lg flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
-                    {t("dash.next_post")} • {todayPost.channel}
-                  </span>
-                  <span className="text-xs text-slate-400 font-medium">
-                    {todayPost.format || (todayPost as any).contentType}
-                  </span>
-                </div>
-                <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">
-                  {todayPost.status}
-                </span>
-              </div>
-
-              <h3 className="font-bold text-base text-slate-900 dark:text-white mb-2 line-clamp-1">
-                {todayPost.hook}
-              </h3>
-              <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-4 leading-relaxed font-sans whitespace-pre-line bg-slate-50/50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-200/40 dark:border-slate-800/40">
-                {todayPost.body || (todayPost as any).bodyContent}
-              </p>
-            </div>
-
-            <div className="pt-4 flex items-center justify-between border-t border-slate-200/60 dark:border-slate-800/60">
-              <button
-                type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(todayPost.body || (todayPost as any).bodyContent);
-                  toast(t("studio.copied_toast"), "success");
-                }}
-                className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
-              >
-                {t("studio.copy_post")}
-              </button>
-              <Link
-                href="/studio"
-                className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center gap-1"
-              >
-                {t("dash.open_studio")} <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-        )}
-
-        {/* Brand Manifesto Preview Card */}
-        <div className="p-6 rounded-3xl glass-card border border-slate-200/80 dark:border-slate-800 space-y-4 shadow-lg flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider mb-2">
-              <Layers className="w-4 h-4" /> {t("dash.brand_core")}
-            </div>
-            <h3 className="font-bold text-base text-slate-900 dark:text-white mb-2">
-              {businessProfile.businessName} {t("strategy.manifesto_badge")}
-            </h3>
-            <div className="text-xs text-slate-600 dark:text-slate-400 line-clamp-5 leading-relaxed bg-slate-50/50 dark:bg-slate-900/40 p-3.5 rounded-xl border border-slate-200/40 dark:border-slate-800/40">
-              {strategy.brandManifesto || strategy.positioningDoc}
-            </div>
-          </div>
-
-          <div className="pt-4 flex items-center justify-between border-t border-slate-200/60 dark:border-slate-800/60">
-            <span className="text-xs text-slate-400 font-medium">
-              4 {t("strategy.pillars")}
-            </span>
-            <Link
-              href="/strategy"
-              className="text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1 hover:underline"
-            >
-              {t("nav.strategy")} <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
+      {/* Fast Action Footer */}
+      <div className="p-6 rounded-3xl gradient-card-glow glass-card border border-indigo-200/80 dark:border-indigo-900/40 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="space-y-1 text-center sm:text-left">
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">
+            Ready to deploy this week's content schedule?
+          </h3>
+          <p className="text-xs text-slate-500">
+            Head to the Content Studio to review your visual Midjourney prompts and short-form scripts.
+          </p>
         </div>
+        <Link
+          href="/studio"
+          className="px-6 py-3 rounded-2xl text-xs font-bold text-white gradient-brand shadow-md shadow-indigo-500/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 shrink-0"
+        >
+          <Sparkles className="w-4 h-4" />
+          Review 30-Day Calendar
+          <ArrowRight className="w-4 h-4" />
+        </Link>
       </div>
     </div>
   );

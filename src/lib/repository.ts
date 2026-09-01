@@ -4,21 +4,34 @@ import { calculateBVI } from "./bvi-calculator";
 import { generateMarketingStrategy } from "./ai-generator";
 import { getDemoFullProfile, defaultDemoWizardState } from "./mock-data";
 
-// Fallback in-memory store for instant zero-config dev
+// Fallback in-memory store keyed by userId or userId_language
 const fallbackStore = new Map<string, FullProfilePayload>();
 
-export async function getOrCreateUserProfile(
+export async function getUserProfile(
   userId: string,
-  language: string = "en"
-): Promise<FullProfilePayload> {
-  // If demo user or fallback request
+  language: string = "en",
+  isDemo: boolean = false
+): Promise<FullProfilePayload | null> {
+  // If explicitly demo user
+  if (isDemo || userId === "demo-user-01") {
+    if (fallbackStore.has(`demo_${language}`)) {
+      return fallbackStore.get(`demo_${language}`)!;
+    }
+    const demoProfile = getDemoFullProfile(language);
+    fallbackStore.set(`demo_${language}`, demoProfile);
+    fallbackStore.set("demo-user-01", demoProfile);
+    return demoProfile;
+  }
+
+  // 1. Check user-specific in-memory store
   if (fallbackStore.has(`${userId}_${language}`)) {
     return fallbackStore.get(`${userId}_${language}`)!;
   }
-  if (fallbackStore.has(userId) && language === "en") {
+  if (fallbackStore.has(userId)) {
     return fallbackStore.get(userId)!;
   }
 
+  // 2. Check Postgres Database via Prisma for THIS user
   try {
     const biz = await prisma.businessProfile.findFirst({
       where: { userId },
@@ -50,8 +63,8 @@ export async function getOrCreateUserProfile(
           vocation: biz.ikigai.vocation,
           mission: biz.ikigai.mission,
           profession: biz.ikigai.profession,
-          archetype: biz.ikigai.archetype as any,
-          coreValues: biz.ikigai.coreValues,
+          archetype: (biz.ikigai.archetype as any) || "VISIONARY_DISRUPTOR",
+          coreValues: biz.ikigai.coreValues || [],
         },
         diagnostic: {
           differentiator: biz.diagnostic.differentiator,
@@ -90,17 +103,25 @@ export async function getOrCreateUserProfile(
           publishedAt: (c as any).publishedAt ? (c as any).publishedAt.toISOString() : undefined,
         })),
       };
+
+      fallbackStore.set(`${userId}_${language}`, payload);
+      fallbackStore.set(userId, payload);
       return payload;
     }
   } catch (err) {
-    // Database connection note in zero-config dev
+    console.warn("DB profile lookup:", err);
   }
 
-  // Initialize with localized Demo profile
-  const demoProfile = getDemoFullProfile(language);
-  fallbackStore.set(`${userId}_${language}`, demoProfile);
-  fallbackStore.set(userId, demoProfile);
-  return demoProfile;
+  // A new registered user with no submitted diagnostic returns null (fresh start)
+  return null;
+}
+
+export async function getOrCreateUserProfile(
+  userId: string,
+  language: string = "en",
+  isDemo: boolean = false
+): Promise<FullProfilePayload | null> {
+  return getUserProfile(userId, language, isDemo);
 }
 
 export async function saveWizardAndGenerate(
@@ -110,7 +131,7 @@ export async function saveWizardAndGenerate(
   provider?: "builtin" | "openai" | "gemini",
   language: string = "en"
 ): Promise<FullProfilePayload> {
-  const bviBreakdown = calculateBVI(state);
+  const bviBreakdown = calculateBVI(state, language);
   const { strategy, contents } = await generateMarketingStrategy(state, apiKey, provider, language);
 
   const payload: FullProfilePayload = {
@@ -125,7 +146,11 @@ export async function saveWizardAndGenerate(
       monthlyBudget: state.business.monthlyBudget,
       weeklyHours: state.business.weeklyHours,
     },
-    ikigai: state.ikigai,
+    ikigai: {
+      ...state.ikigai,
+      archetype: state.ikigai.archetype || "VISIONARY_DISRUPTOR",
+      coreValues: state.ikigai.coreValues || [],
+    },
     diagnostic: {
       differentiator: state.competitive.differentiator,
       competitors: state.competitive.competitors,
@@ -137,8 +162,9 @@ export async function saveWizardAndGenerate(
     contents,
   };
 
-  // Always save to fallback store for instant client availability
+  // Always save to user-specific fallback store for instant client availability
   fallbackStore.set(userId, payload);
+  fallbackStore.set(`${userId}_${language}`, payload);
 
   // Attempt database persistence if Prisma is available
   try {
@@ -146,13 +172,14 @@ export async function saveWizardAndGenerate(
       where: { userId },
     });
 
-    const bizId = existingBiz ? existingBiz.id : undefined;
+    let bizId: string;
 
-    if (bizId) {
+    if (existingBiz) {
+      bizId = existingBiz.id;
       await prisma.businessProfile.update({
         where: { id: bizId },
         data: {
-          businessName: state.business.businessName,
+          businessName: state.business.businessName || "My Business",
           websiteUrl: state.business.websiteUrl,
           businessModel: state.business.businessModel,
           industry: state.business.industry,
@@ -162,84 +189,99 @@ export async function saveWizardAndGenerate(
           weeklyHours: state.business.weeklyHours,
         },
       });
-
-      await prisma.ikigaiProfile.upsert({
-        where: { businessProfileId: bizId },
-        create: {
-          businessProfileId: bizId,
-          passion: state.ikigai.passion,
-          vocation: state.ikigai.vocation,
-          mission: state.ikigai.mission,
-          profession: state.ikigai.profession,
-          archetype: state.ikigai.archetype || "VISIONARY_DISRUPTOR",
-          coreValues: state.ikigai.coreValues || [],
-        },
-        update: {
-          passion: state.ikigai.passion,
-          vocation: state.ikigai.vocation,
-          mission: state.ikigai.mission,
-          profession: state.ikigai.profession,
-          archetype: state.ikigai.archetype || "VISIONARY_DISRUPTOR",
-          coreValues: state.ikigai.coreValues || [],
+    } else {
+      const created = await prisma.businessProfile.create({
+        data: {
+          userId,
+          businessName: state.business.businessName || "My Business",
+          websiteUrl: state.business.websiteUrl,
+          businessModel: state.business.businessModel,
+          industry: state.business.industry,
+          geoScope: state.business.geoScope,
+          currentStage: state.business.currentStage,
+          monthlyBudget: state.business.monthlyBudget,
+          weeklyHours: state.business.weeklyHours,
         },
       });
-
-      await prisma.diagnosticData.upsert({
-        where: { businessProfileId: bizId },
-        create: {
-          businessProfileId: bizId,
-          differentiator: state.competitive.differentiator,
-          competitors: state.competitive.competitors,
-          marketSaturation: state.competitive.marketSaturation,
-          viabilityScore: bviBreakdown.totalScore,
-          scoreBreakdown: bviBreakdown as any,
-        },
-        update: {
-          differentiator: state.competitive.differentiator,
-          competitors: state.competitive.competitors,
-          marketSaturation: state.competitive.marketSaturation,
-          viabilityScore: bviBreakdown.totalScore,
-          scoreBreakdown: bviBreakdown as any,
-        },
-      });
-
-      await prisma.strategyPlan.upsert({
-        where: { businessProfileId: bizId },
-        create: {
-          businessProfileId: bizId,
-          positioningDoc: strategy.positioningDoc,
-          contentPillars: strategy.contentPillars as any,
-          reviewCadence: strategy.reviewCadence || state.scope.reviewCadence || "MONTHLY",
-          activeChannels: strategy.activeChannels || state.scope.activeChannels || ["LINKEDIN"],
-        },
-        update: {
-          positioningDoc: strategy.positioningDoc,
-          contentPillars: strategy.contentPillars as any,
-          reviewCadence: strategy.reviewCadence || state.scope.reviewCadence || "MONTHLY",
-          activeChannels: strategy.activeChannels || state.scope.activeChannels || ["LINKEDIN"],
-        },
-      });
-
-      // Clear existing content and re-insert
-      await prisma.generatedContent.deleteMany({
-        where: { businessProfileId: bizId },
-      });
-
-      await prisma.generatedContent.createMany({
-        data: contents.map((c) => ({
-          businessProfileId: bizId,
-          channel: c.channel,
-          contentType: (c.contentType || c.format || "POST") as string,
-          hook: c.hook,
-          bodyContent: (c.bodyContent || c.body || "") as string,
-          visualPrompt: c.visualPrompt,
-          status: c.status,
-          scheduledDate: c.scheduledDate ? new Date(c.scheduledDate) : null,
-        })),
-      });
+      bizId = created.id;
     }
+
+    await prisma.ikigaiProfile.upsert({
+      where: { businessProfileId: bizId },
+      create: {
+        businessProfileId: bizId,
+        passion: state.ikigai.passion,
+        vocation: state.ikigai.vocation,
+        mission: state.ikigai.mission,
+        profession: state.ikigai.profession,
+        archetype: state.ikigai.archetype || "VISIONARY_DISRUPTOR",
+        coreValues: state.ikigai.coreValues || [],
+      },
+      update: {
+        passion: state.ikigai.passion,
+        vocation: state.ikigai.vocation,
+        mission: state.ikigai.mission,
+        profession: state.ikigai.profession,
+        archetype: state.ikigai.archetype || "VISIONARY_DISRUPTOR",
+        coreValues: state.ikigai.coreValues || [],
+      },
+    });
+
+    await prisma.diagnosticData.upsert({
+      where: { businessProfileId: bizId },
+      create: {
+        businessProfileId: bizId,
+        differentiator: state.competitive.differentiator,
+        competitors: state.competitive.competitors,
+        marketSaturation: state.competitive.marketSaturation,
+        viabilityScore: bviBreakdown.totalScore,
+        scoreBreakdown: bviBreakdown as any,
+      },
+      update: {
+        differentiator: state.competitive.differentiator,
+        competitors: state.competitive.competitors,
+        marketSaturation: state.competitive.marketSaturation,
+        viabilityScore: bviBreakdown.totalScore,
+        scoreBreakdown: bviBreakdown as any,
+      },
+    });
+
+    await prisma.strategyPlan.upsert({
+      where: { businessProfileId: bizId },
+      create: {
+        businessProfileId: bizId,
+        positioningDoc: strategy.positioningDoc,
+        contentPillars: strategy.contentPillars as any,
+        reviewCadence: strategy.reviewCadence || state.scope.reviewCadence || "MONTHLY",
+        activeChannels: strategy.activeChannels || state.scope.activeChannels || ["LINKEDIN"],
+      },
+      update: {
+        positioningDoc: strategy.positioningDoc,
+        contentPillars: strategy.contentPillars as any,
+        reviewCadence: strategy.reviewCadence || state.scope.reviewCadence || "MONTHLY",
+        activeChannels: strategy.activeChannels || state.scope.activeChannels || ["LINKEDIN"],
+      },
+    });
+
+    // Clear existing content and re-insert
+    await prisma.generatedContent.deleteMany({
+      where: { businessProfileId: bizId },
+    });
+
+    await prisma.generatedContent.createMany({
+      data: contents.map((c) => ({
+        businessProfileId: bizId,
+        channel: c.channel,
+        contentType: (c.contentType || c.format || "POST") as string,
+        hook: c.hook,
+        bodyContent: (c.bodyContent || c.body || "") as string,
+        visualPrompt: c.visualPrompt,
+        status: c.status,
+        scheduledDate: c.scheduledDate ? new Date(c.scheduledDate) : null,
+      })),
+    });
   } catch (err) {
-    console.warn("Prisma save skipped/errored in local dev mode:", err);
+    console.warn("Prisma save note:", err);
   }
 
   return payload;
