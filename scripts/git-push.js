@@ -75,6 +75,9 @@ async function main() {
   }
 
   console.log("\nReady to push. Attempting push to", remoteUrl);
+  const cliToken = process.argv[2];
+  const token = cliToken || process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+
   try {
     const pushResult = await git.push({
       fs,
@@ -83,19 +86,17 @@ async function main() {
       remote: "origin",
       ref: "main",
       onAuth: () => {
-        // If git credential helper or token is in env
-        const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
         if (token) {
           return { username: token, password: "" };
         }
         return {};
       },
     });
-    console.log("Push result:", pushResult);
+    console.log("Push result: SUCCESS!", pushResult);
   } catch (pushErr) {
-    console.log("Push notice (Auth/Token needed):", pushErr.message);
-    if (pushErr.message.includes("HTTP 401") || pushErr.message.includes("auth") || pushErr.message.includes("credentials")) {
-      console.log("\nNote: GitHub requires a Personal Access Token (PAT) or SSH key for HTTPS push.");
+    console.log("Push notice:", pushErr.message);
+    if (pushErr.message.includes("401") || pushErr.message.includes("Unauthorized") || pushErr.message.includes("auth")) {
+      console.log("\nAuthentication required: You can push by running:\n  node scripts/git-push.js <YOUR_GITHUB_TOKEN>\nor by using standard git:\n  git push -u origin main");
     }
   }
 }
