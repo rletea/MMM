@@ -4,14 +4,27 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/Toast";
-import { Sparkles, Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import {
+  Sparkles,
+  Mail,
+  Lock,
+  User,
+  ArrowRight,
+  Loader2,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = useLanguage();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -46,10 +59,10 @@ export default function RegisterPage() {
             <Sparkles className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">
-            Create Your Account
+            {t("auth.register_title")}
           </h1>
           <p className="text-xs text-slate-500">
-            Start the Ikigai diagnostic to unlock your custom marketing engine.
+            {t("auth.register_subtitle")}
           </p>
         </div>
 
@@ -57,7 +70,7 @@ export default function RegisterPage() {
         <form onSubmit={handleRegister} className="space-y-4">
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <User className="w-3.5 h-3.5 text-indigo-500" /> Full Name
+              <User className="w-3.5 h-3.5 text-indigo-500" /> {t("auth.name_label")}
             </label>
             <input
               type="text"
@@ -65,13 +78,13 @@ export default function RegisterPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Alex Vance"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white"
             />
           </div>
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <Mail className="w-3.5 h-3.5 text-indigo-500" /> Email Address
+              <Mail className="w-3.5 h-3.5 text-indigo-500" /> {t("auth.email_label")}
             </label>
             <input
               type="email"
@@ -79,23 +92,37 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="alex@company.com"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white"
             />
           </div>
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <Lock className="w-3.5 h-3.5 text-indigo-500" /> Password
+              <Lock className="w-3.5 h-3.5 text-indigo-500" /> {t("auth.password_label")}
             </label>
-            <input
-              type="password"
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="At least 6 characters"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="At least 6 characters"
+                className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? t("auth.hide_password") : t("auth.show_password")}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
+            </div>
           </div>
 
           <button
@@ -107,16 +134,17 @@ export default function RegisterPage() {
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <>
-                Create Account & Start Wizard <ArrowRight className="w-4 h-4" />
+                <span>{t("auth.signup_btn")}</span>
+                <ArrowRight className="w-4 h-4" />
               </>
             )}
           </button>
         </form>
 
         <div className="text-center text-xs text-slate-500">
-          Already have an account?{" "}
+          {t("auth.have_account")}{" "}
           <Link href="/login" className="font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
-            Log In
+            {t("auth.login_link")}
           </Link>
         </div>
       </div>

@@ -4,13 +4,26 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/Toast";
-import { Sparkles, Mail, Lock, ArrowRight, Zap, Loader2 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import {
+  Sparkles,
+  Mail,
+  Lock,
+  ArrowRight,
+  Zap,
+  Loader2,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = useLanguage();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
 
@@ -62,10 +75,10 @@ export default function LoginPage() {
             <Sparkles className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">
-            Log in to Your Portal
+            {t("auth.login_title")}
           </h1>
           <p className="text-xs text-slate-500">
-            Access your BVI scorecard, Brand Manifesto, and 30-day content calendar.
+            {t("auth.login_subtitle")}
           </p>
         </div>
 
@@ -81,13 +94,13 @@ export default function LoginPage() {
           ) : (
             <Zap className="w-4 h-4 text-amber-500" />
           )}
-          <span>1-Click Instant Demo Login (Sandbox)</span>
+          <span>{t("auth.demo_login")}</span>
         </button>
 
         <div className="relative flex items-center justify-center">
           <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
           <span className="bg-white dark:bg-slate-900 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest absolute">
-            Or Standard Account
+            {t("auth.or_standard")}
           </span>
         </div>
 
@@ -95,7 +108,7 @@ export default function LoginPage() {
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <Mail className="w-3.5 h-3.5 text-indigo-500" /> Email Address
+              <Mail className="w-3.5 h-3.5 text-indigo-500" /> {t("auth.email_label")}
             </label>
             <input
               type="email"
@@ -103,22 +116,44 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="founder@company.com"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <Lock className="w-3.5 h-3.5 text-indigo-500" /> Password
-            </label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <Lock className="w-3.5 h-3.5 text-indigo-500" /> {t("auth.password_label")}
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline transition-colors"
+              >
+                {t("auth.forgot_password")}
+              </Link>
+            </div>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? t("auth.hide_password") : t("auth.show_password")}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
+            </div>
           </div>
 
           <button
@@ -130,16 +165,17 @@ export default function LoginPage() {
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <>
-                Sign In to Workspace <ArrowRight className="w-4 h-4" />
+                <span>{t("auth.signin_btn")}</span>
+                <ArrowRight className="w-4 h-4" />
               </>
             )}
           </button>
         </form>
 
         <div className="text-center text-xs text-slate-500">
-          Don&apos;t have an account yet?{" "}
+          {t("auth.no_account")}{" "}
           <Link href="/register" className="font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
-            Create an Account
+            {t("auth.create_account")}
           </Link>
         </div>
       </div>
