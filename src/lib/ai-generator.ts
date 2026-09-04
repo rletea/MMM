@@ -298,21 +298,26 @@ export function synthesizeStrategyAndContent(
     "an integrated Ikigai-driven diagnostic engine combined with automated multi-channel campaign architectures";
   const passion =
     ikigai.passion ||
+    ikigai.p1_energizing_tasks ||
+    ikigai.p1_time_loss ||
+    ikigai.p1_spare_time_reading ||
     ikigai.energizingTasks ||
     ikigai.timeFlyActivities ||
-    ikigai.naturalTopics ||
     "designing high-leverage growth architectures";
   const mission =
     ikigai.mission ||
-    ikigai.priorityCause ||
+    ikigai.overlap_synthesis ||
+    ikigai.p3_unlimited_resource ||
+    ikigai.p3_systemic_injustice ||
     ikigai.coreIntersection ||
-    ikigai.systemicProblems ||
     "democratizing tier-one CMO marketing positioning";
   const profession =
     ikigai.profession ||
+    ikigai.p4_market_paid_skills ||
+    ikigai.p4_premium_assets ||
+    ikigai.p4_monetization_fit ||
     ikigai.highValueSkills ||
     ikigai.premiumOffers ||
-    ikigai.monetizationModel ||
     "strategic growth advisory";
   const pain = audience.painTriggers?.[0] || "low conversion velocity and generic marketing noise";
   const valuesStr = (ikigai.coreValues && ikigai.coreValues.length > 0

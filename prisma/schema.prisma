@@ -7,11 +7,22 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum SupportedLocale {
+  EN
+  RO
+  DE
+  FR
+  IT
+  PL
+  ES
+}
+
 model User {
   id               String            @id @default(cuid())
   email            String            @unique
   passwordHash     String
   name             String?
+  preferredLocale  SupportedLocale   @default(EN)
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   businessProfiles BusinessProfile[]
@@ -38,53 +49,57 @@ model BusinessProfile {
 }
 
 model IkigaiProfile {
-  id                 String          @id @default(cuid())
-  businessProfileId  String          @unique
-  businessProfile    BusinessProfile @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
-  locale             String          @default("en") // "en" | "ro" | "de" | "fr" | "it" | "pl" | "es"
+  id                    String          @id @default(cuid())
+  businessProfileId     String          @unique
+  businessProfile       BusinessProfile @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
+  locale                SupportedLocale @default(EN)
 
-  // Pillar 1: Passion / What You Love
-  timeFlyActivities  String?         @db.Text
-  naturalTopics      String?         @db.Text
-  idealTuesday       String?         @db.Text
-  energizingTasks    String?         @db.Text
-  childhoodPassions  String?         @db.Text
-  sparkDebates       String?         @db.Text
-  creativeOutlets    String?         @db.Text
+  // Pillar 1: What You Love / Passion
+  p1_time_loss          String?         @db.Text
+  p1_spare_time_reading String?         @db.Text
+  p1_average_tuesday    String?         @db.Text
+  p1_energizing_tasks   String?         @db.Text
+  p1_childhood_passions String?         @db.Text
+  p1_spark_debates      String?         @db.Text
+  p1_creative_outlets   String?         @db.Text
 
-  // Pillar 2: Vocation / What You Are Good At
-  effortlessSkills   String?         @db.Text
-  soughtAdvice       String?         @db.Text
-  hardSkills         String?         @db.Text
-  softSkills         String?         @db.Text
-  successPatterns    String?         @db.Text
-  problemSolvingWay  String?         @db.Text
-  recurringPraise    String?         @db.Text
+  // Pillar 2: What You Are Good At / Vocation
+  p2_effortless_skills  String?         @db.Text
+  p2_sought_advice      String?         @db.Text
+  p2_hard_skills        String?         @db.Text
+  p2_interpersonal_soft String?         @db.Text
+  p2_success_patterns   String?         @db.Text
+  p2_problem_solving    String?         @db.Text
+  p2_recurring_praise   String?         @db.Text
 
-  // Pillar 3: Mission / What The World Needs
-  systemicProblems   String?         @db.Text
-  targetCommunity    String?         @db.Text
-  priorityCause      String?         @db.Text
-  practicalNeeds     String?         @db.Text
-  coreValues         String[]
-  decadeOutlook      String?         @db.Text
-  desiredLegacy      String?         @db.Text
+  // Pillar 3: What the World Needs / Mission
+  p3_systemic_injustice String?         @db.Text
+  p3_community_to_help  String?         @db.Text
+  p3_unlimited_resource String?         @db.Text
+  p3_immediate_needs    String?         @db.Text
+  p3_non_negotiables    String?         @db.Text
+  p3_future_gap         String?         @db.Text
+  p3_legacy_impact      String?         @db.Text
 
-  // Pillar 4: Profession / What You Can Be Paid For
-  pastPaidServices   String?         @db.Text
-  highValueSkills    String?         @db.Text
-  commercialHobbies  String?         @db.Text
-  economicImpact     String?         @db.Text
-  premiumOffers      String?         @db.Text
-  growthNiches       String?         @db.Text
-  monetizationModel  String?
+  // Pillar 4: What You Can Be Paid For / Profession
+  p4_past_paid_services String?         @db.Text
+  p4_market_paid_skills String?         @db.Text
+  p4_commercial_hobbies String?         @db.Text
+  p4_high_value_roi     String?         @db.Text
+  p4_premium_assets     String?         @db.Text
+  p4_growth_niches      String?         @db.Text
+  p4_monetization_fit   String?         @db.Text
 
-  // Synthesis & Action
-  coreIntersection   String?         @db.Text
-  pilotProject30Days String?         @db.Text
+  // Intersection & Alignment / Synthesis
+  overlap_synthesis     String?         @db.Text
+  pilot_30_days         String?         @db.Text
 
-  createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt
+  // Positioning Additions
+  archetype             String?         @default("VISIONARY_DISRUPTOR")
+  coreValues            String[]        @default([])
+
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
 }
 
 model DiagnosticData {
@@ -102,6 +117,7 @@ model StrategyPlan {
   id                String          @id @default(cuid())
   businessProfileId String          @unique
   businessProfile   BusinessProfile @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
+  locale            SupportedLocale @default(EN)
   positioningDoc    String          @db.Text
   contentPillars    Json
   reviewCadence     String          // BIWEEKLY, MONTHLY, QUARTERLY
@@ -113,6 +129,7 @@ model GeneratedContent {
   id                String          @id @default(cuid())
   businessProfileId String
   businessProfile   BusinessProfile @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
+  locale            SupportedLocale @default(EN)
   channel           String          // LINKEDIN, FACEBOOK, INSTAGRAM, TIKTOK, EMAIL
   contentType       String          // POST, REEL_SCRIPT, CAROUSEL, NEWSLETTER
   scheduledDate     DateTime?

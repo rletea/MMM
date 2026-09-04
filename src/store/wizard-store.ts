@@ -34,8 +34,52 @@ interface WizardStore extends WizardFormState {
 }
 
 const initialIkigai: IkigaiData = {
-  locale: "en",
-  // Pillar 1: Passion
+  locale: "EN",
+  // Pillar 1: What You Love / Passion (AG-SPEC Standard)
+  p1_time_loss: "",
+  p1_spare_time_reading: "",
+  p1_average_tuesday: "",
+  p1_energizing_tasks: "",
+  p1_childhood_passions: "",
+  p1_spark_debates: "",
+  p1_creative_outlets: "",
+
+  // Pillar 2: What You Are Good At / Vocation (AG-SPEC Standard)
+  p2_effortless_skills: "",
+  p2_sought_advice: "",
+  p2_hard_skills: "",
+  p2_interpersonal_soft: "",
+  p2_success_patterns: "",
+  p2_problem_solving: "",
+  p2_recurring_praise: "",
+
+  // Pillar 3: What the World Needs / Mission (AG-SPEC Standard)
+  p3_systemic_injustice: "",
+  p3_community_to_help: "",
+  p3_unlimited_resource: "",
+  p3_immediate_needs: "",
+  p3_non_negotiables: "",
+  p3_future_gap: "",
+  p3_legacy_impact: "",
+
+  // Pillar 4: What You Can Be Paid For / Profession (AG-SPEC Standard)
+  p4_past_paid_services: "",
+  p4_market_paid_skills: "",
+  p4_commercial_hobbies: "",
+  p4_high_value_roi: "",
+  p4_premium_assets: "",
+  p4_growth_niches: "",
+  p4_monetization_fit: "",
+
+  // Intersection & Alignment / Synthesis (AG-SPEC Standard)
+  overlap_synthesis: "",
+  pilot_30_days: "",
+
+  // Positioning
+  archetype: "VISIONARY_DISRUPTOR",
+  coreValues: ["Mastery", "Integrity", "Innovation"],
+
+  // Backward compatibility
   timeFlyActivities: "",
   naturalTopics: "",
   idealTuesday: "",
@@ -43,8 +87,6 @@ const initialIkigai: IkigaiData = {
   childhoodPassions: "",
   sparkDebates: "",
   creativeOutlets: "",
-
-  // Pillar 2: Vocation
   effortlessSkills: "",
   soughtAdvice: "",
   hardSkills: "",
@@ -52,17 +94,12 @@ const initialIkigai: IkigaiData = {
   successPatterns: "",
   problemSolvingWay: "",
   recurringPraise: "",
-
-  // Pillar 3: Mission
   systemicProblems: "",
   targetCommunity: "",
   priorityCause: "",
   practicalNeeds: "",
-  coreValues: ["Mastery", "Integrity", "Innovation"],
   decadeOutlook: "",
   desiredLegacy: "",
-
-  // Pillar 4: Profession
   pastPaidServices: "",
   highValueSkills: "",
   commercialHobbies: "",
@@ -70,17 +107,12 @@ const initialIkigai: IkigaiData = {
   premiumOffers: "",
   growthNiches: "",
   monetizationModel: "",
-
-  // Synthesis & Action
   coreIntersection: "",
   pilotProject30Days: "",
-
-  // Legacy synthesis compatibility
   passion: "",
   vocation: "",
   mission: "",
   profession: "",
-  archetype: "VISIONARY_DISRUPTOR",
 };
 
 const initialBusiness: BusinessData = {
@@ -211,7 +243,37 @@ export const useWizardStore = create<WizardStore>()(
 
         if (isRo) {
           ikigaiDemo = {
-            locale: "ro",
+            locale: "RO",
+            p1_time_loss: "Arhitecturarea motoarelor complexe de creștere, scrierea analizelor strategice și optimizarea sistemelor de piață",
+            p1_spare_time_reading: "Creștere organică B2B, psihologie decizională, automatizări AI, diferențiere strategică de brand",
+            p1_average_tuesday: "Dimineață dedicată creației de strategii fără întreruperi, după-amiază de consultanță strategică de nivel înalt",
+            p1_energizing_tasks: "Transformarea intuiției fondatorului în sisteme de piață clare, sistematizate și scalabile",
+            p1_childhood_passions: "Simulări de strategie, crearea de reviste și jocuri logice interactive",
+            p1_spark_debates: "De ce majoritatea agențiilor B2B vând metrici vanitoase în loc de dominanță de categorie",
+            p1_creative_outlets: "Eseuri provocatoare, design de brand minimalist și arhitectură de procese",
+            p2_effortless_skills: "Identificarea instantanee a blocajelor ascunse din poziționare și comunicare",
+            p2_sought_advice: "Stabilirea prețurilor premium, arhitectura autorității de brand, generarea de oportunități calificate",
+            p2_hard_skills: "Analiză de creștere B2B, repoziționare strategică, fluxuri editoriale multi-canal, prompt engineering",
+            p2_interpersonal_soft: "Empatie profundă, ascultare activă structurată, comunicare de impact și sinteză contrariană",
+            p2_success_patterns: "Concentrare pe canale asimetrice de distribuție, eliminarea zgomotului inutil și creare de active IP durabile",
+            p2_problem_solving: "Deconstrucție după primele principii urmată de prototipare rapidă și iterație sistemică",
+            p2_recurring_praise: "«Ați rezumat viziunea noastră pe 5 ani și ne-ați diferențiat în 1 oră mai bine decât o agenție în 6 luni»",
+            p3_systemic_injustice: "Fondatori remarcabili construiesc produse excepționale, dar rămân invizibili din cauza lipsei de strategie clară",
+            p3_community_to_help: "Fondatori B2B, consultanți de elită și antreprenori orientați spre excelență și impact",
+            p3_unlimited_resource: "Democratizarea strategiilor de CMO de nivel enterprise pentru operatori onești și ambițioși",
+            p3_immediate_needs: "Un motor previzibil de distribuție pe 30 de zile care generează autoritate și vânzări fără epuizare",
+            p3_non_negotiables: "Transparență Radicală, Eficiență Asimetrică, Măiestrie, Focalizare Neclintită",
+            p3_future_gap: "Conținutul generic generat de AI va inunda platformele; doar vocea autentică a fondatorului va mai converti",
+            p3_legacy_impact: "Sprijinirea a peste 1.000 de fondatori să își construiască afaceri durabile, extrem de profitabile și lideri de nișă",
+            p4_past_paid_services: "Servicii de Fractional CMO (5.000€/lună), workshop-uri intensive de repoziționare, audituri de conversie",
+            p4_market_paid_skills: "Design de categorie de piață, mesaje de conversie high-ticket, sisteme autonome de distribuție",
+            p4_commercial_hobbies: "Publicarea de analize de business, comunități private pentru fondatori, prototipuri software",
+            p4_high_value_roi: "Peste 2.4M€ în contracte încheiate de clienți datorită autorității organice construite",
+            p4_premium_assets: "Sistemul Integrat de Poziționare și Distribuție pe 30 de Zile cu lansare multi-canal",
+            p4_growth_niches: "Consultanță B2B asistată de inteligență artificială, tehnologie enterprise, servicii high-ticket",
+            p4_monetization_fit: "Consultanță strategică premium + Abonament lunar de optimizare continuă",
+            overlap_synthesis: "Ghidarea fondatorilor ambițioși către autoritate de piață de necontestat și clienți calificați recurenți",
+            pilot_30_days: "Lansarea unui calendar multi-canal intensiv pe 30 de zile cu analize zilnice pe LinkedIn și secvență de email",
             timeFlyActivities: "Arhitecturarea motoarelor complexe de creștere, scrierea analizelor strategice și optimizarea sistemelor de piață",
             naturalTopics: "Creștere organică B2B, psihologie decizională, automatizări AI, diferențiere strategică de brand",
             idealTuesday: "Dimineață dedicată creației de strategii fără întreruperi, după-amiază de consultanță strategică de nivel înalt",
@@ -255,7 +317,37 @@ export const useWizardStore = create<WizardStore>()(
           };
         } else {
           ikigaiDemo = {
-            locale: lang,
+            locale: (lang || "en").toUpperCase(),
+            p1_time_loss: "Architecting complex growth engines, writing contrarian long-form thought leadership, dissecting startup business models",
+            p1_spare_time_reading: "Product-led growth, behavioral psychology, AI automation workflows, brand moat construction",
+            p1_average_tuesday: "Morning deep-work writing thesis essays, afternoon high-leverage client strategy sessions, zero reactive meetings",
+            p1_energizing_tasks: "Translating founder intuition into systematic go-to-market playbooks and high-converting narrative structures",
+            p1_childhood_passions: "Building strategic computer simulations, storytelling, designing custom magazines and games",
+            p1_spark_debates: "Why most B2B marketing agencies sell low-ROI vanity metrics instead of category dominance",
+            p1_creative_outlets: "Writing provocative essays, visual branding design, designing minimalist workflow architectures",
+            p2_effortless_skills: "Quickly spotting underlying systemic bottlenecks in positioning and messaging that founders overlook",
+            p2_sought_advice: "Pricing high-ticket packages, personal brand authority architecture, organic inbound funnel creation",
+            p2_hard_skills: "Growth analytics, positioning teardowns, multi-channel editorial workflows, prompt engineering",
+            p2_interpersonal_soft: "Radical empathy, structured active listening, high-stakes communication, contrarian synthesis",
+            p2_success_patterns: "Focusing on asymmetric distribution channels, zero-fluff signal, and building defensible IP assets",
+            p2_problem_solving: "First-principles deconstruction followed by rapid prototyping and algorithmic iteration",
+            p2_recurring_praise: "«You summarized our entire 5-year vision and differentiated us better in 1 hour than our agency did in 6 months»",
+            p3_systemic_injustice: "Ambitious operators build world-class products but stay invisible because marketing feels dirty, noisy, or fake",
+            p3_community_to_help: "Visionary founders, boutique consultancy partners, and solopreneur builders striving for freedom",
+            p3_unlimited_resource: "Democratize elite CMO-level strategic positioning for high-integrity operators",
+            p3_immediate_needs: "A predictable 30-day organic distribution engine that builds authority without burnout",
+            p3_non_negotiables: "Radical Transparency, Asymmetric Leverage, Craftsmanship, Unapologetic Focus",
+            p3_future_gap: "Commoditized generic AI content will flood feeds; only authentic founder voice and deep domain moats will convert",
+            p3_legacy_impact: "Empowered 1,000+ independent founders to build durable, highly profitable category-leading businesses",
+            p4_past_paid_services: "Fractional CMO engagements ($10k/mo), strategic positioning intensives ($5k), cohort advisory ($2.5k)",
+            p4_market_paid_skills: "Category design, high-ticket messaging frameworks, multi-channel content system architecture",
+            p4_commercial_hobbies: "Writing breakdown newsletters, curating founder mastermind circles, SaaS prototyping",
+            p4_high_value_roi: "Client deals closed exceeding $2.4M directly attributable to organic brand authority",
+            p4_premium_assets: "30-Day Brand Positioning & Authority Operating System with complete multi-channel deployment",
+            p4_growth_niches: "AI-augmented professional advisory, enterprise developer tooling, high-ticket B2B services",
+            p4_monetization_fit: "High-ticket retainer + Performance upside + Scalable digital product ecosystem",
+            overlap_synthesis: "Empowering visionary B2B founders to achieve category authority and predictable inbound pipeline through systematic Ikigai-aligned positioning",
+            pilot_30_days: "Launch a 30-day multi-channel authority blitz with daily long-form LinkedIn teardowns and an automated email onboarding engine",
             timeFlyActivities: "Architecting complex growth engines, writing contrarian long-form thought leadership, dissecting startup business models",
             naturalTopics: "Product-led growth, behavioral psychology, AI automation workflows, brand moat construction",
             idealTuesday: "Morning deep-work writing thesis essays, afternoon high-leverage client strategy sessions, zero reactive meetings",

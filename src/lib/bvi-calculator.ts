@@ -17,59 +17,72 @@ export function calculateBVI(
 
   // Pillar 1: Passion depth
   const p1Depth = [
+    ikigai.p1_time_loss,
+    ikigai.p1_spare_time_reading,
+    ikigai.p1_average_tuesday,
+    ikigai.p1_energizing_tasks,
+    ikigai.p1_childhood_passions,
+    ikigai.p1_spark_debates,
+    ikigai.p1_creative_outlets,
     ikigai.timeFlyActivities,
     ikigai.naturalTopics,
     ikigai.idealTuesday,
     ikigai.energizingTasks,
-    ikigai.childhoodPassions,
-    ikigai.sparkDebates,
-    ikigai.creativeOutlets,
     ikigai.passion,
   ].filter((v) => v && v.trim().length > 10).length;
   if (p1Depth >= 2 || (ikigai.passion && ikigai.passion.trim().length > 15)) ikigaiScore += 12;
 
   // Pillar 2: Vocation depth
   const p2Depth = [
+    ikigai.p2_effortless_skills,
+    ikigai.p2_sought_advice,
+    ikigai.p2_hard_skills,
+    ikigai.p2_interpersonal_soft,
+    ikigai.p2_success_patterns,
+    ikigai.p2_problem_solving,
+    ikigai.p2_recurring_praise,
     ikigai.effortlessSkills,
     ikigai.soughtAdvice,
     ikigai.hardSkills,
-    ikigai.softSkills,
-    ikigai.successPatterns,
-    ikigai.problemSolvingWay,
-    ikigai.recurringPraise,
     ikigai.vocation,
   ].filter((v) => v && v.trim().length > 10).length;
   if (p2Depth >= 2 || (ikigai.vocation && ikigai.vocation.trim().length > 15)) ikigaiScore += 12;
 
   // Pillar 3: Mission depth
   const p3Depth = [
+    ikigai.p3_systemic_injustice,
+    ikigai.p3_community_to_help,
+    ikigai.p3_unlimited_resource,
+    ikigai.p3_immediate_needs,
+    ikigai.p3_non_negotiables,
+    ikigai.p3_future_gap,
+    ikigai.p3_legacy_impact,
     ikigai.systemicProblems,
     ikigai.targetCommunity,
     ikigai.priorityCause,
-    ikigai.practicalNeeds,
-    ikigai.decadeOutlook,
-    ikigai.desiredLegacy,
     ikigai.mission,
   ].filter((v) => v && v.trim().length > 10).length;
   if (p3Depth >= 2 || (ikigai.mission && ikigai.mission.trim().length > 15)) ikigaiScore += 12;
 
   // Pillar 4: Profession depth
   const p4Depth = [
+    ikigai.p4_past_paid_services,
+    ikigai.p4_market_paid_skills,
+    ikigai.p4_commercial_hobbies,
+    ikigai.p4_high_value_roi,
+    ikigai.p4_premium_assets,
+    ikigai.p4_growth_niches,
+    ikigai.p4_monetization_fit,
     ikigai.pastPaidServices,
     ikigai.highValueSkills,
-    ikigai.commercialHobbies,
-    ikigai.economicImpact,
-    ikigai.premiumOffers,
-    ikigai.growthNiches,
-    ikigai.monetizationModel,
     ikigai.profession,
   ].filter((v) => v && v.trim().length > 10).length;
   if (p4Depth >= 2 || (ikigai.profession && ikigai.profession.trim().length > 15)) ikigaiScore += 12;
 
   // Synthesis & Core Values
   if (ikigai.coreValues && ikigai.coreValues.length >= 3) ikigaiScore += 6;
-  if (ikigai.coreIntersection && ikigai.coreIntersection.trim().length > 15) ikigaiScore += 4;
-  if (ikigai.pilotProject30Days && ikigai.pilotProject30Days.trim().length > 15) ikigaiScore += 4;
+  if ((ikigai.overlap_synthesis || ikigai.coreIntersection)?.trim()?.length! > 15) ikigaiScore += 4;
+  if ((ikigai.pilot_30_days || ikigai.pilotProject30Days)?.trim()?.length! > 15) ikigaiScore += 4;
   if (ikigai.archetype) ikigaiScore += 4;
 
   ikigaiScore = Math.min(100, Math.max(20, ikigaiScore));

@@ -45,10 +45,56 @@ export type RiskTierType =
   | "MODERATE_RISK"
   | "CRITICAL_PIVOT";
 
-export interface IkigaiData {
-  locale?: string; // "en" | "ro" | "de" | "fr" | "it" | "pl" | "es"
+export type SupportedLocaleType = "EN" | "RO" | "DE" | "FR" | "IT" | "PL" | "ES";
 
-  // Pillar 1: Passion / What You Love
+export interface IkigaiData {
+  locale?: string; // "EN" | "RO" | "DE" | "FR" | "IT" | "PL" | "ES" or lowercase
+
+  // Pillar 1: What You Love / Passion (AG-SPEC Standard)
+  p1_time_loss?: string;
+  p1_spare_time_reading?: string;
+  p1_average_tuesday?: string;
+  p1_energizing_tasks?: string;
+  p1_childhood_passions?: string;
+  p1_spark_debates?: string;
+  p1_creative_outlets?: string;
+
+  // Pillar 2: What You Are Good At / Vocation (AG-SPEC Standard)
+  p2_effortless_skills?: string;
+  p2_sought_advice?: string;
+  p2_hard_skills?: string;
+  p2_interpersonal_soft?: string;
+  p2_success_patterns?: string;
+  p2_problem_solving?: string;
+  p2_recurring_praise?: string;
+
+  // Pillar 3: What the World Needs / Mission (AG-SPEC Standard)
+  p3_systemic_injustice?: string;
+  p3_community_to_help?: string;
+  p3_unlimited_resource?: string;
+  p3_immediate_needs?: string;
+  p3_non_negotiables?: string;
+  p3_future_gap?: string;
+  p3_legacy_impact?: string;
+
+  // Pillar 4: What You Can Be Paid For / Profession (AG-SPEC Standard)
+  p4_past_paid_services?: string;
+  p4_market_paid_skills?: string;
+  p4_commercial_hobbies?: string;
+  p4_high_value_roi?: string;
+  p4_premium_assets?: string;
+  p4_growth_niches?: string;
+  p4_monetization_fit?: string;
+
+  // Intersection & Alignment / Synthesis (AG-SPEC Standard)
+  overlap_synthesis?: string;
+  pilot_30_days?: string;
+
+  // Positioning additions
+  archetype?: BrandArchetypeType;
+  coreValues?: string[];
+
+  // Backward compatible aliases
   timeFlyActivities?: string;
   naturalTopics?: string;
   idealTuesday?: string;
@@ -57,7 +103,6 @@ export interface IkigaiData {
   sparkDebates?: string;
   creativeOutlets?: string;
 
-  // Pillar 2: Vocation / What You Are Good At
   effortlessSkills?: string;
   soughtAdvice?: string;
   hardSkills?: string;
@@ -66,16 +111,13 @@ export interface IkigaiData {
   problemSolvingWay?: string;
   recurringPraise?: string;
 
-  // Pillar 3: Mission / What The World Needs
   systemicProblems?: string;
   targetCommunity?: string;
   priorityCause?: string;
   practicalNeeds?: string;
-  coreValues?: string[];
   decadeOutlook?: string;
   desiredLegacy?: string;
 
-  // Pillar 4: Profession / What You Can Be Paid For
   pastPaidServices?: string;
   highValueSkills?: string;
   commercialHobbies?: string;
@@ -84,16 +126,13 @@ export interface IkigaiData {
   growthNiches?: string;
   monetizationModel?: string;
 
-  // Synthesis & Action
   coreIntersection?: string;
   pilotProject30Days?: string;
 
-  // Synthesis & Legacy compatibility
   passion?: string;
   vocation?: string;
   mission?: string;
   profession?: string;
-  archetype?: BrandArchetypeType;
 }
 
 export interface WizardFormState {
@@ -233,31 +272,40 @@ export function getIkigaiSummary(data?: IkigaiData): {
   }
   const passion =
     data.passion ||
+    data.p1_energizing_tasks ||
+    data.p1_time_loss ||
+    data.p1_spare_time_reading ||
+    data.p1_creative_outlets ||
     data.energizingTasks ||
     data.timeFlyActivities ||
     data.naturalTopics ||
-    data.creativeOutlets ||
     "";
   const vocation =
     data.vocation ||
+    data.p2_effortless_skills ||
+    data.p2_hard_skills ||
+    data.p2_sought_advice ||
+    data.p2_success_patterns ||
     data.effortlessSkills ||
     data.hardSkills ||
-    data.soughtAdvice ||
-    data.successPatterns ||
     "";
   const mission =
     data.mission ||
+    data.p3_systemic_injustice ||
+    data.p3_community_to_help ||
+    data.p3_unlimited_resource ||
+    data.p3_immediate_needs ||
     data.priorityCause ||
     data.systemicProblems ||
-    data.practicalNeeds ||
-    data.desiredLegacy ||
     "";
   const profession =
     data.profession ||
+    data.p4_market_paid_skills ||
+    data.p4_high_value_roi ||
+    data.p4_premium_assets ||
+    data.p4_past_paid_services ||
     data.highValueSkills ||
     data.premiumOffers ||
-    data.pastPaidServices ||
-    data.monetizationModel ||
     "";
 
   return { passion, vocation, mission, profession };

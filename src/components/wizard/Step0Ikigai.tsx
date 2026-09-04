@@ -109,39 +109,41 @@ export function Step0Ikigai() {
 
   const coreValuesList = ikigai.coreValues || [];
 
-  // Calculate completion stats across 28 fields
-  const totalFields = 28;
+  // Calculate completion stats across 30 AG-SPEC fields
+  const totalFields = 30;
   const completedFields = useMemo(() => {
     let count = 0;
     const checkFields = [
-      ikigai.timeFlyActivities,
-      ikigai.naturalTopics,
-      ikigai.idealTuesday,
-      ikigai.energizingTasks,
-      ikigai.childhoodPassions,
-      ikigai.sparkDebates,
-      ikigai.creativeOutlets,
-      ikigai.effortlessSkills,
-      ikigai.soughtAdvice,
-      ikigai.hardSkills,
-      ikigai.softSkills,
-      ikigai.successPatterns,
-      ikigai.problemSolvingWay,
-      ikigai.recurringPraise,
-      ikigai.systemicProblems,
-      ikigai.targetCommunity,
-      ikigai.priorityCause,
-      ikigai.practicalNeeds,
-      ikigai.decadeOutlook,
-      ikigai.desiredLegacy,
-      ikigai.pastPaidServices,
-      ikigai.highValueSkills,
-      ikigai.commercialHobbies,
-      ikigai.economicImpact,
-      ikigai.premiumOffers,
-      ikigai.growthNiches,
-      ikigai.monetizationModel,
-      ikigai.coreIntersection,
+      ikigai.p1_time_loss || ikigai.timeFlyActivities,
+      ikigai.p1_spare_time_reading || ikigai.naturalTopics,
+      ikigai.p1_average_tuesday || ikigai.idealTuesday,
+      ikigai.p1_energizing_tasks || ikigai.energizingTasks,
+      ikigai.p1_childhood_passions || ikigai.childhoodPassions,
+      ikigai.p1_spark_debates || ikigai.sparkDebates,
+      ikigai.p1_creative_outlets || ikigai.creativeOutlets,
+      ikigai.p2_effortless_skills || ikigai.effortlessSkills,
+      ikigai.p2_sought_advice || ikigai.soughtAdvice,
+      ikigai.p2_hard_skills || ikigai.hardSkills,
+      ikigai.p2_interpersonal_soft || ikigai.softSkills,
+      ikigai.p2_success_patterns || ikigai.successPatterns,
+      ikigai.p2_problem_solving || ikigai.problemSolvingWay,
+      ikigai.p2_recurring_praise || ikigai.recurringPraise,
+      ikigai.p3_systemic_injustice || ikigai.systemicProblems,
+      ikigai.p3_community_to_help || ikigai.targetCommunity,
+      ikigai.p3_unlimited_resource || ikigai.priorityCause,
+      ikigai.p3_immediate_needs || ikigai.practicalNeeds,
+      ikigai.p3_non_negotiables || (ikigai.coreValues && ikigai.coreValues.join(", ")),
+      ikigai.p3_future_gap || ikigai.decadeOutlook,
+      ikigai.p3_legacy_impact || ikigai.desiredLegacy,
+      ikigai.p4_past_paid_services || ikigai.pastPaidServices,
+      ikigai.p4_market_paid_skills || ikigai.highValueSkills,
+      ikigai.p4_commercial_hobbies || ikigai.commercialHobbies,
+      ikigai.p4_high_value_roi || ikigai.economicImpact,
+      ikigai.p4_premium_assets || ikigai.premiumOffers,
+      ikigai.p4_growth_niches || ikigai.growthNiches,
+      ikigai.p4_monetization_fit || ikigai.monetizationModel,
+      ikigai.overlap_synthesis || ikigai.coreIntersection,
+      ikigai.pilot_30_days || ikigai.pilotProject30Days,
     ];
     checkFields.forEach((val) => {
       if (val && typeof val === "string" && val.trim().length > 0) count++;
@@ -166,15 +168,32 @@ export function Step0Ikigai() {
   // Auto-synthesizer helper: compiles concise summary for legacy & prompt compatibility
   const handleAutoSynthesize = () => {
     const passionSum =
-      ikigai.energizingTasks || ikigai.timeFlyActivities || ikigai.naturalTopics || "";
+      ikigai.p1_energizing_tasks ||
+      ikigai.p1_time_loss ||
+      ikigai.energizingTasks ||
+      ikigai.timeFlyActivities ||
+      "";
     const vocationSum =
-      ikigai.effortlessSkills || ikigai.hardSkills || ikigai.soughtAdvice || "";
+      ikigai.p2_effortless_skills ||
+      ikigai.p2_hard_skills ||
+      ikigai.effortlessSkills ||
+      ikigai.hardSkills ||
+      "";
     const missionSum =
-      ikigai.priorityCause || ikigai.systemicProblems || ikigai.practicalNeeds || "";
+      ikigai.p3_systemic_injustice ||
+      ikigai.p3_community_to_help ||
+      ikigai.priorityCause ||
+      ikigai.systemicProblems ||
+      "";
     const professionSum =
-      ikigai.highValueSkills || ikigai.premiumOffers || ikigai.monetizationModel || "";
+      ikigai.p4_market_paid_skills ||
+      ikigai.p4_premium_assets ||
+      ikigai.highValueSkills ||
+      ikigai.premiumOffers ||
+      "";
 
     const combinedIntersection =
+      ikigai.overlap_synthesis ||
       ikigai.coreIntersection ||
       `Aligning ${passionSum.slice(0, 60)} with ${vocationSum.slice(0, 60)} to solve ${missionSum.slice(0, 60)}.`;
 
@@ -183,6 +202,7 @@ export function Step0Ikigai() {
       vocation: vocationSum,
       mission: missionSum,
       profession: professionSum,
+      overlap_synthesis: combinedIntersection,
       coreIntersection: combinedIntersection,
     });
   };
