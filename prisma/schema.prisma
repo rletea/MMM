@@ -18,35 +18,73 @@ model User {
 }
 
 model BusinessProfile {
-  id              String            @id @default(cuid())
-  userId          String
-  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  businessName    String
-  websiteUrl      String?
-  businessModel   String            // B2B_SERVICE, B2B_SAAS, B2C_ECOM, B2C_LOCAL, CREATOR
-  industry        String
-  geoScope        String
-  currentStage    String
-  monthlyBudget   Float             @default(0)
-  weeklyHours     Int               @default(5)
-  ikigai          IkigaiProfile?
-  diagnostic      DiagnosticData?
-  strategy        StrategyPlan?
-  contents        GeneratedContent[]
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  id               String            @id @default(cuid())
+  userId           String
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName     String
+  websiteUrl       String?
+  businessModel    String            // B2B_SERVICE, B2B_SAAS, B2C_ECOM, B2C_LOCAL, CREATOR
+  industry         String
+  geoScope         String            // LOCAL, NATIONAL, GLOBAL
+  currentStage     String            // PRE_LAUNCH, TRACTION, GROWTH, ESTABLISHED
+  monthlyBudget    Float             @default(0)
+  weeklyHours      Int               @default(5)
+  ikigai           IkigaiProfile?
+  diagnostic       DiagnosticData?
+  strategy         StrategyPlan?
+  contents         GeneratedContent[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 }
 
 model IkigaiProfile {
-  id                String          @id @default(cuid())
-  businessProfileId String          @unique
-  businessProfile   BusinessProfile @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
-  passion           String          @db.Text
-  vocation          String          @db.Text
-  mission           String          @db.Text
-  profession        String          @db.Text
-  archetype         String
-  coreValues        String[]
+  id                 String          @id @default(cuid())
+  businessProfileId  String          @unique
+  businessProfile    BusinessProfile @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
+  locale             String          @default("en") // "en" | "ro" | "de" | "fr" | "it" | "pl" | "es"
+
+  // Pillar 1: Passion / What You Love
+  timeFlyActivities  String?         @db.Text
+  naturalTopics      String?         @db.Text
+  idealTuesday       String?         @db.Text
+  energizingTasks    String?         @db.Text
+  childhoodPassions  String?         @db.Text
+  sparkDebates       String?         @db.Text
+  creativeOutlets    String?         @db.Text
+
+  // Pillar 2: Vocation / What You Are Good At
+  effortlessSkills   String?         @db.Text
+  soughtAdvice       String?         @db.Text
+  hardSkills         String?         @db.Text
+  softSkills         String?         @db.Text
+  successPatterns    String?         @db.Text
+  problemSolvingWay  String?         @db.Text
+  recurringPraise    String?         @db.Text
+
+  // Pillar 3: Mission / What The World Needs
+  systemicProblems   String?         @db.Text
+  targetCommunity    String?         @db.Text
+  priorityCause      String?         @db.Text
+  practicalNeeds     String?         @db.Text
+  coreValues         String[]
+  decadeOutlook      String?         @db.Text
+  desiredLegacy      String?         @db.Text
+
+  // Pillar 4: Profession / What You Can Be Paid For
+  pastPaidServices   String?         @db.Text
+  highValueSkills    String?         @db.Text
+  commercialHobbies  String?         @db.Text
+  economicImpact     String?         @db.Text
+  premiumOffers      String?         @db.Text
+  growthNiches       String?         @db.Text
+  monetizationModel  String?
+
+  // Synthesis & Action
+  coreIntersection   String?         @db.Text
+  pilotProject30Days String?         @db.Text
+
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
 }
 
 model DiagnosticData {
@@ -81,6 +119,6 @@ model GeneratedContent {
   hook              String          @db.Text
   bodyContent       String          @db.Text
   visualPrompt      String?         @db.Text
-  status            String          @default("DRAFT") // DRAFT, COPIED, PUBLISHED, SCHEDULED
+  status            String          @default("DRAFT") // DRAFT, COPIED, PUBLISHED
   createdAt         DateTime        @default(now())
 }

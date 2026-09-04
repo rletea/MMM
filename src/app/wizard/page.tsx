@@ -24,7 +24,7 @@ import {
 
 export default function WizardPage() {
   const { step, setStep, nextStep, prevStep, loadDemoData, resetWizard } = useWizardStore();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const STEPS = [
     { id: 0, title: t("wizard.step0_tab"), icon: Compass },
@@ -38,9 +38,9 @@ export default function WizardPage() {
   const progressPercent = Math.round(((step + 1) / STEPS.length) * 100);
 
   return (
-    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-8">
-      {/* Top Banner & Demo Quick-loader */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
             {t("wizard.title")}
@@ -53,7 +53,7 @@ export default function WizardPage() {
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={loadDemoData}
+            onClick={() => loadDemoData(language)}
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300/50 hover:bg-amber-100 transition-colors shadow-sm"
           >
             <Zap className="w-3.5 h-3.5 text-amber-600" />

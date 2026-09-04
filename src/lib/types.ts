@@ -45,16 +45,60 @@ export type RiskTierType =
   | "MODERATE_RISK"
   | "CRITICAL_PIVOT";
 
+export interface IkigaiData {
+  locale?: string; // "en" | "ro" | "de" | "fr" | "it" | "pl" | "es"
+
+  // Pillar 1: Passion / What You Love
+  timeFlyActivities?: string;
+  naturalTopics?: string;
+  idealTuesday?: string;
+  energizingTasks?: string;
+  childhoodPassions?: string;
+  sparkDebates?: string;
+  creativeOutlets?: string;
+
+  // Pillar 2: Vocation / What You Are Good At
+  effortlessSkills?: string;
+  soughtAdvice?: string;
+  hardSkills?: string;
+  softSkills?: string;
+  successPatterns?: string;
+  problemSolvingWay?: string;
+  recurringPraise?: string;
+
+  // Pillar 3: Mission / What The World Needs
+  systemicProblems?: string;
+  targetCommunity?: string;
+  priorityCause?: string;
+  practicalNeeds?: string;
+  coreValues?: string[];
+  decadeOutlook?: string;
+  desiredLegacy?: string;
+
+  // Pillar 4: Profession / What You Can Be Paid For
+  pastPaidServices?: string;
+  highValueSkills?: string;
+  commercialHobbies?: string;
+  economicImpact?: string;
+  premiumOffers?: string;
+  growthNiches?: string;
+  monetizationModel?: string;
+
+  // Synthesis & Action
+  coreIntersection?: string;
+  pilotProject30Days?: string;
+
+  // Synthesis & Legacy compatibility
+  passion?: string;
+  vocation?: string;
+  mission?: string;
+  profession?: string;
+  archetype?: BrandArchetypeType;
+}
+
 export interface WizardFormState {
   step: number;
-  ikigai: {
-    passion: string;
-    vocation: string;
-    mission: string;
-    profession: string;
-    archetype?: BrandArchetypeType;
-    coreValues?: string[];
-  };
+  ikigai: IkigaiData;
   business: {
     businessName: string;
     websiteUrl?: string;
@@ -83,8 +127,6 @@ export interface WizardFormState {
     reviewCadence: ReviewCadenceType;
   };
 }
-
-export type IkigaiData = WizardFormState["ikigai"];
 export type BusinessData = WizardFormState["business"];
 export type CompetitiveData = WizardFormState["competitive"];
 export type AudienceData = WizardFormState["audience"];
@@ -168,14 +210,7 @@ export interface FullProfilePayload {
     monthlyBudget: number;
     weeklyHours: number;
   };
-  ikigai: {
-    passion: string;
-    vocation: string;
-    mission: string;
-    profession: string;
-    archetype?: BrandArchetypeType;
-    coreValues?: string[];
-  };
+  ikigai: IkigaiData;
   diagnostic: {
     differentiator: string;
     competitors: string[];
@@ -186,3 +221,45 @@ export interface FullProfilePayload {
   strategy: StrategyPlanOutput;
   contents: GeneratedPostItem[];
 }
+
+export function getIkigaiSummary(data?: IkigaiData): {
+  passion: string;
+  vocation: string;
+  mission: string;
+  profession: string;
+} {
+  if (!data) {
+    return { passion: "", vocation: "", mission: "", profession: "" };
+  }
+  const passion =
+    data.passion ||
+    data.energizingTasks ||
+    data.timeFlyActivities ||
+    data.naturalTopics ||
+    data.creativeOutlets ||
+    "";
+  const vocation =
+    data.vocation ||
+    data.effortlessSkills ||
+    data.hardSkills ||
+    data.soughtAdvice ||
+    data.successPatterns ||
+    "";
+  const mission =
+    data.mission ||
+    data.priorityCause ||
+    data.systemicProblems ||
+    data.practicalNeeds ||
+    data.desiredLegacy ||
+    "";
+  const profession =
+    data.profession ||
+    data.highValueSkills ||
+    data.premiumOffers ||
+    data.pastPaidServices ||
+    data.monetizationModel ||
+    "";
+
+  return { passion, vocation, mission, profession };
+}
+

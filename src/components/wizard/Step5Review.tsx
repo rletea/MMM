@@ -162,7 +162,7 @@ export function Step5Review() {
             {state.ikigai.archetype?.replace(/_/g, " ")}
           </div>
           <p className="text-xs text-slate-500 line-clamp-2">
-            <strong>Mission:</strong> {state.ikigai.mission || "Not specified"}
+            <strong>Mission:</strong> {state.ikigai.mission || state.ikigai.priorityCause || state.ikigai.coreIntersection || "Not specified"}
           </p>
           <div className="flex flex-wrap gap-1 pt-1">
             {state.ikigai.coreValues?.map((v) => (

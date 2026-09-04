@@ -13,13 +13,65 @@ export function calculateBVI(
   const { ikigai, business, competitive, audience, scope } = state;
 
   // 1. Ikigai Congruence Score (0 - 100)
-  let ikigaiScore = 50;
-  if (ikigai.passion && ikigai.passion.trim().length > 15) ikigaiScore += 12;
-  if (ikigai.vocation && ikigai.vocation.trim().length > 15) ikigaiScore += 12;
-  if (ikigai.mission && ikigai.mission.trim().length > 15) ikigaiScore += 12;
-  if (ikigai.profession && ikigai.profession.trim().length > 15) ikigaiScore += 12;
-  if (ikigai.coreValues && ikigai.coreValues.length >= 3) ikigaiScore += 10;
-  if (ikigai.archetype) ikigaiScore += 5;
+  let ikigaiScore = 40;
+
+  // Pillar 1: Passion depth
+  const p1Depth = [
+    ikigai.timeFlyActivities,
+    ikigai.naturalTopics,
+    ikigai.idealTuesday,
+    ikigai.energizingTasks,
+    ikigai.childhoodPassions,
+    ikigai.sparkDebates,
+    ikigai.creativeOutlets,
+    ikigai.passion,
+  ].filter((v) => v && v.trim().length > 10).length;
+  if (p1Depth >= 2 || (ikigai.passion && ikigai.passion.trim().length > 15)) ikigaiScore += 12;
+
+  // Pillar 2: Vocation depth
+  const p2Depth = [
+    ikigai.effortlessSkills,
+    ikigai.soughtAdvice,
+    ikigai.hardSkills,
+    ikigai.softSkills,
+    ikigai.successPatterns,
+    ikigai.problemSolvingWay,
+    ikigai.recurringPraise,
+    ikigai.vocation,
+  ].filter((v) => v && v.trim().length > 10).length;
+  if (p2Depth >= 2 || (ikigai.vocation && ikigai.vocation.trim().length > 15)) ikigaiScore += 12;
+
+  // Pillar 3: Mission depth
+  const p3Depth = [
+    ikigai.systemicProblems,
+    ikigai.targetCommunity,
+    ikigai.priorityCause,
+    ikigai.practicalNeeds,
+    ikigai.decadeOutlook,
+    ikigai.desiredLegacy,
+    ikigai.mission,
+  ].filter((v) => v && v.trim().length > 10).length;
+  if (p3Depth >= 2 || (ikigai.mission && ikigai.mission.trim().length > 15)) ikigaiScore += 12;
+
+  // Pillar 4: Profession depth
+  const p4Depth = [
+    ikigai.pastPaidServices,
+    ikigai.highValueSkills,
+    ikigai.commercialHobbies,
+    ikigai.economicImpact,
+    ikigai.premiumOffers,
+    ikigai.growthNiches,
+    ikigai.monetizationModel,
+    ikigai.profession,
+  ].filter((v) => v && v.trim().length > 10).length;
+  if (p4Depth >= 2 || (ikigai.profession && ikigai.profession.trim().length > 15)) ikigaiScore += 12;
+
+  // Synthesis & Core Values
+  if (ikigai.coreValues && ikigai.coreValues.length >= 3) ikigaiScore += 6;
+  if (ikigai.coreIntersection && ikigai.coreIntersection.trim().length > 15) ikigaiScore += 4;
+  if (ikigai.pilotProject30Days && ikigai.pilotProject30Days.trim().length > 15) ikigaiScore += 4;
+  if (ikigai.archetype) ikigaiScore += 4;
+
   ikigaiScore = Math.min(100, Math.max(20, ikigaiScore));
 
   // 2. Market Viability Score (0 - 100)

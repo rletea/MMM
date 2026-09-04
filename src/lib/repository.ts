@@ -59,12 +59,48 @@ export async function getUserProfile(
           weeklyHours: biz.weeklyHours,
         },
         ikigai: {
-          passion: biz.ikigai.passion,
-          vocation: biz.ikigai.vocation,
-          mission: biz.ikigai.mission,
-          profession: biz.ikigai.profession,
-          archetype: (biz.ikigai.archetype as any) || "VISIONARY_DISRUPTOR",
+          locale: biz.ikigai.locale || language,
+          // Pillar 1: Passion
+          timeFlyActivities: biz.ikigai.timeFlyActivities || undefined,
+          naturalTopics: biz.ikigai.naturalTopics || undefined,
+          idealTuesday: biz.ikigai.idealTuesday || undefined,
+          energizingTasks: biz.ikigai.energizingTasks || undefined,
+          childhoodPassions: biz.ikigai.childhoodPassions || undefined,
+          sparkDebates: biz.ikigai.sparkDebates || undefined,
+          creativeOutlets: biz.ikigai.creativeOutlets || undefined,
+          // Pillar 2: Vocation
+          effortlessSkills: biz.ikigai.effortlessSkills || undefined,
+          soughtAdvice: biz.ikigai.soughtAdvice || undefined,
+          hardSkills: biz.ikigai.hardSkills || undefined,
+          softSkills: biz.ikigai.softSkills || undefined,
+          successPatterns: biz.ikigai.successPatterns || undefined,
+          problemSolvingWay: biz.ikigai.problemSolvingWay || undefined,
+          recurringPraise: biz.ikigai.recurringPraise || undefined,
+          // Pillar 3: Mission
+          systemicProblems: biz.ikigai.systemicProblems || undefined,
+          targetCommunity: biz.ikigai.targetCommunity || undefined,
+          priorityCause: biz.ikigai.priorityCause || undefined,
+          practicalNeeds: biz.ikigai.practicalNeeds || undefined,
           coreValues: biz.ikigai.coreValues || [],
+          decadeOutlook: biz.ikigai.decadeOutlook || undefined,
+          desiredLegacy: biz.ikigai.desiredLegacy || undefined,
+          // Pillar 4: Profession
+          pastPaidServices: biz.ikigai.pastPaidServices || undefined,
+          highValueSkills: biz.ikigai.highValueSkills || undefined,
+          commercialHobbies: biz.ikigai.commercialHobbies || undefined,
+          economicImpact: biz.ikigai.economicImpact || undefined,
+          premiumOffers: biz.ikigai.premiumOffers || undefined,
+          growthNiches: biz.ikigai.growthNiches || undefined,
+          monetizationModel: biz.ikigai.monetizationModel || undefined,
+          // Synthesis & Action
+          coreIntersection: biz.ikigai.coreIntersection || undefined,
+          pilotProject30Days: biz.ikigai.pilotProject30Days || undefined,
+          // Legacy summary compatibility
+          passion: biz.ikigai.energizingTasks || biz.ikigai.timeFlyActivities || biz.ikigai.naturalTopics || "",
+          vocation: biz.ikigai.effortlessSkills || biz.ikigai.hardSkills || biz.ikigai.soughtAdvice || "",
+          mission: biz.ikigai.priorityCause || biz.ikigai.systemicProblems || biz.ikigai.practicalNeeds || "",
+          profession: biz.ikigai.highValueSkills || biz.ikigai.premiumOffers || biz.ikigai.pastPaidServices || "",
+          archetype: "VISIONARY_DISRUPTOR",
         },
         diagnostic: {
           differentiator: biz.diagnostic.differentiator,
@@ -206,24 +242,53 @@ export async function saveWizardAndGenerate(
       bizId = created.id;
     }
 
+    const ikigaiDbData = {
+      locale: language,
+      // Pillar 1: Passion
+      timeFlyActivities: state.ikigai.timeFlyActivities || null,
+      naturalTopics: state.ikigai.naturalTopics || null,
+      idealTuesday: state.ikigai.idealTuesday || null,
+      energizingTasks: state.ikigai.energizingTasks || state.ikigai.passion || null,
+      childhoodPassions: state.ikigai.childhoodPassions || null,
+      sparkDebates: state.ikigai.sparkDebates || null,
+      creativeOutlets: state.ikigai.creativeOutlets || null,
+      // Pillar 2: Vocation
+      effortlessSkills: state.ikigai.effortlessSkills || state.ikigai.vocation || null,
+      soughtAdvice: state.ikigai.soughtAdvice || null,
+      hardSkills: state.ikigai.hardSkills || null,
+      softSkills: state.ikigai.softSkills || null,
+      successPatterns: state.ikigai.successPatterns || null,
+      problemSolvingWay: state.ikigai.problemSolvingWay || null,
+      recurringPraise: state.ikigai.recurringPraise || null,
+      // Pillar 3: Mission
+      systemicProblems: state.ikigai.systemicProblems || null,
+      targetCommunity: state.ikigai.targetCommunity || null,
+      priorityCause: state.ikigai.priorityCause || state.ikigai.mission || null,
+      practicalNeeds: state.ikigai.practicalNeeds || null,
+      coreValues: state.ikigai.coreValues || [],
+      decadeOutlook: state.ikigai.decadeOutlook || null,
+      desiredLegacy: state.ikigai.desiredLegacy || null,
+      // Pillar 4: Profession
+      pastPaidServices: state.ikigai.pastPaidServices || null,
+      highValueSkills: state.ikigai.highValueSkills || state.ikigai.profession || null,
+      commercialHobbies: state.ikigai.commercialHobbies || null,
+      economicImpact: state.ikigai.economicImpact || null,
+      premiumOffers: state.ikigai.premiumOffers || null,
+      growthNiches: state.ikigai.growthNiches || null,
+      monetizationModel: state.ikigai.monetizationModel || null,
+      // Synthesis & Action
+      coreIntersection: state.ikigai.coreIntersection || null,
+      pilotProject30Days: state.ikigai.pilotProject30Days || null,
+    };
+
     await prisma.ikigaiProfile.upsert({
       where: { businessProfileId: bizId },
       create: {
         businessProfileId: bizId,
-        passion: state.ikigai.passion,
-        vocation: state.ikigai.vocation,
-        mission: state.ikigai.mission,
-        profession: state.ikigai.profession,
-        archetype: state.ikigai.archetype || "VISIONARY_DISRUPTOR",
-        coreValues: state.ikigai.coreValues || [],
+        ...ikigaiDbData,
       },
       update: {
-        passion: state.ikigai.passion,
-        vocation: state.ikigai.vocation,
-        mission: state.ikigai.mission,
-        profession: state.ikigai.profession,
-        archetype: state.ikigai.archetype || "VISIONARY_DISRUPTOR",
-        coreValues: state.ikigai.coreValues || [],
+        ...ikigaiDbData,
       },
     });
 

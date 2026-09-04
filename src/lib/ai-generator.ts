@@ -296,9 +296,24 @@ export function synthesizeStrategyAndContent(
   const differentiator =
     competitive.differentiator ||
     "an integrated Ikigai-driven diagnostic engine combined with automated multi-channel campaign architectures";
-  const passion = ikigai.passion || "designing high-leverage growth architectures";
-  const mission = ikigai.mission || "democratizing tier-one CMO marketing positioning";
-  const profession = ikigai.profession || "strategic growth advisory";
+  const passion =
+    ikigai.passion ||
+    ikigai.energizingTasks ||
+    ikigai.timeFlyActivities ||
+    ikigai.naturalTopics ||
+    "designing high-leverage growth architectures";
+  const mission =
+    ikigai.mission ||
+    ikigai.priorityCause ||
+    ikigai.coreIntersection ||
+    ikigai.systemicProblems ||
+    "democratizing tier-one CMO marketing positioning";
+  const profession =
+    ikigai.profession ||
+    ikigai.highValueSkills ||
+    ikigai.premiumOffers ||
+    ikigai.monetizationModel ||
+    "strategic growth advisory";
   const pain = audience.painTriggers?.[0] || "low conversion velocity and generic marketing noise";
   const valuesStr = (ikigai.coreValues && ikigai.coreValues.length > 0
     ? ikigai.coreValues
