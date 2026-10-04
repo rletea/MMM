@@ -21,12 +21,12 @@ export function QuickMetrics({ profile }: QuickMetricsProps) {
       {/* 30-Day Content Pipeline */}
       <div className="p-5 rounded-2xl glass-card border border-slate-200/80 dark:border-slate-800 flex items-center justify-between shadow-sm">
         <div className="space-y-1">
-          <span className="text-xs font-semibold text-slate-500">30-Day Calendar</span>
+          <span className="text-xs font-semibold text-slate-500">{t("metrics.30day_calendar")}</span>
           <div className="text-2xl font-black text-slate-900 dark:text-white">
-            {posts.length} Posts
+            {posts.length} {t("metrics.posts")}
           </div>
           <div className="text-[10px] text-slate-400">
-            {publishedCount} {t("studio.col_published")} • {copiedCount} {t("studio.col_copied")}
+            {publishedCount} {t("studio.status_published")} • {copiedCount} {t("studio.status_copied")}
           </div>
         </div>
         <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
@@ -39,7 +39,7 @@ export function QuickMetrics({ profile }: QuickMetricsProps) {
         <div className="space-y-1">
           <span className="text-xs font-semibold text-slate-500">{t("step4.channels")}</span>
           <div className="text-2xl font-black text-slate-900 dark:text-white">
-            {profile.strategy.activeChannels?.length || 4} {t("studio.platform")}s
+            {profile.strategy.activeChannels?.length || 4} {t("metrics.platforms")}
           </div>
           <div className="text-[10px] text-slate-400 truncate max-w-[150px]">
             {profile.strategy.activeChannels?.join(", ") || "LinkedIn, Email, Instagram, TikTok"}
@@ -55,10 +55,10 @@ export function QuickMetrics({ profile }: QuickMetricsProps) {
         <div className="space-y-1">
           <span className="text-xs font-semibold text-slate-500">{t("strategy.pillars")}</span>
           <div className="text-2xl font-black text-slate-900 dark:text-white">
-            {profile.strategy.contentPillars?.length || 4} Pillars
+            {profile.strategy.contentPillars?.length || 4} {t("metrics.pillars_count")}
           </div>
           <div className="text-[10px] text-slate-400">
-            7-Day Cadence
+            {t("metrics.7day_cadence")}
           </div>
         </div>
         <div className="w-11 h-11 rounded-xl bg-sky-50 dark:bg-sky-950 flex items-center justify-center text-sky-600 dark:text-sky-400">
@@ -69,12 +69,12 @@ export function QuickMetrics({ profile }: QuickMetricsProps) {
       {/* Execution Health */}
       <div className="p-5 rounded-2xl glass-card border border-slate-200/80 dark:border-slate-800 flex items-center justify-between shadow-sm">
         <div className="space-y-1">
-          <span className="text-xs font-semibold text-slate-500">Execution Velocity</span>
+          <span className="text-xs font-semibold text-slate-500">{t("metrics.execution_velocity")}</span>
           <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
             {Math.round(((publishedCount + copiedCount) / Math.max(1, posts.length)) * 100)}%
           </div>
           <div className="text-[10px] text-slate-400">
-            {draftCount} {t("studio.col_drafts")}
+            {draftCount} {t("studio.status_draft")}
           </div>
         </div>
         <div className="w-11 h-11 rounded-xl bg-emerald-50 dark:bg-emerald-950 flex items-center justify-center text-emerald-600 dark:text-emerald-400">

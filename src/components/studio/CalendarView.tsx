@@ -52,6 +52,41 @@ export function CalendarView({ posts, onSelectPost }: CalendarViewProps) {
     }
   };
 
+  const getFormatLabel = (fmt?: string) => {
+    if (!fmt) return "";
+    switch (fmt.toLowerCase()) {
+      case "post":
+        return t("studio.format_post");
+      case "carousel":
+        return t("studio.format_carousel");
+      case "reel_script":
+      case "reel script":
+      case "video script":
+        return t("studio.format_reel_script");
+      case "newsletter":
+        return t("studio.format_newsletter");
+      case "thread":
+        return t("studio.format_thread");
+      default:
+        return fmt;
+    }
+  };
+
+  const getStatusLabel = (st: string) => {
+    switch (st) {
+      case "DRAFT":
+        return t("studio.status_draft");
+      case "SCHEDULED":
+        return t("studio.status_scheduled");
+      case "COPIED":
+        return t("studio.status_copied");
+      case "PUBLISHED":
+        return t("studio.status_published");
+      default:
+        return st;
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-3.5">
@@ -84,7 +119,7 @@ export function CalendarView({ posts, onSelectPost }: CalendarViewProps) {
               {/* Hook text */}
               <div className="space-y-1">
                 <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">
-                  {post.format || (post as any).contentType}
+                  {getFormatLabel(post.format || (post as any).contentType)}
                 </div>
                 <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 line-clamp-3 leading-snug group-hover:text-indigo-600 transition-colors">
                   {post.hook}
@@ -102,7 +137,7 @@ export function CalendarView({ posts, onSelectPost }: CalendarViewProps) {
                       : "bg-slate-100 dark:bg-slate-800 text-slate-500"
                   }`}
                 >
-                  {post.status}
+                  {getStatusLabel(post.status)}
                 </span>
                 <span className="text-[10px] text-indigo-600 font-bold group-hover:underline">
                   {t("studio.day")} #{post.dayNumber}

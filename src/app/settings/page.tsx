@@ -62,17 +62,17 @@ export default function SettingsPage() {
   };
 
   const handleResetData = () => {
-    if (confirm("Reset current wizard and diagnostic to factory demo profile?")) {
+    if (confirm(t("settings.reset_confirm"))) {
       loadDemoData();
-      toast("Profile reset to sample demo data.", "info");
+      toast(t("settings.reset_toast"), "info");
     }
   };
 
   const handleClearAll = () => {
-    if (confirm("Clear all local storage session and wizard data?")) {
+    if (confirm(t("settings.clear_confirm"))) {
       localStorage.clear();
       resetWizard();
-      toast("Local storage cleared.", "info");
+      toast(t("settings.clear_toast"), "info");
     }
   };
 
@@ -114,7 +114,7 @@ export default function SettingsPage() {
                 type="button"
                 onClick={() => {
                   setLanguage(lang.code);
-                  toast(`Language switched to ${lang.nativeName}`, "success");
+                  toast(`${t("settings.lang_switched")} ${lang.nativeName}`, "success");
                 }}
                 className={`p-3.5 rounded-2xl text-left border transition-all flex items-center justify-between ${
                   isSelected
@@ -128,7 +128,9 @@ export default function SettingsPage() {
                     <div className="font-bold text-xs text-slate-900 dark:text-white">
                       {lang.nativeName}
                     </div>
-                    <div className="text-[10px] text-slate-400">{lang.name}</div>
+                    <div className="text-[10px] text-slate-400">
+                      {t(("lang_name." + lang.code) as any)}
+                    </div>
                   </div>
                 </div>
                 {isSelected && <Check className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />}
@@ -150,7 +152,7 @@ export default function SettingsPage() {
               {t("settings.ai_engine")}
             </h2>
             <p className="text-xs text-slate-500">
-              Select between the offline high-leverage synthesizer or live AI model completions.
+              {t("settings.ai_engine_desc")}
             </p>
           </div>
         </div>
@@ -160,18 +162,18 @@ export default function SettingsPage() {
           {[
             {
               id: "builtin",
-              title: "Built-In Synthesizer",
-              desc: "Instant generation without requiring API keys.",
+              title: t("settings.engine_builtin_title"),
+              desc: t("settings.engine_builtin_desc"),
             },
             {
               id: "openai",
-              title: "OpenAI (GPT-4o)",
-              desc: "Live GPT-4o model via your personal API key.",
+              title: t("settings.engine_openai_title"),
+              desc: t("settings.engine_openai_desc"),
             },
             {
               id: "gemini",
-              title: "Google Gemini 1.5",
-              desc: "High-context multimodality via Gemini API.",
+              title: t("settings.engine_gemini_title"),
+              desc: t("settings.engine_gemini_desc"),
             },
           ].map((item) => (
             <button
@@ -230,7 +232,7 @@ export default function SettingsPage() {
             type="submit"
             className="px-6 py-2.5 rounded-xl text-xs font-bold text-white gradient-brand shadow-sm hover:opacity-95 transition-opacity"
           >
-            Save AI Settings
+            {t("settings.save_ai_btn")}
           </button>
         </div>
       </form>
@@ -241,26 +243,26 @@ export default function SettingsPage() {
           <User className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
           <div>
             <h2 className="text-base font-bold text-slate-900 dark:text-white">
-              User Profile & Session
+              {t("settings.profile_session_title")}
             </h2>
             <p className="text-xs text-slate-500">
-              Active authenticated session details.
+              {t("settings.profile_session_desc")}
             </p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
           <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-            <span className="text-slate-400 block font-medium">Email Account:</span>
+            <span className="text-slate-400 block font-medium">{t("settings.email_account_label")}</span>
             <span className="font-bold text-slate-900 dark:text-white mt-0.5 block">
               {currentUser?.email || "founder@nexusgrowth.io"}
             </span>
           </div>
 
           <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-            <span className="text-slate-400 block font-medium">Session Status:</span>
+            <span className="text-slate-400 block font-medium">{t("settings.session_status_label")}</span>
             <span className="font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 block">
-              Active • {currentUser?.isDemo ? "Demo Sandbox" : "Standard User"}
+              {t("settings.status_active")} • {currentUser?.isDemo ? t("settings.status_demo_sandbox") : t("settings.status_standard_user")}
             </span>
           </div>
         </div>
@@ -272,10 +274,10 @@ export default function SettingsPage() {
           <Trash2 className="w-5 h-5 text-rose-500" />
           <div>
             <h2 className="text-base font-bold text-slate-900 dark:text-white">
-              Data Maintenance & Reset
+              {t("settings.maintenance_title")}
             </h2>
             <p className="text-xs text-slate-500">
-              Reset wizard parameters or clear cached client store.
+              {t("settings.maintenance_desc")}
             </p>
           </div>
         </div>
@@ -287,7 +289,7 @@ export default function SettingsPage() {
             className="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-200 transition-colors flex items-center gap-1.5"
           >
             <RefreshCw className="w-3.5 h-3.5 text-indigo-500" />
-            Reset to Sample Demo Profile
+            {t("settings.reset_demo_btn")}
           </button>
 
           <button
@@ -296,7 +298,7 @@ export default function SettingsPage() {
             className="px-4 py-2 rounded-xl text-xs font-bold text-rose-600 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 hover:bg-rose-100 transition-colors flex items-center gap-1.5"
           >
             <Trash2 className="w-3.5 h-3.5" />
-            Clear All Local Storage
+            {t("settings.clear_storage_btn")}
           </button>
         </div>
       </div>

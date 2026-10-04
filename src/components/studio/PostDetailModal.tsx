@@ -32,6 +32,46 @@ export function PostDetailModal({ post, onClose, onStatusChange }: PostDetailMod
   const bodyText = post.body || (post as any).bodyContent || "";
   const formatText = post.format || (post as any).contentType || "POST";
 
+  const getFormatLabel = (fmt?: string) => {
+    if (!fmt) return "";
+    switch (fmt.toLowerCase()) {
+      case "post":
+        return t("studio.format_post");
+      case "carousel":
+        return t("studio.format_carousel");
+      case "reel_script":
+      case "reel script":
+      case "video script":
+        return t("studio.format_reel_script");
+      case "newsletter":
+        return t("studio.format_newsletter");
+      case "thread":
+        return t("studio.format_thread");
+      default:
+        return fmt;
+    }
+  };
+
+  const getStatusLabel = (st: ContentStatusType) => {
+    switch (st) {
+      case "DRAFT":
+        return t("studio.status_draft");
+      case "SCHEDULED":
+        return t("studio.status_scheduled");
+      case "COPIED":
+        return t("studio.status_copied");
+      case "PUBLISHED":
+        return t("studio.status_published");
+      default:
+        return st;
+    }
+  };
+
+  const displayTopic = (post.topic || (post as any).pillar || "").replace(
+    /\((Day|Ziua|Tag|Jour|Giorno|Dzień|Día)\s+(\d+)\)/i,
+    `(${t("studio.day")} $2)`
+  );
+
   const handleCopyBody = () => {
     navigator.clipboard.writeText(bodyText);
     setCopied(true);
@@ -78,11 +118,11 @@ export function PostDetailModal({ post, onClose, onStatusChange }: PostDetailMod
                   {t("studio.day")} {post.dayNumber} • {post.channel}
                 </span>
                 <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">
-                  {formatText}
+                  {getFormatLabel(formatText)}
                 </span>
               </div>
               <h2 className="text-sm font-semibold text-slate-900 dark:text-white truncate max-w-md mt-0.5">
-                {post.topic || (post as any).pillar}
+                {displayTopic}
               </h2>
             </div>
           </div>
@@ -154,7 +194,7 @@ export function PostDetailModal({ post, onClose, onStatusChange }: PostDetailMod
                     : "bg-slate-200/80 dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
                 }`}
               >
-                {st}
+                {getStatusLabel(st)}
               </button>
             ))}
           </div>
@@ -231,7 +271,7 @@ export function PostDetailModal({ post, onClose, onStatusChange }: PostDetailMod
         {/* Footer Actions */}
         <div className="p-4 sm:p-6 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 flex items-center justify-between">
           <div className="text-[11px] text-slate-400">
-            {post.channel} • {formatText}
+            {post.channel} • {getFormatLabel(formatText)}
           </div>
           <div className="flex items-center gap-2">
             <button

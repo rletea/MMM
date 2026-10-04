@@ -178,7 +178,7 @@ export function KanbanBoard({
                             type="button"
                             onClick={() => onUpdateStatus(post.id, col.prevStatus!)}
                             className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
-                            title={`Move to ${col.prevStatus}`}
+                            title={`${t("studio.status")}: ${col.prevStatus}`}
                           >
                             <ChevronLeft className="w-3.5 h-3.5" />
                           </button>
@@ -187,7 +187,7 @@ export function KanbanBoard({
                           type="button"
                           onClick={() => onSelectPost(post)}
                           className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-indigo-600 transition-colors"
-                          title="Inspect Details"
+                          title={t("studio.status")}
                         >
                           <Eye className="w-3.5 h-3.5" />
                         </button>
@@ -196,7 +196,7 @@ export function KanbanBoard({
                             type="button"
                             onClick={() => onUpdateStatus(post.id, col.nextStatus!)}
                             className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
-                            title={`Move to ${col.nextStatus}`}
+                            title={`${t("studio.status")}: ${col.nextStatus}`}
                           >
                             <ChevronRight className="w-3.5 h-3.5" />
                           </button>

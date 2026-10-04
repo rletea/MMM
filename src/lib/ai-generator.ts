@@ -563,12 +563,23 @@ ${t.manifestoPromise}`;
     const promptTemplate = localizedContent.prompts[(day - 1) % localizedContent.prompts.length];
     const scriptTemplate = localizedContent.scripts[(day - 1) % localizedContent.scripts.length];
 
+    const dayWordMap: Record<string, string> = {
+      ro: "Ziua",
+      de: "Tag",
+      fr: "Jour",
+      it: "Giorno",
+      pl: "Dzień",
+      es: "Día",
+      en: "Day",
+    };
+    const dayWord = dayWordMap[langCode] || "Day";
+
     contents.push({
       id: `post-day-${day}`,
       dayNumber: day,
       channel,
       format: contentType,
-      topic: `${pillar.title} (Day ${day})`,
+      topic: `${pillar.title} (${dayWord} ${day})`,
       hook: hookTemplate,
       body: bodyTemplate,
       visualPrompt: promptTemplate,
