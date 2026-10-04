@@ -12,6 +12,7 @@ import {
   MarketSaturationType,
   ChannelType,
   ReviewCadenceType,
+  BusinessFitProposal,
 } from "../lib/types";
 import { getDemoWizardState } from "../lib/demo-presets";
 import { normalizeCoreValueId, normalizeCoreValues } from "../lib/core-values";
@@ -34,6 +35,7 @@ interface WizardStore extends WizardFormState {
   addCompetitor: (competitor: string) => void;
   removeCompetitor: (index: number) => void;
   loadDemoData: (lang?: string, targetStep?: number) => void;
+  selectBusinessModelFit: (proposal: BusinessFitProposal) => void;
   resetWizard: () => void;
 }
 
@@ -261,6 +263,23 @@ export const useWizardStore = create<WizardStore>()(
           scope: demo.scope,
         }));
       },
+
+      selectBusinessModelFit: (proposal: BusinessFitProposal) =>
+        set((s) => ({
+          ikigai: {
+            ...s.ikigai,
+            selectedModelFit: proposal.title,
+          },
+          business: {
+            ...s.business,
+            businessModel: proposal.businessModelType,
+            industry: proposal.industry || s.business.industry,
+          },
+          competitive: {
+            ...s.competitive,
+            differentiator: proposal.differentiator || s.competitive.differentiator,
+          },
+        })),
 
       resetWizard: () =>
         set({

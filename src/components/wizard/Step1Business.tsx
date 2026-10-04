@@ -13,6 +13,7 @@ import {
   DollarSign,
   Clock,
   TrendingUp,
+  Sparkles,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
@@ -62,8 +63,8 @@ const STAGES = [
 ];
 
 export function Step1Business() {
-  const { business, updateBusiness } = useWizardStore();
-  const { t } = useLanguage();
+  const { business, updateBusiness, ikigai } = useWizardStore();
+  const { t, language } = useLanguage();
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -78,6 +79,23 @@ export function Step1Business() {
           {t("step1.desc")}
         </p>
       </div>
+
+      {/* Pre-Selected Ikigai Fit Banner */}
+      {ikigai.selectedModelFit && ikigai.selectedModelFit !== "MANUAL" && (
+        <div className="p-4 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-indigo-600 text-white shrink-0">
+            <Sparkles className="w-4 h-4" />
+          </div>
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 block">
+              {language === "ro" ? "Direcție de Business Pre-configurată din Diagnoza Ikigai" : "Pre-Configured from Ikigai Discovery"}
+            </span>
+            <span className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white">
+              {ikigai.selectedModelFit}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Business Name & Website */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

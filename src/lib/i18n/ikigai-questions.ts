@@ -27,6 +27,7 @@ export const IKIGAI_TRANSLATIONS: Record<
       mission: string;
       profession: string;
       synthesis: string;
+      fit?: string;
       archetype: string;
       results: string;
     };
@@ -59,8 +60,9 @@ export const IKIGAI_TRANSLATIONS: Record<
       mission: "3. What the World Needs",
       profession: "4. What You Can Be Paid For",
       synthesis: "5. Intersection",
-      archetype: "Archetype & Values",
-      results: "Results & Confirmation",
+      fit: "6. Business Fit Analysis",
+      archetype: "7. Archetype & Values",
+      results: "8. Diagnostic & Confirmation",
     },
     ui: {
       badge: "Step 0 • Human-First Self-Discovery",
@@ -272,8 +274,9 @@ export const IKIGAI_TRANSLATIONS: Record<
       mission: "3. Ce Nevoie Are Lumea",
       profession: "4. Pentru Ce Poți Fi Plătit",
       synthesis: "5. Convergență",
-      archetype: "Arhetip & Valori",
-      results: "Rezultate & Confirmare",
+      fit: "6. Rezultate Ikigai & Potrivire Business",
+      archetype: "7. Arhetip & Valori",
+      results: "8. Diagnostic & Confirmare",
     },
     ui: {
       badge: "Pasul 0 • Descoperire Umană",

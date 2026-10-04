@@ -47,6 +47,25 @@ export type RiskTierType =
 
 export type SupportedLocaleType = "EN" | "RO" | "DE" | "FR" | "IT" | "PL" | "ES";
 
+export interface BusinessFitProposal {
+  id?: string;
+  title: string;
+  businessModelType: BusinessModelType;
+  industry?: string;
+  differentiator?: string;
+  whyYouFit: string[];
+  monetizationPath: string;
+  recommended30DayMVP: string;
+  fitScore: number;
+}
+
+export interface IkigaiFitAnalysisResult {
+  ikigaiStatement: string;
+  strengthsSummary: string[];
+  marketOpportunity: string;
+  businessProposals: BusinessFitProposal[];
+}
+
 export interface IkigaiData {
   locale?: string; // "EN" | "RO" | "DE" | "FR" | "IT" | "PL" | "ES" or lowercase
 
@@ -93,6 +112,11 @@ export interface IkigaiData {
   // Positioning additions
   archetype?: BrandArchetypeType;
   coreValues?: string[];
+
+  // Business Fit & Synthesis
+  ikigaiSynthesis?: string;
+  suggestedModels?: BusinessFitProposal[];
+  selectedModelFit?: string;
 
   // Backward compatible aliases
   timeFlyActivities?: string;

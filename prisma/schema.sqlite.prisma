@@ -47,6 +47,9 @@ model IkigaiProfile {
   profession        String
   archetype         String
   coreValues        String          // JSON array string
+  ikigaiSynthesis   String?
+  suggestedModels   String?         // JSON string
+  selectedModelFit  String?
 }
 
 model DiagnosticData {

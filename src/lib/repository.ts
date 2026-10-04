@@ -133,6 +133,13 @@ export async function getUserProfile(
           mission: biz.ikigai.p3_systemic_injustice || biz.ikigai.p3_community_to_help || "",
           profession: biz.ikigai.p4_market_paid_skills || biz.ikigai.p4_premium_assets || "",
           archetype: (biz.ikigai.archetype as any) || "VISIONARY_DISRUPTOR",
+          ikigaiSynthesis: (biz.ikigai as any).ikigaiSynthesis || undefined,
+          suggestedModels: (biz.ikigai as any).suggestedModels
+            ? typeof (biz.ikigai as any).suggestedModels === "string"
+              ? JSON.parse((biz.ikigai as any).suggestedModels)
+              : (biz.ikigai as any).suggestedModels
+            : undefined,
+          selectedModelFit: (biz.ikigai as any).selectedModelFit || undefined,
         },
         diagnostic: {
           differentiator: biz.diagnostic.differentiator,
@@ -318,6 +325,9 @@ export async function saveWizardAndGenerate(
 
       archetype: state.ikigai.archetype || "VISIONARY_DISRUPTOR",
       coreValues: normalizeCoreValues(state.ikigai.coreValues || []),
+      ikigaiSynthesis: state.ikigai.ikigaiSynthesis || null,
+      suggestedModels: state.ikigai.suggestedModels as any || null,
+      selectedModelFit: state.ikigai.selectedModelFit || null,
     };
 
     await prisma.ikigaiProfile.upsert({

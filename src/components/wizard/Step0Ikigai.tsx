@@ -13,6 +13,7 @@ import {
   normalizeCoreValues,
   getLocalizedCoreValue,
 } from "@/lib/core-values";
+import { IkigaiResultsView } from "./IkigaiResultsView";
 import {
   Heart,
   Globe,
@@ -155,13 +156,14 @@ export function Step0Ikigai() {
 
   const completionPercentage = Math.round((completedFields / totalFields) * 100);
 
-  // Tab definitions with 7th Results & Confirmation tab
+  // Tab definitions with 8 tabs including new Intermediate Business Fit milestone
   const tabsList = [
     { id: "passion", label: i18nConfig.tabs.passion, icon: Heart, color: "text-pink-500", bg: "bg-pink-50 dark:bg-pink-950/40" },
     { id: "vocation", label: i18nConfig.tabs.vocation, icon: Globe, color: "text-indigo-500", bg: "bg-indigo-50 dark:bg-indigo-950/40" },
     { id: "mission", label: i18nConfig.tabs.mission, icon: Sparkles, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-950/40" },
     { id: "profession", label: i18nConfig.tabs.profession, icon: Briefcase, color: "text-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-950/40" },
     { id: "synthesis", label: i18nConfig.tabs.synthesis, icon: Target, color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-950/40" },
+    { id: "fit", label: i18nConfig.tabs.fit || (language === "ro" ? "6. Rezultate Ikigai & Potrivire Business" : "6. Business Fit Analysis"), icon: Award, color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-950/40" },
     { id: "archetype", label: i18nConfig.tabs.archetype, icon: Compass, color: "text-violet-500", bg: "bg-violet-50 dark:bg-violet-950/40" },
     { id: "results", label: i18nConfig.tabs.results || t("step0.results_tab"), icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-950/40" },
   ];
@@ -296,7 +298,7 @@ export function Step0Ikigai() {
       {/* Active Tab Content Area */}
       <div className="p-6 rounded-3xl glass-card border border-slate-200/80 dark:border-slate-800 min-h-[460px]">
         {/* Tabs 1 to 5: Standard Ikigai Pillars & Synthesis */}
-        {activeTab !== "archetype" && activeTab !== "results" && (() => {
+        {activeTab !== "archetype" && activeTab !== "results" && activeTab !== "fit" && (() => {
           const currentPillar = pillars.find((p) => p.id === activeTab);
           if (!currentPillar) return null;
           const Icon = PILLAR_ICONS[currentPillar.iconName] || Sparkles;
@@ -382,7 +384,15 @@ export function Step0Ikigai() {
           );
         })()}
 
-        {/* Tab 6: Brand Archetype & Core Values */}
+        {/* Tab 6: Ikigai Results & Business Fit Analysis */}
+        {activeTab === "fit" && (
+          <IkigaiResultsView
+            onContinue={() => setActiveTab("archetype")}
+            onPrev={() => setActiveTab("synthesis")}
+          />
+        )}
+
+        {/* Tab 7: Brand Archetype & Core Values */}
         {activeTab === "archetype" && (
           <div className="space-y-8 animate-fade-in">
             {/* Brand Archetype Selection */}
@@ -604,6 +614,34 @@ export function Step0Ikigai() {
               </div>
             </div>
 
+            {/* Selected Business Direction from Discovery */}
+            {ikigai.selectedModelFit && (
+              <div className="p-5 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-indigo-600 text-white shadow-sm">
+                    <Briefcase className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 block">
+                      {language === "ro" ? "Direcție de Business Pre-Selectată" : "Pre-Selected Business Direction"}
+                    </span>
+                    <h4 className="text-base font-extrabold text-slate-900 dark:text-white">
+                      {ikigai.selectedModelFit === "MANUAL"
+                        ? (language === "ro" ? "Configurare Manuală de la Zero" : "Manual Custom Setup")
+                        : ikigai.selectedModelFit}
+                    </h4>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("fit")}
+                  className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-indigo-600 dark:text-indigo-300 bg-white dark:bg-slate-800 border border-indigo-200 dark:border-indigo-700 hover:bg-indigo-50 transition-all cursor-pointer"
+                >
+                  {language === "ro" ? "Schimbă Direcția" : "Change Fit"}
+                </button>
+              </div>
+            )}
+
             {/* Archetype & Core Values Summary */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-5 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 space-y-2">
@@ -662,45 +700,49 @@ export function Step0Ikigai() {
       </div>
 
       {/* Intra-Pillar Navigation Buttons */}
-      <div className="flex items-center justify-between pt-4 border-t border-slate-200/80 dark:border-slate-800">
-        <button
-          type="button"
-          disabled={currentTabIdx === 0}
-          onClick={() => {
-            if (currentTabIdx > 0) setActiveTab(tabsList[currentTabIdx - 1].id);
-          }}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          <span>{t("step0.prev_pillar")}</span>
-        </button>
-
-        {activeTab !== "results" ? (
+      {activeTab !== "fit" && (
+        <div className="flex items-center justify-between pt-4 border-t border-slate-200/80 dark:border-slate-800">
           <button
             type="button"
+            disabled={currentTabIdx === 0}
             onClick={() => {
-              if (currentTabIdx < tabsList.length - 1) setActiveTab(tabsList[currentTabIdx + 1].id);
+              if (currentTabIdx > 0) setActiveTab(tabsList[currentTabIdx - 1].id);
             }}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition-all border border-indigo-200 dark:border-indigo-800 cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
           >
-            <span>
-              {activeTab === "archetype"
-                ? `${t("step0.results_tab")} →`
-                : t("step0.next_pillar")}
-            </span>
-            <ChevronRight className="w-4 h-4" />
+            <ChevronLeft className="w-4 h-4" />
+            <span>{t("step0.prev_pillar")}</span>
           </button>
-        ) : (
-          <button
-            type="button"
-            onClick={confirmIkigai}
-            className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 hover:scale-105 active:scale-95 transition-all cursor-pointer"
-          >
-            <Check className="w-4 h-4" />
-            <span>{t("step0.confirm_btn")}</span>
-          </button>
-        )}
-      </div>
+
+          {activeTab !== "results" ? (
+            <button
+              type="button"
+              onClick={() => {
+                if (currentTabIdx < tabsList.length - 1) setActiveTab(tabsList[currentTabIdx + 1].id);
+              }}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition-all border border-indigo-200 dark:border-indigo-800 cursor-pointer"
+            >
+              <span>
+                {activeTab === "archetype"
+                  ? `${t("step0.results_tab")} →`
+                  : activeTab === "synthesis"
+                  ? (language === "ro" ? "Rezultate Ikigai & Business →" : "Business Fit Discovery →")
+                  : t("step0.next_pillar")}
+              </span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={confirmIkigai}
+              className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            >
+              <Check className="w-4 h-4" />
+              <span>{t("step0.confirm_btn")}</span>
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
