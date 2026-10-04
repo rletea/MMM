@@ -15,12 +15,15 @@ import {
   Zap,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { TranslationKey } from "@/lib/i18n/translations";
 
 const CHANNELS_CONFIG: {
   id: ChannelType;
   name: string;
   format: string;
   desc: string;
+  formatKey: TranslationKey;
+  descKey: TranslationKey;
   icon: any;
   colorClass: string;
   activeBorder: string;
@@ -30,6 +33,8 @@ const CHANNELS_CONFIG: {
     name: "LinkedIn",
     format: "Authority Posts & Story Frameworks",
     desc: "B2B thought leadership, founder origin stories, and client case study teardowns.",
+    formatKey: "scope.li_format",
+    descKey: "scope.li_desc",
     icon: Linkedin,
     colorClass: "text-[#0a66c2]",
     activeBorder: "border-[#0a66c2] bg-blue-50/50 dark:bg-blue-950/40",
@@ -39,6 +44,8 @@ const CHANNELS_CONFIG: {
     name: "Email Newsletter",
     format: "High-Converting Weekly Editions",
     desc: "Owned audience nurture, high-ticket conversion sequences, and weekly digests.",
+    formatKey: "scope.em_format",
+    descKey: "scope.em_desc",
     icon: Mail,
     colorClass: "text-emerald-500",
     activeBorder: "border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/40",
@@ -48,6 +55,8 @@ const CHANNELS_CONFIG: {
     name: "Instagram",
     format: "Visual Carousels & Reels",
     desc: "Swipeable framework breakdowns, aesthetic brand identity, and story engagement.",
+    formatKey: "scope.ig_format",
+    descKey: "scope.ig_desc",
     icon: Instagram,
     colorClass: "text-rose-500",
     activeBorder: "border-rose-500 bg-rose-50/50 dark:bg-rose-950/40",
@@ -57,6 +66,8 @@ const CHANNELS_CONFIG: {
     name: "TikTok",
     format: "Short-Form Video Scripts",
     desc: "Viral 3-second hook scripts, scene directions, audio cues, and direct CTAs.",
+    formatKey: "scope.tt_format",
+    descKey: "scope.tt_desc",
     icon: Video,
     colorClass: "text-cyan-400",
     activeBorder: "border-cyan-400 bg-cyan-50/50 dark:bg-cyan-950/40",
@@ -66,6 +77,8 @@ const CHANNELS_CONFIG: {
     name: "Facebook",
     format: "Long-Form Value & Direct Response",
     desc: "Community group discussions, organic brand authority, and direct conversion copy.",
+    formatKey: "scope.fb_format",
+    descKey: "scope.fb_desc",
     icon: Facebook,
     colorClass: "text-[#1877f2]",
     activeBorder: "border-[#1877f2] bg-indigo-50/50 dark:bg-indigo-950/40",
@@ -131,11 +144,41 @@ const STRATEGIC_GOALS_BY_LANG: Record<string, string[]> = {
   ],
 };
 
-const REVIEW_CADENCES: { id: ReviewCadenceType; label: string; desc: string }[] = [
-  { id: "WEEKLY", label: "Weekly Rapid Iteration", desc: "Agile sprints, daily monitoring, rapid hook testing." },
-  { id: "BI_WEEKLY", label: "Bi-Weekly Review", desc: "Balanced pacing for teams with 5–15 hrs/wk capacity." },
-  { id: "MONTHLY", label: "Monthly Strategic Overhaul", desc: "High-level macro adjustments and campaign reviews." },
-  { id: "QUARTERLY", label: "Quarterly Deep Diagnostic", desc: "Long-range positioning pivots and asset restructuring." },
+const REVIEW_CADENCES: {
+  id: ReviewCadenceType;
+  label: string;
+  desc: string;
+  labelKey: TranslationKey;
+  descKey: TranslationKey;
+}[] = [
+  {
+    id: "WEEKLY",
+    label: "Weekly Rapid Iteration",
+    desc: "Agile sprints, daily monitoring, rapid hook testing.",
+    labelKey: "scope.cadence_weekly_label",
+    descKey: "scope.cadence_weekly_desc",
+  },
+  {
+    id: "BI_WEEKLY",
+    label: "Bi-Weekly Review",
+    desc: "Balanced pacing for teams with 5–15 hrs/wk capacity.",
+    labelKey: "scope.cadence_biweekly_label",
+    descKey: "scope.cadence_biweekly_desc",
+  },
+  {
+    id: "MONTHLY",
+    label: "Monthly Strategic Overhaul",
+    desc: "High-level macro adjustments and campaign reviews.",
+    labelKey: "scope.cadence_monthly_label",
+    descKey: "scope.cadence_monthly_desc",
+  },
+  {
+    id: "QUARTERLY",
+    label: "Quarterly Deep Diagnostic",
+    desc: "Long-range positioning pivots and asset restructuring.",
+    labelKey: "scope.cadence_quarterly_label",
+    descKey: "scope.cadence_quarterly_desc",
+  },
 ];
 
 export function Step4Scope() {
@@ -173,8 +216,8 @@ export function Step4Scope() {
           {CHANNELS_CONFIG.map((channel) => {
             const Icon = channel.icon;
             const isSelected = scope.activeChannels.includes(channel.id);
-            const localizedFormat = t(`scope.${channel.id.toLowerCase()}_format` as any) || channel.format;
-            const localizedDesc = t(`scope.${channel.id.toLowerCase()}_desc` as any) || channel.desc;
+            const localizedFormat = t(channel.formatKey, channel.format);
+            const localizedDesc = t(channel.descKey, channel.desc);
 
             return (
               <button
@@ -249,8 +292,8 @@ export function Step4Scope() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {REVIEW_CADENCES.map((cadence) => {
             const isSelected = scope.reviewCadence === cadence.id;
-            const localizedLabel = t(`scope.cadence_${cadence.id.toLowerCase()}_label` as any) || cadence.label;
-            const localizedDesc = t(`scope.cadence_${cadence.id.toLowerCase()}_desc` as any) || cadence.desc;
+            const localizedLabel = t(cadence.labelKey, cadence.label);
+            const localizedDesc = t(cadence.descKey, cadence.desc);
 
             return (
               <button

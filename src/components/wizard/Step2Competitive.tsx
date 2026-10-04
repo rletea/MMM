@@ -6,32 +6,44 @@ import { MarketSaturationType } from "@/lib/types";
 import { Shield, Plus, X } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
+import { TranslationKey } from "@/lib/i18n/translations";
+
 const SATURATION_TIERS: {
   id: MarketSaturationType;
+  titleKey: TranslationKey;
+  descKey: TranslationKey;
   title: string;
   desc: string;
   badgeColor: string;
 }[] = [
   {
     id: "LOW",
+    titleKey: "comp.sat_low_title",
+    descKey: "comp.sat_low_desc",
     title: "Low Saturation (Blue Ocean)",
     desc: "Novel category or uncontested niche. High education needed, low competition.",
     badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300",
   },
   {
     id: "MEDIUM",
+    titleKey: "comp.sat_med_title",
+    descKey: "comp.sat_med_desc",
     title: "Medium (Growing Market)",
     desc: "Established category with room for differentiated entrants with superior positioning.",
     badgeColor: "bg-sky-100 text-sky-800 border-sky-300 dark:bg-sky-950/60 dark:text-sky-300",
   },
   {
     id: "HIGH",
+    titleKey: "comp.sat_high_title",
+    descKey: "comp.sat_high_desc",
     title: "High (Crowded Space)",
     desc: "Many active players with similar claims. Demands distinct wedge & sharp storytelling.",
     badgeColor: "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950/60 dark:text-amber-300",
   },
   {
     id: "RED_OCEAN",
+    titleKey: "comp.sat_red_title",
+    descKey: "comp.sat_red_desc",
     title: "Red Ocean (Intensely Saturated)",
     desc: "Commoditized market. Price wars common. Requires radical differentiation or proprietary moat.",
     badgeColor: "bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-950/60 dark:text-rose-300",
@@ -95,8 +107,8 @@ export function Step2Competitive() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           {SATURATION_TIERS.map((tier) => {
             const isSelected = competitive.marketSaturation === tier.id;
-            const localizedTitle = t(`comp.sat_${tier.id.toLowerCase()}_title` as any) || tier.title;
-            const localizedDesc = t(`comp.sat_${tier.id.toLowerCase()}_desc` as any) || tier.desc;
+            const localizedTitle = t(tier.titleKey, tier.title);
+            const localizedDesc = t(tier.descKey, tier.desc);
 
             return (
               <button
