@@ -427,3 +427,122 @@ export async function updatePostStatus(
     return true;
   }
 }
+
+export async function saveWizardDraft(
+  userId: string,
+  state: Partial<WizardFormState>,
+  language: string = "en"
+): Promise<{ success: boolean; message?: string }> {
+  try {
+    if (!state.ikigai && !state.business) {
+      return { success: false, message: "No data to save" };
+    }
+
+    const localeEnum = (["EN", "RO", "DE", "FR", "IT", "PL", "ES"].includes(language.toUpperCase())
+      ? language.toUpperCase()
+      : "EN") as any;
+
+    let existingBiz = await prisma.businessProfile.findFirst({
+      where: { userId },
+    });
+
+    let bizId: string;
+    if (existingBiz) {
+      bizId = existingBiz.id;
+      if (state.business) {
+        await prisma.businessProfile.update({
+          where: { id: bizId },
+          data: {
+            businessName: state.business.businessName || existingBiz.businessName,
+            websiteUrl: state.business.websiteUrl !== undefined ? state.business.websiteUrl : existingBiz.websiteUrl,
+            businessModel: state.business.businessModel || existingBiz.businessModel,
+            industry: state.business.industry || existingBiz.industry,
+            geoScope: state.business.geoScope || existingBiz.geoScope,
+            currentStage: state.business.currentStage || existingBiz.currentStage,
+            monthlyBudget: state.business.monthlyBudget ?? existingBiz.monthlyBudget,
+            weeklyHours: state.business.weeklyHours ?? existingBiz.weeklyHours,
+          },
+        });
+      }
+    } else {
+      const created = await prisma.businessProfile.create({
+        data: {
+          userId,
+          businessName: state.business?.businessName || "My Business",
+          websiteUrl: state.business?.websiteUrl || null,
+          businessModel: state.business?.businessModel || "B2B_SERVICE",
+          industry: state.business?.industry || "Professional Services",
+          geoScope: state.business?.geoScope || "Global / Remote",
+          currentStage: state.business?.currentStage || "TRACTION",
+          monthlyBudget: state.business?.monthlyBudget ?? 1500,
+          weeklyHours: state.business?.weeklyHours ?? 10,
+        },
+      });
+      bizId = created.id;
+    }
+
+    if (state.ikigai) {
+      const ik = state.ikigai;
+      const ikigaiDbData: any = {
+        locale: localeEnum,
+        p1_time_loss: ik.p1_time_loss || ik.timeFlyActivities || null,
+        p1_spare_time_reading: ik.p1_spare_time_reading || ik.naturalTopics || null,
+        p1_average_tuesday: ik.p1_average_tuesday || ik.idealTuesday || null,
+        p1_energizing_tasks: ik.p1_energizing_tasks || ik.energizingTasks || ik.passion || null,
+        p1_childhood_passions: ik.p1_childhood_passions || ik.childhoodPassions || null,
+        p1_spark_debates: ik.p1_spark_debates || ik.sparkDebates || null,
+        p1_creative_outlets: ik.p1_creative_outlets || ik.creativeOutlets || null,
+
+        p2_effortless_skills: ik.p2_effortless_skills || ik.effortlessSkills || ik.vocation || null,
+        p2_sought_advice: ik.p2_sought_advice || ik.soughtAdvice || null,
+        p2_hard_skills: ik.p2_hard_skills || ik.hardSkills || null,
+        p2_interpersonal_soft: ik.p2_interpersonal_soft || ik.softSkills || null,
+        p2_success_patterns: ik.p2_success_patterns || ik.successPatterns || null,
+        p2_problem_solving: ik.p2_problem_solving || ik.problemSolvingWay || null,
+        p2_recurring_praise: ik.p2_recurring_praise || ik.recurringPraise || null,
+
+        p3_systemic_injustice: ik.p3_systemic_injustice || ik.systemicProblems || null,
+        p3_community_to_help: ik.p3_community_to_help || ik.targetCommunity || null,
+        p3_unlimited_resource: ik.p3_unlimited_resource || ik.priorityCause || ik.mission || null,
+        p3_immediate_needs: ik.p3_immediate_needs || ik.practicalNeeds || null,
+        p3_non_negotiables: ik.p3_non_negotiables || (ik.coreValues && ik.coreValues.join(", ")) || null,
+        p3_future_gap: ik.p3_future_gap || ik.decadeOutlook || null,
+        p3_legacy_impact: ik.p3_legacy_impact || ik.desiredLegacy || null,
+
+        p4_past_paid_services: ik.p4_past_paid_services || ik.pastPaidServices || null,
+        p4_market_paid_skills: ik.p4_market_paid_skills || ik.highValueSkills || ik.profession || null,
+        p4_commercial_hobbies: ik.p4_commercial_hobbies || ik.commercialHobbies || null,
+        p4_high_value_roi: ik.p4_high_value_roi || ik.economicImpact || null,
+        p4_premium_assets: ik.p4_premium_assets || ik.premiumOffers || null,
+        p4_growth_niches: ik.p4_growth_niches || ik.growthNiches || null,
+        p4_monetization_fit: ik.p4_monetization_fit || ik.monetizationModel || null,
+
+        overlap_synthesis: ik.overlap_synthesis || ik.coreIntersection || null,
+        pilot_30_days: ik.pilot_30_days || ik.pilotProject30Days || null,
+
+        archetype: ik.archetype || "VISIONARY_DISRUPTOR",
+        coreValues: normalizeCoreValues(ik.coreValues || []),
+        ikigaiSynthesis: ik.ikigaiSynthesis || null,
+        suggestedModels: ik.suggestedModels as any || null,
+        selectedModelFit: ik.selectedModelFit || null,
+      };
+
+      await prisma.ikigaiProfile.upsert({
+        where: { businessProfileId: bizId },
+        create: {
+          businessProfileId: bizId,
+          ...ikigaiDbData,
+        },
+        update: {
+          ...ikigaiDbData,
+        },
+      });
+    }
+
+    return { success: true };
+  } catch (error: any) {
+    console.warn("saveWizardDraft error:", error);
+    return { success: false, message: error.message };
+  }
+}
+

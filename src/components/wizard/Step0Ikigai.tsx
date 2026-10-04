@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useWizardStore } from "@/store/wizard-store";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { ArchetypeType } from "@/lib/types";
@@ -34,6 +34,8 @@ import {
   ArrowRight,
   Check,
   Award,
+  Cloud,
+  RefreshCw,
 } from "lucide-react";
 
 const ARCHETYPES: {
@@ -97,9 +99,13 @@ const PILLAR_ICONS: Record<string, any> = {
 };
 
 export function Step0Ikigai() {
-  const { ikigai, updateIkigai, toggleCoreValue, loadDemoData, ikigaiConfirmed, confirmIkigai } = useWizardStore();
+  const { ikigai, updateIkigai, toggleCoreValue, loadDemoData, ikigaiConfirmed, confirmIkigai, hydrateFromProfile } = useWizardStore();
   const { language, t } = useLanguage();
   const [activeTab, setActiveTab] = useState<string>("passion");
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
+  const [hasServerData, setHasServerData] = useState(false);
+  const [serverProfile, setServerProfile] = useState<any>(null);
 
   const i18nConfig = IKIGAI_TRANSLATIONS[language] || IKIGAI_TRANSLATIONS.en;
   const pillars = useMemo(() => getIkigaiPillarConfig(language), [language]);
@@ -108,6 +114,75 @@ export function Step0Ikigai() {
     () => normalizeCoreValues(ikigai.coreValues || []),
     [ikigai.coreValues]
   );
+
+  // Auto-check for server profile
+  useEffect(() => {
+    let active = true;
+    fetch(`/api/profile?lang=${language}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!active || !data?.data?.ikigai) return;
+        setHasServerData(true);
+        setServerProfile(data.data);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [language]);
+
+  // Debounced auto-save draft to database
+  useEffect(() => {
+    const hasAnyContent = Object.entries(ikigai).some(
+      ([k, v]) => k.startsWith("p") && typeof v === "string" && v.trim().length > 0
+    );
+    if (!hasAnyContent) return;
+
+    setSaveStatus("saving");
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/wizard/draft", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            wizardState: { ikigai },
+            language,
+          }),
+        });
+        if (res.ok) {
+          setSaveStatus("saved");
+          setTimeout(() => setSaveStatus("idle"), 3000);
+        } else {
+          setSaveStatus("idle");
+        }
+      } catch {
+        setSaveStatus("idle");
+      }
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, [ikigai, language]);
+
+  const handleRestoreFromProfile = async () => {
+    if (serverProfile) {
+      hydrateFromProfile(serverProfile);
+      return;
+    }
+    try {
+      setIsRestoring(true);
+      const res = await fetch(`/api/profile?lang=${language}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.data) {
+          hydrateFromProfile(data.data);
+          setServerProfile(data.data);
+          setHasServerData(true);
+        }
+      }
+    } finally {
+      setIsRestoring(false);
+    }
+  };
 
   // Calculate completion stats across 30 AG-SPEC fields
   const totalFields = 30;
@@ -229,8 +304,38 @@ export function Step0Ikigai() {
           </p>
         </div>
 
-        {/* Quick Tools: Fill Demo & Auto-Synthesize */}
+        {/* Quick Tools: Fill Demo, Restore, Auto-Synthesize & Cloud Status */}
         <div className="flex flex-wrap items-center gap-2 self-start md:self-center">
+          {saveStatus === "saving" && (
+            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] text-slate-500 font-medium">
+              <RefreshCw className="w-3 h-3 animate-spin text-indigo-500" />
+              <span>{language === "ro" ? "Se salvează..." : "Saving..."}</span>
+            </span>
+          )}
+          {saveStatus === "saved" && (
+            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-[11px] text-emerald-700 dark:text-emerald-300 font-medium border border-emerald-200 dark:border-emerald-800">
+              <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+              <span>{language === "ro" ? "Salvat în cloud" : "Saved in cloud"}</span>
+            </span>
+          )}
+
+          {hasServerData && (
+            <button
+              type="button"
+              onClick={handleRestoreFromProfile}
+              disabled={isRestoring}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-indigo-50 dark:bg-indigo-950/80 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 transition-all border border-indigo-200 dark:border-indigo-800 shadow-xs"
+              title={
+                language === "ro"
+                  ? "Restaurează răspunsurile salvate anterior în contul tău"
+                  : "Restore previously saved answers from your account"
+              }
+            >
+              <Cloud className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+              <span>{language === "ro" ? "Restaurează Răspunsuri" : "Restore Saved"}</span>
+            </button>
+          )}
+
           <button
             type="button"
             onClick={() => loadDemoData(language, 0)}

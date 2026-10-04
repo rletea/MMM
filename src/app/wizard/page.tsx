@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useWizardStore } from "@/store/wizard-store";
 import { Step0Ikigai } from "@/components/wizard/Step0Ikigai";
 import { Step1Business } from "@/components/wizard/Step1Business";
@@ -20,11 +20,78 @@ import {
   ArrowRight,
   RotateCcw,
   Zap,
+  Cloud,
+  Check,
+  RefreshCw,
 } from "lucide-react";
 
 export default function WizardPage() {
-  const { step, setStep, nextStep, prevStep, loadDemoData, resetWizard } = useWizardStore();
+  const { step, setStep, nextStep, prevStep, loadDemoData, resetWizard, hydrateFromProfile } = useWizardStore();
   const { t, language } = useLanguage();
+
+  const [hasServerProfile, setHasServerProfile] = useState(false);
+  const [serverProfileData, setServerProfileData] = useState<any>(null);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+  const [restoreMessage, setRestoreMessage] = useState<string | null>(null);
+  const hasAutoHydrated = useRef(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function checkAndHydrateServerProfile() {
+      try {
+        setIsLoadingProfile(true);
+        const res = await fetch(`/api/profile?lang=${language}`);
+        if (!res.ok) return;
+        const json = await res.json();
+        if (!isMounted) return;
+
+        if (json?.authenticated && json?.data) {
+          setHasServerProfile(true);
+          setServerProfileData(json.data);
+
+          // If this is the initial load and store has <= 2 answered fields, auto-hydrate from DB!
+          if (!hasAutoHydrated.current) {
+            const currentIk = useWizardStore.getState().ikigai;
+            const filledCount = Object.entries(currentIk).filter(
+              ([k, v]) => k.startsWith("p") && typeof v === "string" && v.trim().length > 0
+            ).length;
+
+            if (filledCount <= 2 && json.data.ikigai) {
+              hydrateFromProfile(json.data);
+              hasAutoHydrated.current = true;
+              setRestoreMessage(
+                language === "ro"
+                  ? "Răspunsurile tale salvate au fost sincronizate din baza de date!"
+                  : "Your previously saved answers have been restored from your account!"
+              );
+              setTimeout(() => setRestoreMessage(null), 6000);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to load server profile for wizard:", err);
+      } finally {
+        if (isMounted) setIsLoadingProfile(false);
+      }
+    }
+
+    checkAndHydrateServerProfile();
+    return () => {
+      isMounted = false;
+    };
+  }, [language, hydrateFromProfile]);
+
+  const handleManualRestore = () => {
+    if (serverProfileData) {
+      hydrateFromProfile(serverProfileData);
+      setRestoreMessage(
+        language === "ro"
+          ? "Răspunsurile salvate au fost restaurate cu succes!"
+          : "Saved answers restored successfully!"
+      );
+      setTimeout(() => setRestoreMessage(null), 5000);
+    }
+  };
 
   const STEPS = [
     { id: 0, title: t("wizard.step0_tab"), icon: Compass },
@@ -39,6 +106,14 @@ export default function WizardPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
+      {/* Top Notification if Restored */}
+      {restoreMessage && (
+        <div className="flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs font-semibold animate-fade-in shadow-sm">
+          <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+          <span>{restoreMessage}</span>
+        </div>
+      )}
+
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -50,7 +125,26 @@ export default function WizardPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {hasServerProfile && (
+            <button
+              type="button"
+              onClick={handleManualRestore}
+              disabled={isLoadingProfile}
+              title={
+                language === "ro"
+                  ? "Restaurează toate răspunsurile salvate anterior în cont"
+                  : "Restore all previously saved answers from your account"
+              }
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition-colors shadow-sm"
+            >
+              <Cloud className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+              <span>
+                {language === "ro" ? "Restaurează din Cont" : "Restore from Account"}
+              </span>
+            </button>
+          )}
+
           <button
             type="button"
             onClick={() => loadDemoData(language)}

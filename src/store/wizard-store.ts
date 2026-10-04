@@ -36,6 +36,7 @@ interface WizardStore extends WizardFormState {
   removeCompetitor: (index: number) => void;
   loadDemoData: (lang?: string, targetStep?: number) => void;
   selectBusinessModelFit: (proposal: BusinessFitProposal) => void;
+  hydrateFromProfile: (profile: any) => void;
   resetWizard: () => void;
 }
 
@@ -280,6 +281,118 @@ export const useWizardStore = create<WizardStore>()(
             differentiator: proposal.differentiator || s.competitive.differentiator,
           },
         })),
+
+      hydrateFromProfile: (profile: any) => {
+        if (!profile) return;
+        set((s) => {
+          const ik = profile.ikigai || {};
+          const biz = profile.businessProfile || profile.business || {};
+          const diag = profile.diagnostic || profile.competitive || {};
+          const aud = profile.audience || {};
+          const sc = profile.scope || {};
+
+          const mergedIkigai: IkigaiData = {
+            ...s.ikigai,
+            ...ik,
+            // Pillar 1
+            p1_time_loss: ik.p1_time_loss || ik.timeFlyActivities || s.ikigai.p1_time_loss,
+            p1_spare_time_reading: ik.p1_spare_time_reading || ik.naturalTopics || s.ikigai.p1_spare_time_reading,
+            p1_average_tuesday: ik.p1_average_tuesday || ik.idealTuesday || s.ikigai.p1_average_tuesday,
+            p1_energizing_tasks: ik.p1_energizing_tasks || ik.energizingTasks || s.ikigai.p1_energizing_tasks,
+            p1_childhood_passions: ik.p1_childhood_passions || ik.childhoodPassions || s.ikigai.p1_childhood_passions,
+            p1_spark_debates: ik.p1_spark_debates || ik.sparkDebates || s.ikigai.p1_spark_debates,
+            p1_creative_outlets: ik.p1_creative_outlets || ik.creativeOutlets || s.ikigai.p1_creative_outlets,
+
+            // Pillar 2
+            p2_effortless_skills: ik.p2_effortless_skills || ik.effortlessSkills || s.ikigai.p2_effortless_skills,
+            p2_sought_advice: ik.p2_sought_advice || ik.soughtAdvice || s.ikigai.p2_sought_advice,
+            p2_hard_skills: ik.p2_hard_skills || ik.hardSkills || s.ikigai.p2_hard_skills,
+            p2_interpersonal_soft: ik.p2_interpersonal_soft || ik.softSkills || s.ikigai.p2_interpersonal_soft,
+            p2_success_patterns: ik.p2_success_patterns || ik.successPatterns || s.ikigai.p2_success_patterns,
+            p2_problem_solving: ik.p2_problem_solving || ik.problemSolvingWay || s.ikigai.p2_problem_solving,
+            p2_recurring_praise: ik.p2_recurring_praise || ik.recurringPraise || s.ikigai.p2_recurring_praise,
+
+            // Pillar 3
+            p3_systemic_injustice: ik.p3_systemic_injustice || ik.systemicProblems || s.ikigai.p3_systemic_injustice,
+            p3_community_to_help: ik.p3_community_to_help || ik.targetCommunity || s.ikigai.p3_community_to_help,
+            p3_unlimited_resource: ik.p3_unlimited_resource || ik.priorityCause || s.ikigai.p3_unlimited_resource,
+            p3_immediate_needs: ik.p3_immediate_needs || ik.practicalNeeds || s.ikigai.p3_immediate_needs,
+            p3_non_negotiables: ik.p3_non_negotiables || s.ikigai.p3_non_negotiables,
+            p3_future_gap: ik.p3_future_gap || ik.decadeOutlook || s.ikigai.p3_future_gap,
+            p3_legacy_impact: ik.p3_legacy_impact || ik.desiredLegacy || s.ikigai.p3_legacy_impact,
+
+            // Pillar 4
+            p4_past_paid_services: ik.p4_past_paid_services || ik.pastPaidServices || s.ikigai.p4_past_paid_services,
+            p4_market_paid_skills: ik.p4_market_paid_skills || ik.highValueSkills || s.ikigai.p4_market_paid_skills,
+            p4_commercial_hobbies: ik.p4_commercial_hobbies || ik.commercialHobbies || s.ikigai.p4_commercial_hobbies,
+            p4_high_value_roi: ik.p4_high_value_roi || ik.economicImpact || s.ikigai.p4_high_value_roi,
+            p4_premium_assets: ik.p4_premium_assets || ik.premiumOffers || s.ikigai.p4_premium_assets,
+            p4_growth_niches: ik.p4_growth_niches || ik.growthNiches || s.ikigai.p4_growth_niches,
+            p4_monetization_fit: ik.p4_monetization_fit || ik.monetizationModel || s.ikigai.p4_monetization_fit,
+
+            // Synthesis
+            overlap_synthesis: ik.overlap_synthesis || ik.coreIntersection || s.ikigai.overlap_synthesis,
+            pilot_30_days: ik.pilot_30_days || ik.pilotProject30Days || s.ikigai.pilot_30_days,
+
+            archetype: ik.archetype || s.ikigai.archetype || "VISIONARY_DISRUPTOR",
+            coreValues: normalizeCoreValues(ik.coreValues || s.ikigai.coreValues || []),
+            ikigaiSynthesis: ik.ikigaiSynthesis || s.ikigai.ikigaiSynthesis,
+            suggestedModels: ik.suggestedModels || s.ikigai.suggestedModels,
+            selectedModelFit: ik.selectedModelFit || s.ikigai.selectedModelFit,
+          };
+
+          const mergedBusiness: BusinessData = {
+            ...s.business,
+            businessName: biz.businessName || s.business.businessName,
+            websiteUrl: biz.websiteUrl !== undefined ? biz.websiteUrl : s.business.websiteUrl,
+            businessModel: biz.businessModel || s.business.businessModel,
+            industry: biz.industry || s.business.industry,
+            geoScope: biz.geoScope || s.business.geoScope,
+            currentStage: biz.currentStage || s.business.currentStage,
+            monthlyBudget: biz.monthlyBudget !== undefined ? Number(biz.monthlyBudget) : s.business.monthlyBudget,
+            weeklyHours: biz.weeklyHours !== undefined ? Number(biz.weeklyHours) : s.business.weeklyHours,
+          };
+
+          const mergedCompetitive: CompetitiveData = {
+            ...s.competitive,
+            differentiator: diag.differentiator || s.competitive.differentiator,
+            competitors: Array.isArray(diag.competitors) && diag.competitors.length > 0 ? diag.competitors : s.competitive.competitors,
+            marketSaturation: diag.marketSaturation || s.competitive.marketSaturation,
+          };
+
+          const mergedAudience: AudienceData = {
+            ...s.audience,
+            icpDemographics: aud.icpDemographics || s.audience.icpDemographics,
+            painTriggers: Array.isArray(aud.painTriggers) && aud.painTriggers.length > 0 ? aud.painTriggers : s.audience.painTriggers,
+            buyingObjections: Array.isArray(aud.buyingObjections) && aud.buyingObjections.length > 0 ? aud.buyingObjections : s.audience.buyingObjections,
+            existingAssets: aud.existingAssets || s.audience.existingAssets,
+          };
+
+          const mergedScope: ChannelScopeData = {
+            ...s.scope,
+            primaryGoals: Array.isArray(sc.primaryGoals) && sc.primaryGoals.length > 0 ? sc.primaryGoals : s.scope.primaryGoals,
+            reviewCadence: sc.reviewCadence || s.scope.reviewCadence,
+            activeChannels: Array.isArray(sc.activeChannels) && sc.activeChannels.length > 0 ? sc.activeChannels : s.scope.activeChannels,
+          };
+
+          const hasAnswers = !!(
+            mergedIkigai.p1_time_loss ||
+            mergedIkigai.p2_effortless_skills ||
+            mergedIkigai.p3_systemic_injustice ||
+            mergedIkigai.p4_market_paid_skills ||
+            mergedIkigai.overlap_synthesis
+          );
+
+          return {
+            ikigai: mergedIkigai,
+            business: mergedBusiness,
+            competitive: mergedCompetitive,
+            audience: mergedAudience,
+            scope: mergedScope,
+            ikigaiConfirmed: hasAnswers || s.ikigaiConfirmed,
+          };
+        });
+      },
 
       resetWizard: () =>
         set({
