@@ -83,7 +83,7 @@ function getGermanDemoState(): WizardFormState {
     targetCommunity: "Visionäre B2B-Gründer, spezialisierte Beratungsunternehmen und qualitätsorientierte Unternehmer, die echte Werte schaffen",
     priorityCause: "Demokratisierung erstklassiger CMO-Strategien für werteorientierte und ambitionierte Unternehmer",
     practicalNeeds: "Ein verlässlicher 30-Tage-Distributionsmotor, der planbare Kundenanfragen generiert – ohne Gründer-Burnout",
-    coreValues: ["Radikale Transparenz", "Asymmetrische Effizienz", "Meisterschaft", "Kompromisslose Qualität"],
+    coreValues: ["DESIGN_ELEGANCE", "SPEED_AGILITY", "ZERO_FLUFF", "DATA_RIGOR"],
     decadeOutlook: "Austauschbare KI-Texte werden die Feeds überfluten; nur die authentische Gründerstimme und echte Domänenkompetenz werden konvertieren",
     desiredLegacy: "Mehr als 1.000 Gründern zu nachhaltigen, hochprofitablen und marktführenden Unternehmen verholfen zu haben",
 
@@ -218,7 +218,7 @@ function getEnglishDemoState(): WizardFormState {
     targetCommunity: "Visionary founders, boutique consultancy partners, and solopreneur builders striving for freedom",
     priorityCause: "Democratize elite CMO-level strategic positioning for high-integrity operators",
     practicalNeeds: "A predictable 30-day organic distribution engine that builds authority without burnout",
-    coreValues: ["Radical Transparency", "Asymmetric Leverage", "Craftsmanship", "Unapologetic Focus"],
+    coreValues: ["DESIGN_ELEGANCE", "SPEED_AGILITY", "ZERO_FLUFF", "DATA_RIGOR"],
     decadeOutlook: "Commoditized generic AI content will flood feeds; only authentic founder voice and deep domain moats will convert",
     desiredLegacy: "Empowered 1,000+ independent founders to build durable, highly profitable category-leading businesses",
 
@@ -349,7 +349,7 @@ function getRomanianDemoState(): WizardFormState {
     targetCommunity: "Fondatori B2B, consultanți de elită și antreprenori orientați spre excelență și impact",
     priorityCause: "Democratizarea strategiilor de CMO de nivel enterprise pentru operatori onești și ambițioși",
     practicalNeeds: "Un motor previzibil de distribuție pe 30 de zile care generează autoritate și vânzări fără epuizare",
-    coreValues: ["Transparență Radicală", "Eficiență Asimetrică", "Măiestrie", "Focalizare Neclintită"],
+    coreValues: ["DESIGN_ELEGANCE", "SPEED_AGILITY", "ZERO_FLUFF", "DATA_RIGOR"],
     decadeOutlook: "Conținutul generic generat de AI va inunda platformele; doar vocea autentică a fondatorului va mai converti",
     desiredLegacy: "Sprijinirea a peste 1.000 de fondatori să își construiască afaceri durabile, extrem de profitabile și lideri de nișă",
 

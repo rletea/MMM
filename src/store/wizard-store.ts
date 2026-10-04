@@ -14,6 +14,7 @@ import {
   ReviewCadenceType,
 } from "../lib/types";
 import { getDemoWizardState } from "../lib/demo-presets";
+import { normalizeCoreValueId, normalizeCoreValues } from "../lib/core-values";
 
 interface WizardStore extends WizardFormState {
   ikigaiConfirmed: boolean;
@@ -80,7 +81,7 @@ const initialIkigai: IkigaiData = {
 
   // Positioning
   archetype: "VISIONARY_DISRUPTOR",
-  coreValues: ["Mastery", "Integrity", "Innovation"],
+  coreValues: ["DESIGN_ELEGANCE", "SPEED_AGILITY", "ZERO_FLUFF", "DATA_RIGOR"],
 
   // Backward compatibility
   timeFlyActivities: "",
@@ -166,7 +167,13 @@ export const useWizardStore = create<WizardStore>()(
       prevStep: () => set((s) => ({ step: Math.max(0, s.step - 1) })),
 
       updateIkigai: (data) =>
-        set((s) => ({ ikigai: { ...s.ikigai, ...data } })),
+        set((s) => ({
+          ikigai: {
+            ...s.ikigai,
+            ...data,
+            ...(data.coreValues ? { coreValues: normalizeCoreValues(data.coreValues) } : {}),
+          },
+        })),
 
       updateBusiness: (data) =>
         set((s) => ({ business: { ...s.business, ...data } })),
@@ -182,11 +189,12 @@ export const useWizardStore = create<WizardStore>()(
 
       toggleCoreValue: (val) =>
         set((s) => {
-          const current = s.ikigai.coreValues || [];
-          const exists = current.includes(val);
+          const key = normalizeCoreValueId(val);
+          const current = normalizeCoreValues(s.ikigai.coreValues || []);
+          const exists = current.includes(key);
           const next = exists
-            ? current.filter((v) => v !== val)
-            : [...current, val];
+            ? current.filter((k) => k !== key)
+            : [...current, key];
           return { ikigai: { ...s.ikigai, coreValues: next } };
         }),
 
@@ -243,7 +251,10 @@ export const useWizardStore = create<WizardStore>()(
         set((s) => ({
           step: targetStep !== undefined ? targetStep : s.step,
           ikigaiConfirmed: false,
-          ikigai: demo.ikigai,
+          ikigai: {
+            ...demo.ikigai,
+            coreValues: normalizeCoreValues(demo.ikigai.coreValues || []),
+          },
           business: demo.business,
           competitive: demo.competitive,
           audience: demo.audience,
@@ -264,6 +275,11 @@ export const useWizardStore = create<WizardStore>()(
     }),
     {
       name: "mmm_wizard_state_v1",
+      onRehydrateStorage: () => (state) => {
+        if (state?.ikigai?.coreValues) {
+          state.ikigai.coreValues = normalizeCoreValues(state.ikigai.coreValues);
+        }
+      },
     }
   )
 );

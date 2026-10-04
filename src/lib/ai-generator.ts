@@ -7,6 +7,7 @@ import {
   ContentPillar,
 } from "./types";
 import { LanguageCode } from "./i18n/types";
+import { getLocalizedCoreValue } from "./core-values";
 
 export interface AIStrategyGenerationResult {
   strategy: StrategyPlanOutput;
@@ -321,7 +322,7 @@ export function synthesizeStrategyAndContent(
     "strategic growth advisory";
   const pain = audience.painTriggers?.[0] || "low conversion velocity and generic marketing noise";
   const valuesStr = (ikigai.coreValues && ikigai.coreValues.length > 0
-    ? ikigai.coreValues
+    ? ikigai.coreValues.map((v) => getLocalizedCoreValue(v, langCode))
     : ["Integrity", "Innovation", "Mastery"]
   ).join(" • ");
 

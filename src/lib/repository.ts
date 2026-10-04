@@ -3,6 +3,7 @@ import { FullProfilePayload, WizardFormState, ContentStatusType } from "./types"
 import { calculateBVI } from "./bvi-calculator";
 import { generateMarketingStrategy } from "./ai-generator";
 import { getDemoFullProfile, defaultDemoWizardState } from "./mock-data";
+import { normalizeCoreValues } from "./core-values";
 
 // Fallback in-memory store keyed by userId or userId_language
 const fallbackStore = new Map<string, FullProfilePayload>();
@@ -115,7 +116,7 @@ export async function getUserProfile(
           targetCommunity: biz.ikigai.p3_community_to_help || undefined,
           priorityCause: biz.ikigai.p3_unlimited_resource || undefined,
           practicalNeeds: biz.ikigai.p3_immediate_needs || undefined,
-          coreValues: biz.ikigai.coreValues || [],
+          coreValues: normalizeCoreValues(biz.ikigai.coreValues || []),
           decadeOutlook: biz.ikigai.p3_future_gap || undefined,
           desiredLegacy: biz.ikigai.p3_legacy_impact || undefined,
           pastPaidServices: biz.ikigai.p4_past_paid_services || undefined,
@@ -216,7 +217,7 @@ export async function saveWizardAndGenerate(
     ikigai: {
       ...state.ikigai,
       archetype: state.ikigai.archetype || "VISIONARY_DISRUPTOR",
-      coreValues: state.ikigai.coreValues || [],
+      coreValues: normalizeCoreValues(state.ikigai.coreValues || []),
     },
     diagnostic: {
       differentiator: state.competitive.differentiator,
@@ -316,7 +317,7 @@ export async function saveWizardAndGenerate(
       pilot_30_days: state.ikigai.pilot_30_days || state.ikigai.pilotProject30Days || null,
 
       archetype: state.ikigai.archetype || "VISIONARY_DISRUPTOR",
-      coreValues: state.ikigai.coreValues || [],
+      coreValues: normalizeCoreValues(state.ikigai.coreValues || []),
     };
 
     await prisma.ikigaiProfile.upsert({

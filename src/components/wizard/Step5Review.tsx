@@ -15,6 +15,7 @@ import {
 import { useToast } from "@/components/ui/Toast";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { getLocalizedCoreValue } from "@/lib/core-values";
 
 export function Step5Review() {
   const state = useWizardStore();
@@ -160,7 +161,7 @@ export function Step5Review() {
           <div className="flex flex-wrap gap-1 pt-1">
             {state.ikigai.coreValues?.map((v) => (
               <span key={v} className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                {v}
+                {getLocalizedCoreValue(v, language)}
               </span>
             ))}
           </div>

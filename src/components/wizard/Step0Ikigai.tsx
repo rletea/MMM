@@ -9,6 +9,11 @@ import {
   IKIGAI_TRANSLATIONS,
 } from "@/lib/i18n/ikigai-questions";
 import {
+  CORE_VALUE_KEYS,
+  normalizeCoreValues,
+  getLocalizedCoreValue,
+} from "@/lib/core-values";
+import {
   Heart,
   Globe,
   Sparkles,
@@ -81,92 +86,6 @@ const ARCHETYPES: {
   },
 ];
 
-const SUGGESTED_VALUES_BY_LANG: Record<string, string[]> = {
-  de: [
-    "Radikale Transparenz",
-    "Design-Eleganz",
-    "Geschwindigkeit & Agilität",
-    "Zero Fluff / Hohe Relevanz",
-    "Kundenfokus",
-    "Datenbasierte Präzision",
-    "Querdenker-Innovation",
-    "Kompromisslose Qualität",
-    "Ethische Verantwortung",
-    "Community-Befähigung",
-  ],
-  ro: [
-    "Transparență Radicală",
-    "Eleganță în Design",
-    "Viteză & Agilitate",
-    "Fără Vorbărie / Semnal Puternic",
-    "Obsesie pentru Client",
-    "Rigoare Bazată pe Date",
-    "Inovație Contrariană",
-    "Calitate Fără Compromis",
-    "Responsabilitate Etică",
-    "Împuternicirea Comunității",
-  ],
-  fr: [
-    "Transparence Radicale",
-    "Élégance du Design",
-    "Rapidité & Agilité",
-    "Zéro Superflu / Haute Valeur",
-    "Obsession Client",
-    "Rigueur Basée sur les Données",
-    "Innovation à Contre-Courant",
-    "Qualité Sans Compromis",
-    "Responsabilité Éthique",
-    "Autonomisation de la Communauté",
-  ],
-  it: [
-    "Trasparenza Radicale",
-    "Eleganza del Design",
-    "Velocità & Agilità",
-    "Zero Fronzoli / Alto Valore",
-    "Ossessione per il Cliente",
-    "Rigore Basato sui Dati",
-    "Innovazione Contrarian",
-    "Qualità Senza Compromessi",
-    "Responsabilità Etica",
-    "Crescita della Community",
-  ],
-  pl: [
-    "Radykalna Przejrzystość",
-    "Elegancja Projektowa",
-    "Szybkość i Zwinność",
-    "Czysta Wartość / Zero Lania Wody",
-    "Orientacja na Klienta",
-    "Rygor Oparty na Danych",
-    "Przełomowa Innowacja",
-    "Bezkompromisowa Jakość",
-    "Etyczne Przywództwo",
-    "Wzmacnianie Społeczności",
-  ],
-  es: [
-    "Transparencia Radical",
-    "Elegancia de Diseño",
-    "Velocidad y Agilidad",
-    "Cero Relleno / Alto Valor",
-    "Obsesión por el Cliente",
-    "Rigor Basado en Datos",
-    "Innovación a Contracorriente",
-    "Calidad Sin Concesiones",
-    "Responsabilidad Ética",
-    "Empoderamiento Comunitario",
-  ],
-  en: [
-    "Radical Transparency",
-    "Design Elegance",
-    "Speed & Agility",
-    "Zero Fluff / High Signal",
-    "Customer Obsession",
-    "Data-Driven Rigor",
-    "Contrarian Innovation",
-    "Uncompromising Quality",
-    "Ethical Stewardship",
-    "Community Empowerment",
-  ],
-};
 
 const PILLAR_ICONS: Record<string, any> = {
   Heart,
@@ -184,8 +103,10 @@ export function Step0Ikigai() {
   const i18nConfig = IKIGAI_TRANSLATIONS[language] || IKIGAI_TRANSLATIONS.en;
   const pillars = useMemo(() => getIkigaiPillarConfig(language), [language]);
 
-  const coreValuesList = ikigai.coreValues || [];
-  const suggestedValues = SUGGESTED_VALUES_BY_LANG[language] || SUGGESTED_VALUES_BY_LANG.en;
+  const coreValuesList = useMemo(
+    () => normalizeCoreValues(ikigai.coreValues || []),
+    [ikigai.coreValues]
+  );
 
   // Calculate completion stats across 30 AG-SPEC fields
   const totalFields = 30;
@@ -210,7 +131,10 @@ export function Step0Ikigai() {
       ikigai.p3_community_to_help || ikigai.targetCommunity,
       ikigai.p3_unlimited_resource || ikigai.priorityCause,
       ikigai.p3_immediate_needs || ikigai.practicalNeeds,
-      ikigai.p3_non_negotiables || (ikigai.coreValues && ikigai.coreValues.join(", ")),
+      ikigai.p3_non_negotiables ||
+        (coreValuesList.length > 0
+          ? coreValuesList.map((v) => getLocalizedCoreValue(v, language)).join(", ")
+          : undefined),
       ikigai.p3_future_gap || ikigai.decadeOutlook,
       ikigai.p3_legacy_impact || ikigai.desiredLegacy,
       ikigai.p4_past_paid_services || ikigai.pastPaidServices,
@@ -529,20 +453,21 @@ export function Step0Ikigai() {
               <p className="text-xs text-slate-500">{t("step0.values_desc")}</p>
 
               <div className="flex flex-wrap gap-2 pt-1">
-                {suggestedValues.map((val) => {
-                  const isSelected = coreValuesList.includes(val);
+                {CORE_VALUE_KEYS.map((key) => {
+                  const isSelected = coreValuesList.includes(key);
+                  const label = getLocalizedCoreValue(key, language);
                   return (
                     <button
-                      key={val}
+                      key={key}
                       type="button"
-                      onClick={() => toggleCoreValue(val)}
+                      onClick={() => toggleCoreValue(key)}
                       className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-150 border ${
                         isSelected
                           ? "bg-indigo-600 text-white border-indigo-600 shadow-sm shadow-indigo-500/30 scale-105"
                           : "bg-slate-100/80 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-indigo-400"
                       }`}
                     >
-                      {isSelected ? `✓ ${val}` : `+ ${val}`}
+                      {isSelected ? `✓ ${label}` : `+ ${label}`}
                     </button>
                   );
                 })}
@@ -711,7 +636,7 @@ export function Step0Ikigai() {
                         key={val}
                         className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800"
                       >
-                        ✓ {val}
+                        ✓ {getLocalizedCoreValue(val, language)}
                       </span>
                     ))
                   ) : (

@@ -19,6 +19,7 @@ import {
 import Link from "next/link";
 import { exportStrategyToMarkdown, downloadBlobFile } from "@/lib/export-utils";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { getLocalizedCoreValue } from "@/lib/core-values";
 
 import { NewUserOnboarding } from "@/components/dashboard/NewUserOnboarding";
 
@@ -145,7 +146,7 @@ export default function StrategyPage() {
               key={val}
               className="px-3 py-1 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-indigo-600 dark:text-indigo-400 shadow-xs"
             >
-              {val}
+              {getLocalizedCoreValue(val, language)}
             </span>
           ))}
         </div>
