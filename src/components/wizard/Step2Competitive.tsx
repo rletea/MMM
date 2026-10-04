@@ -72,7 +72,7 @@ export function Step2Competitive() {
             {t("step2.differentiator")}
           </label>
           <span className="text-xs text-slate-400">
-            {competitive.differentiator.length} characters
+            {competitive.differentiator.length} {t("comp.characters")}
           </span>
         </div>
         <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -95,6 +95,9 @@ export function Step2Competitive() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           {SATURATION_TIERS.map((tier) => {
             const isSelected = competitive.marketSaturation === tier.id;
+            const localizedTitle = t(`comp.sat_${tier.id.toLowerCase()}_title` as any) || tier.title;
+            const localizedDesc = t(`comp.sat_${tier.id.toLowerCase()}_desc` as any) || tier.desc;
+
             return (
               <button
                 key={tier.id}
@@ -108,14 +111,14 @@ export function Step2Competitive() {
               >
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="font-bold text-xs text-slate-900 dark:text-white">
-                    {tier.title}
+                    {localizedTitle}
                   </span>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${tier.badgeColor}`}>
                     {tier.id}
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
-                  {tier.desc}
+                  {localizedDesc}
                 </p>
               </button>
             );
@@ -133,14 +136,14 @@ export function Step2Competitive() {
             type="text"
             value={newComp}
             onChange={(e) => setNewComp(e.target.value)}
-            placeholder="Add competitor name or alternative (e.g. Generic Agency, Tool X)..."
+            placeholder={t("comp.placeholder") || "Add competitor name or alternative..."}
             className="flex-1 px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
           <button
             type="submit"
-            className="px-4 py-2.5 rounded-xl text-xs font-bold text-white gradient-brand shadow-sm hover:opacity-95 transition-opacity flex items-center gap-1"
+            className="px-4 py-2.5 rounded-xl text-xs font-bold text-white gradient-brand shadow-sm hover:opacity-95 transition-opacity flex items-center gap-1 cursor-pointer"
           >
-            <Plus className="w-4 h-4" /> Add
+            <Plus className="w-4 h-4" /> {t("comp.add_btn")}
           </button>
         </form>
 
@@ -154,7 +157,7 @@ export function Step2Competitive() {
               <button
                 type="button"
                 onClick={() => removeCompetitor(idx)}
-                className="text-slate-400 hover:text-rose-500 transition-colors"
+                className="text-slate-400 hover:text-rose-500 transition-colors cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -169,14 +172,14 @@ export function Step2Competitive() {
           {t("step2.retention")}
         </label>
         <select
-          value={competitive.retentionRate || "80%+"}
+          value={competitive.retentionRate || "90%+"}
           onChange={(e) => updateCompetitive({ retentionRate: e.target.value })}
           className="w-full sm:w-72 px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
-          <option value="90%+ (Exceptional LTV / Recurring)">90%+ (Exceptional LTV / Recurring)</option>
-          <option value="75%–90% (Healthy Retention)">75%–90% (Healthy Retention)</option>
-          <option value="50%–75% (Moderate Churn)">50%–75% (Moderate Churn)</option>
-          <option value="<50% (High Churn / One-off Transactional)">&lt;50% (High Churn / One-off Transactional)</option>
+          <option value="90%+">{t("comp.retention_90")}</option>
+          <option value="75% - 89%">{t("comp.retention_75")}</option>
+          <option value="50% - 74%">{t("comp.retention_50")}</option>
+          <option value="Under 50%">{t("comp.retention_low")}</option>
         </select>
       </div>
     </div>

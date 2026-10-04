@@ -155,13 +155,13 @@ export default function StrategyPage() {
       {(ikigai.overlap_synthesis || ikigai.coreIntersection || ikigai.pilot_30_days || ikigai.pilotProject30Days) && (
         <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-amber-500/10 via-indigo-500/5 to-purple-500/10 border border-amber-300/60 dark:border-amber-900/40 shadow-xl space-y-4">
           <div className="flex items-center gap-2 text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wide">
-            <Sparkles className="w-4 h-4" /> Ikigai Core Intersection & 30-Day Pilot
+            <Sparkles className="w-4 h-4" /> {t("strategy.ikigai_intersection_title")}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {(ikigai.overlap_synthesis || ikigai.coreIntersection) && (
               <div className="p-5 rounded-2xl bg-white/70 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800 space-y-1.5">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
-                  Core Intersection
+                  {t("strategy.core_intersection")}
                 </span>
                 <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
                   {ikigai.overlap_synthesis || ikigai.coreIntersection}
@@ -171,7 +171,7 @@ export default function StrategyPage() {
             {(ikigai.pilot_30_days || ikigai.pilotProject30Days) && (
               <div className="p-5 rounded-2xl bg-white/70 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800 space-y-1.5">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                  30-Day Pilot Action Project
+                  {t("strategy.pilot_action")}
                 </span>
                 <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
                   {ikigai.pilot_30_days || ikigai.pilotProject30Days}

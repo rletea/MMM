@@ -89,17 +89,17 @@ export default function LandingPage() {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-slate-200/80 dark:border-slate-800/80">
             <div>
               <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">
-                Platform Architecture
+                {t("landing.arch_badge")}
               </span>
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-0.5">
-                From Raw Founder Diagnostic to 30-Day Campaign Execution
+                {t("landing.arch_title")}
               </h2>
             </div>
             <Link
               href="/dashboard"
               className="px-4 py-2 rounded-xl text-xs font-bold text-white gradient-brand shadow-sm flex items-center gap-1"
             >
-              Live Demo View <ArrowRight className="w-3.5 h-3.5" />
+              {t("landing.live_demo")} <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
@@ -110,10 +110,10 @@ export default function LandingPage() {
                 01
               </div>
               <h3 className="font-bold text-sm text-slate-900 dark:text-white">
-                Ikigai & Moat Diagnostic
+                {t("landing.card1_title")}
               </h3>
               <p className="text-xs text-slate-500 leading-relaxed">
-                Evaluates Passion, Profession, Vocation, Mission, Archetype, and market saturation to prevent generic positioning.
+                {t("landing.card1_desc")}
               </p>
             </div>
 
@@ -123,10 +123,10 @@ export default function LandingPage() {
                 02
               </div>
               <h3 className="font-bold text-sm text-slate-900 dark:text-white">
-                BVI Calculation Engine
+                {t("landing.card2_title")}
               </h3>
               <p className="text-xs text-slate-500 leading-relaxed">
-                Deterministic mathematical scoring from 0–100% calculating risk tiers, capacity constraints, and action directives.
+                {t("landing.card2_desc")}
               </p>
             </div>
 
@@ -136,10 +136,10 @@ export default function LandingPage() {
                 03
               </div>
               <h3 className="font-bold text-sm text-slate-900 dark:text-white">
-                30-Day Multi-Channel Studio
+                {t("landing.card3_title")}
               </h3>
               <p className="text-xs text-slate-500 leading-relaxed">
-                Kanban and Calendar workspace with full post copy, hook analysis, video scripts, Midjourney visual prompts, and 1-click export.
+                {t("landing.card3_desc")}
               </p>
             </div>
           </div>
@@ -150,70 +150,70 @@ export default function LandingPage() {
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-8">
         <div className="text-center space-y-2">
           <span className="text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">
-            Omni-Channel Coverage
+            {t("landing.omni_badge")}
           </span>
           <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">
-            Tailored Format Engines for Every Platform
+            {t("landing.omni_title")}
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto">
-            Each post is synthesized natively for the attention dynamics of each specific social network.
+            {t("landing.omni_subtitle")}
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="p-6 rounded-3xl glass-card border border-blue-200/60 dark:border-blue-950/60 space-y-2 shadow-sm">
             <span className="text-xs font-extrabold text-[#0a66c2] uppercase">LinkedIn</span>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">Thought Leadership & Authority</h3>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">{t("landing.li_title")}</h3>
             <p className="text-xs text-slate-500 leading-relaxed">
-              Contrarian insights, founder origin stories, and 3-phase client case studies formatted for high engagement.
+              {t("landing.li_desc")}
             </p>
           </div>
 
           <div className="p-6 rounded-3xl glass-card border border-cyan-200/60 dark:border-cyan-950/60 space-y-2 shadow-sm">
             <span className="text-xs font-extrabold text-cyan-500 uppercase">TikTok & Reels</span>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">Short-Form Video Scripts</h3>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">{t("landing.tt_title")}</h3>
             <p className="text-xs text-slate-500 leading-relaxed">
-              0-3s visual hooks, on-screen text directions, scene-by-scene storyboard, and audio cue guides.
+              {t("landing.tt_desc")}
             </p>
           </div>
 
           <div className="p-6 rounded-3xl glass-card border border-rose-200/60 dark:border-rose-950/60 space-y-2 shadow-sm">
             <span className="text-xs font-extrabold text-rose-500 uppercase">Instagram</span>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">Carousels & Aesthetic Hooks</h3>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">{t("landing.ig_title")}</h3>
             <p className="text-xs text-slate-500 leading-relaxed">
-              Slide-by-slide educational teardowns with Midjourney image prompt descriptors included.
+              {t("landing.ig_desc")}
             </p>
           </div>
 
           <div className="p-6 rounded-3xl glass-card border border-emerald-200/60 dark:border-emerald-950/60 space-y-2 shadow-sm">
             <span className="text-xs font-extrabold text-emerald-500 uppercase">Email Newsletter</span>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">High-Converting Digests</h3>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">{t("landing.em_title")}</h3>
             <p className="text-xs text-slate-500 leading-relaxed">
-              Subject lines, preview text, personal narrative frameworks, and primary sales/reply CTAs.
+              {t("landing.em_desc")}
             </p>
           </div>
 
           <div className="p-6 rounded-3xl glass-card border border-indigo-200/60 dark:border-indigo-950/60 space-y-2 shadow-sm">
             <span className="text-xs font-extrabold text-[#1877f2] uppercase">Facebook</span>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">Community Discussion Prompts</h3>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">{t("landing.fb_title")}</h3>
             <p className="text-xs text-slate-500 leading-relaxed">
-              Group discussion catalysts, client transformation spotlights, and retargeting hooks.
+              {t("landing.fb_desc")}
             </p>
           </div>
 
           <div className="p-6 rounded-3xl glass-card border border-purple-200/60 dark:border-purple-950/60 space-y-2 shadow-sm flex flex-col justify-between">
             <div>
-              <span className="text-xs font-extrabold text-purple-500 uppercase">One-Click Schedulers</span>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">Instant Export & Pipeline</h3>
+              <span className="text-xs font-extrabold text-purple-500 uppercase">{t("landing.sched_badge")}</span>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">{t("landing.sched_title")}</h3>
               <p className="text-xs text-slate-500 leading-relaxed">
-                Export directly to CSV formatted for Buffer, Hootsuite, and Meta Business Suite.
+                {t("landing.sched_desc")}
               </p>
             </div>
             <Link
               href="/wizard"
               className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
             >
-              Get Started Now <ArrowRight className="w-3 h-3" />
+              {t("landing.get_started_now")} <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
         </div>
@@ -223,10 +223,10 @@ export default function LandingPage() {
       <section className="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center space-y-6">
         <div className="p-10 rounded-3xl gradient-card-glow glass-card border border-indigo-200/80 dark:border-indigo-900 shadow-2xl space-y-4">
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-            Ready to Build Your Category-Dominant Marketing Machine?
+            {t("landing.cta_footer_title")}
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-lg mx-auto">
-            Take the 5-minute diagnostic now. Unlock your BVI viability scorecard, brand positioning manifesto, and 30-day multi-channel calendar.
+            {t("landing.cta_footer_subtitle")}
           </p>
           <div className="pt-2">
             <Link
@@ -234,7 +234,7 @@ export default function LandingPage() {
               className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl text-sm font-bold text-white gradient-brand shadow-lg shadow-indigo-500/25 hover:opacity-95 transition-opacity"
             >
               <Sparkles className="w-4 h-4" />
-              Begin Free Diagnostic
+              {t("landing.cta_footer_btn")}
             </Link>
           </div>
         </div>

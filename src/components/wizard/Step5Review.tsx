@@ -1,62 +1,52 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { useWizardStore } from "@/store/wizard-store";
 import { calculateBVI } from "@/lib/bvi-calculator";
-import { useRouter } from "next/navigation";
-import { useToast } from "../ui/Toast";
-import confetti from "canvas-confetti";
-import { useLanguage } from "@/lib/i18n/LanguageContext";
 import {
   Sparkles,
   Award,
-  Cpu,
   Layers,
+  Cpu,
   ArrowRight,
   Loader2,
   Key,
 } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
+import { useRouter } from "next/navigation";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export function Step5Review() {
   const state = useWizardStore();
-  const router = useRouter();
-  const { toast } = useToast();
-  const { language, t } = useLanguage();
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [apiKey, setApiKey] = useState("");
   const [useOpenAI, setUseOpenAI] = useState(false);
+  const [apiKey, setApiKey] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { toast } = useToast();
+  const router = useRouter();
+  const { language, t } = useLanguage();
 
-  // Calculate live BVI with active language
-  const bvi = useMemo(() => calculateBVI(state, language), [state, language]);
+  const bvi = calculateBVI(state, language);
 
   const handleGenerate = async () => {
     setIsGenerating(true);
     try {
-      // Trigger confetti on submit
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-      });
-
       const response = await fetch("/api/wizard/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           wizardState: state,
+          language,
+          useOpenAI,
           apiKey: useOpenAI ? apiKey : undefined,
-          provider: useOpenAI ? "openai" : "builtin",
-          language: language,
         }),
       });
 
       const res = await response.json();
-
       if (!response.ok) {
         throw new Error(res.error || "Failed to generate strategy");
       }
 
-      toast("Marketing Strategy and 30-Day Content Generated!", "success");
+      toast(t("step5.toast_success") || "Marketing Strategy and 30-Day Content Generated!", "success");
       router.push("/dashboard");
     } catch (err: any) {
       toast(err.message || "Generation error. Please check your inputs.", "error");
@@ -64,6 +54,9 @@ export function Step5Review() {
       setIsGenerating(false);
     }
   };
+
+  const localizedArchetype = t(`archetype.${state.ikigai.archetype}` as any) || state.ikigai.archetype?.replace(/_/g, " ");
+  const localizedBizModel = t(`biz_model.${state.business.businessModel}.title` as any) || state.business.businessModel?.replace(/_/g, " ");
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -159,10 +152,10 @@ export function Step5Review() {
             <Sparkles className="w-3.5 h-3.5" /> {t("wizard.step0_tab")}
           </div>
           <div className="text-sm font-semibold text-slate-900 dark:text-white">
-            {state.ikigai.archetype?.replace(/_/g, " ")}
+            {localizedArchetype}
           </div>
           <p className="text-xs text-slate-500 line-clamp-2">
-            <strong>Mission:</strong> {state.ikigai.mission || state.ikigai.priorityCause || state.ikigai.coreIntersection || "Not specified"}
+            <strong>{t("step5.mission_label")}:</strong> {state.ikigai.mission || state.ikigai.priorityCause || state.ikigai.coreIntersection || "—"}
           </p>
           <div className="flex flex-wrap gap-1 pt-1">
             {state.ikigai.coreValues?.map((v) => (
@@ -179,10 +172,10 @@ export function Step5Review() {
             <Layers className="w-3.5 h-3.5" /> {t("wizard.step1_tab")}
           </div>
           <div className="text-sm font-semibold text-slate-900 dark:text-white">
-            {state.business.businessModel?.replace(/_/g, " ")} • {state.business.industry || "General"}
+            {localizedBizModel} • {state.business.industry || "General"}
           </div>
           <p className="text-xs text-slate-500">
-            <strong>Budget:</strong> ${state.business.monthlyBudget}/mo • <strong>Time:</strong> {state.business.weeklyHours} hrs/week
+            <strong>{t("step5.budget_label")}:</strong> ${state.business.monthlyBudget}{t("biz_units.per_month")} • <strong>{t("step5.time_label")}:</strong> {state.business.weeklyHours} {t("biz_units.hours_per_week")}
           </p>
           <div className="flex flex-wrap gap-1.5 pt-1">
             {state.scope.activeChannels.map((c) => (
@@ -206,16 +199,16 @@ export function Step5Review() {
               <div className="text-xs text-slate-500">
                 {useOpenAI
                   ? "Live OpenAI GPT-4o Generation"
-                  : "High-Leverage Built-In Synthesis Engine (Zero API Key required)"}
+                  : t("step5.engine_builtin")}
               </div>
             </div>
           </div>
           <button
             type="button"
             onClick={() => setUseOpenAI(!useOpenAI)}
-            className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
           >
-            {useOpenAI ? "Use Built-In Engine" : "+ Custom OpenAI Key"}
+            {useOpenAI ? t("step5.engine_builtin_btn") : t("step5.engine_custom")}
           </button>
         </div>
 
@@ -244,7 +237,7 @@ export function Step5Review() {
           type="button"
           onClick={handleGenerate}
           disabled={isGenerating}
-          className="w-full sm:w-auto px-8 py-3.5 rounded-2xl text-sm font-bold text-white gradient-brand shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 shrink-0 disabled:opacity-50"
+          className="w-full sm:w-auto px-8 py-3.5 rounded-2xl text-sm font-bold text-white gradient-brand shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 shrink-0 disabled:opacity-50 cursor-pointer"
         >
           {isGenerating ? (
             <>

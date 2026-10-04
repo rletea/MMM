@@ -147,10 +147,10 @@ export default function DashboardPage() {
       <div className="p-6 rounded-3xl gradient-card-glow glass-card border border-indigo-200/80 dark:border-indigo-900/40 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="space-y-1 text-center sm:text-left">
           <h3 className="text-base font-bold text-slate-900 dark:text-white">
-            Ready to deploy this week's content schedule?
+            {t("dash.deploy_title")}
           </h3>
           <p className="text-xs text-slate-500">
-            Head to the Content Studio to review your visual Midjourney prompts and short-form scripts.
+            {t("dash.deploy_desc")}
           </p>
         </div>
         <Link
@@ -158,7 +158,7 @@ export default function DashboardPage() {
           className="px-6 py-3 rounded-2xl text-xs font-bold text-white gradient-brand shadow-md shadow-indigo-500/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 shrink-0"
         >
           <Sparkles className="w-4 h-4" />
-          Review 30-Day Calendar
+          {t("dash.review_calendar_btn")}
           <ArrowRight className="w-4 h-4" />
         </Link>
       </div>

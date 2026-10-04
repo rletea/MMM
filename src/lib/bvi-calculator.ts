@@ -318,7 +318,123 @@ export function calculateBVI(
   };
 
   const tFeedback = feedbackTranslations[lang] || feedbackTranslations.en;
-  const archName = ikigai.archetype?.replace(/_/g, " ") || "Visionary";
+  
+  const archetypeMap: Record<string, Record<string, string>> = {
+    de: {
+      VISIONARY_DISRUPTOR: "Visionärer Disruptor",
+      TRUSTED_AUTHORITY: "Vertrauenswürdige Autorität",
+      COMMUNITY_CATALYST: "Community-Katalysator",
+      CREATIVE_ARTISAN: "Kreativer Handwerker",
+      DATA_SCIENTIST: "Daten-Wissenschaftler",
+      TRANSFORMATION_GUIDE: "Transformations-Guide",
+    },
+    ro: {
+      VISIONARY_DISRUPTOR: "Disruptor Vizionar",
+      TRUSTED_AUTHORITY: "Autoritate de Încredere",
+      COMMUNITY_CATALYST: "Catalizator de Comunitate",
+      CREATIVE_ARTISAN: "Artizan Creativ",
+      DATA_SCIENTIST: "Om de Știință a Datelor",
+      TRANSFORMATION_GUIDE: "Ghid de Transformare",
+    },
+    fr: {
+      VISIONARY_DISRUPTOR: "Disrupteur Visionnaire",
+      TRUSTED_AUTHORITY: "Autorité de Confiance",
+      COMMUNITY_CATALYST: "Catalyseur de Communauté",
+      CREATIVE_ARTISAN: "Artisan Créatif",
+      DATA_SCIENTIST: "Scientifique des Données",
+      TRANSFORMATION_GUIDE: "Guide de Transformation",
+    },
+    it: {
+      VISIONARY_DISRUPTOR: "Disruptor Visionario",
+      TRUSTED_AUTHORITY: "Autorità Fidata",
+      COMMUNITY_CATALYST: "Catalizzatore di Comunità",
+      CREATIVE_ARTISAN: "Artigiano Creativo",
+      DATA_SCIENTIST: "Data Scientist",
+      TRANSFORMATION_GUIDE: "Guida alla Trasformazione",
+    },
+    pl: {
+      VISIONARY_DISRUPTOR: "Wizjonerski Disruptor",
+      TRUSTED_AUTHORITY: "Zaufany Autorytet",
+      COMMUNITY_CATALYST: "Katalizator Społeczności",
+      CREATIVE_ARTISAN: "Kreatywny Rzemieślnik",
+      DATA_SCIENTIST: "Naukowiec Danych",
+      TRANSFORMATION_GUIDE: "Przewodnik Transformacji",
+    },
+    es: {
+      VISIONARY_DISRUPTOR: "Disruptor Visionario",
+      TRUSTED_AUTHORITY: "Autoridad Confiable",
+      COMMUNITY_CATALYST: "Catalizador de Comunidad",
+      CREATIVE_ARTISAN: "Artesano Creativo",
+      DATA_SCIENTIST: "Científico de Datos",
+      TRANSFORMATION_GUIDE: "Guía de Transformación",
+    },
+    en: {
+      VISIONARY_DISRUPTOR: "Visionary Disruptor",
+      TRUSTED_AUTHORITY: "Trusted Authority",
+      COMMUNITY_CATALYST: "Community Catalyst",
+      CREATIVE_ARTISAN: "Creative Artisan",
+      DATA_SCIENTIST: "Data Scientist",
+      TRANSFORMATION_GUIDE: "Transformation Guide",
+    },
+  };
+
+  const modelMap: Record<string, Record<string, string>> = {
+    de: {
+      B2B_SERVICE: "B2B-Dienstleistung & Beratung",
+      B2B_SAAS: "B2B-SaaS",
+      B2C_ECOM: "B2C-E-Commerce",
+      B2C_LOCAL: "Lokales B2C-Geschäft",
+      CREATOR: "Creator & Medienmarke",
+    },
+    ro: {
+      B2B_SERVICE: "Servicii B2B & Consultanță",
+      B2B_SAAS: "B2B SaaS",
+      B2C_ECOM: "B2C E-Commerce",
+      B2C_LOCAL: "Afacere Locală B2C",
+      CREATOR: "Creator & Brand Media",
+    },
+    fr: {
+      B2B_SERVICE: "Services B2B & Conseil",
+      B2B_SAAS: "SaaS B2B",
+      B2C_ECOM: "E-Commerce B2C",
+      B2C_LOCAL: "Commerce Local B2C",
+      CREATOR: "Créateur & Média",
+    },
+    it: {
+      B2B_SERVICE: "Servizi B2B & Consulenza",
+      B2B_SAAS: "SaaS B2B",
+      B2C_ECOM: "E-Commerce B2C",
+      B2C_LOCAL: "Attività Locale B2C",
+      CREATOR: "Creator & Media",
+    },
+    pl: {
+      B2B_SERVICE: "Usługi B2B i Doradztwo",
+      B2B_SAAS: "SaaS B2B",
+      B2C_ECOM: "E-Commerce B2C",
+      B2C_LOCAL: "Lokalny Biznes B2C",
+      CREATOR: "Twórca i Marka Medialna",
+    },
+    es: {
+      B2B_SERVICE: "Servicios B2B y Consultoría",
+      B2B_SAAS: "SaaS B2B",
+      B2C_ECOM: "E-Commerce B2C",
+      B2C_LOCAL: "Negocio Local B2C",
+      CREATOR: "Creador y Medios",
+    },
+    en: {
+      B2B_SERVICE: "B2B Service & Advisory",
+      B2B_SAAS: "B2B SaaS",
+      B2C_ECOM: "B2C E-Commerce",
+      B2C_LOCAL: "B2C Local Business",
+      CREATOR: "Creator & Media",
+    },
+  };
+
+  const rawArch = ikigai.archetype || "VISIONARY_DISRUPTOR";
+  const archName = (archetypeMap[lang] && archetypeMap[lang][rawArch]) || (archetypeMap.en && archetypeMap.en[rawArch]) || rawArch.replace(/_/g, " ");
+
+  const rawModel = model || "B2B_SERVICE";
+  const modelName = (modelMap[lang] && modelMap[lang][rawModel]) || (modelMap.en && modelMap.en[rawModel]) || rawModel.replace(/_/g, " ");
 
   if (ikigaiScore >= 75) {
     strengths.push(tFeedback.strIkigai(archName));
@@ -349,7 +465,7 @@ export function calculateBVI(
   }
 
   if (channelScore >= 75) {
-    strengths.push(tFeedback.strChannel(model.replace(/_/g, " ")));
+    strengths.push(tFeedback.strChannel(modelName));
   } else {
     actionDirectives.push(tFeedback.dirChannel);
   }

@@ -25,6 +25,9 @@ import {
   ChevronLeft,
   Sparkle,
   Wand2,
+  ArrowRight,
+  Check,
+  Award,
 } from "lucide-react";
 
 const ARCHETYPES: {
@@ -78,18 +81,92 @@ const ARCHETYPES: {
   },
 ];
 
-const SUGGESTED_VALUES = [
-  "Radical Transparency",
-  "Design Elegance",
-  "Speed & Agility",
-  "Zero Fluff / High Signal",
-  "Customer Obsession",
-  "Data-Driven Rigor",
-  "Contrarian Innovation",
-  "Uncompromising Quality",
-  "Ethical Stewardship",
-  "Community Empowerment",
-];
+const SUGGESTED_VALUES_BY_LANG: Record<string, string[]> = {
+  de: [
+    "Radikale Transparenz",
+    "Design-Eleganz",
+    "Geschwindigkeit & Agilität",
+    "Zero Fluff / Hohe Relevanz",
+    "Kundenfokus",
+    "Datenbasierte Präzision",
+    "Querdenker-Innovation",
+    "Kompromisslose Qualität",
+    "Ethische Verantwortung",
+    "Community-Befähigung",
+  ],
+  ro: [
+    "Transparență Radicală",
+    "Eleganță în Design",
+    "Viteză & Agilitate",
+    "Fără Vorbărie / Semnal Puternic",
+    "Obsesie pentru Client",
+    "Rigoare Bazată pe Date",
+    "Inovație Contrariană",
+    "Calitate Fără Compromis",
+    "Responsabilitate Etică",
+    "Împuternicirea Comunității",
+  ],
+  fr: [
+    "Transparence Radicale",
+    "Élégance du Design",
+    "Rapidité & Agilité",
+    "Zéro Superflu / Haute Valeur",
+    "Obsession Client",
+    "Rigueur Basée sur les Données",
+    "Innovation à Contre-Courant",
+    "Qualité Sans Compromis",
+    "Responsabilité Éthique",
+    "Autonomisation de la Communauté",
+  ],
+  it: [
+    "Trasparenza Radicale",
+    "Eleganza del Design",
+    "Velocità & Agilità",
+    "Zero Fronzoli / Alto Valore",
+    "Ossessione per il Cliente",
+    "Rigore Basato sui Dati",
+    "Innovazione Contrarian",
+    "Qualità Senza Compromessi",
+    "Responsabilità Etica",
+    "Crescita della Community",
+  ],
+  pl: [
+    "Radykalna Przejrzystość",
+    "Elegancja Projektowa",
+    "Szybkość i Zwinność",
+    "Czysta Wartość / Zero Lania Wody",
+    "Orientacja na Klienta",
+    "Rygor Oparty na Danych",
+    "Przełomowa Innowacja",
+    "Bezkompromisowa Jakość",
+    "Etyczne Przywództwo",
+    "Wzmacnianie Społeczności",
+  ],
+  es: [
+    "Transparencia Radical",
+    "Elegancia de Diseño",
+    "Velocidad y Agilidad",
+    "Cero Relleno / Alto Valor",
+    "Obsesión por el Cliente",
+    "Rigor Basado en Datos",
+    "Innovación a Contracorriente",
+    "Calidad Sin Concesiones",
+    "Responsabilidad Ética",
+    "Empoderamiento Comunitario",
+  ],
+  en: [
+    "Radical Transparency",
+    "Design Elegance",
+    "Speed & Agility",
+    "Zero Fluff / High Signal",
+    "Customer Obsession",
+    "Data-Driven Rigor",
+    "Contrarian Innovation",
+    "Uncompromising Quality",
+    "Ethical Stewardship",
+    "Community Empowerment",
+  ],
+};
 
 const PILLAR_ICONS: Record<string, any> = {
   Heart,
@@ -100,7 +177,7 @@ const PILLAR_ICONS: Record<string, any> = {
 };
 
 export function Step0Ikigai() {
-  const { ikigai, updateIkigai, toggleCoreValue, loadDemoData } = useWizardStore();
+  const { ikigai, updateIkigai, toggleCoreValue, loadDemoData, ikigaiConfirmed, confirmIkigai } = useWizardStore();
   const { language, t } = useLanguage();
   const [activeTab, setActiveTab] = useState<string>("passion");
 
@@ -108,6 +185,7 @@ export function Step0Ikigai() {
   const pillars = useMemo(() => getIkigaiPillarConfig(language), [language]);
 
   const coreValuesList = ikigai.coreValues || [];
+  const suggestedValues = SUGGESTED_VALUES_BY_LANG[language] || SUGGESTED_VALUES_BY_LANG.en;
 
   // Calculate completion stats across 30 AG-SPEC fields
   const totalFields = 30;
@@ -153,7 +231,7 @@ export function Step0Ikigai() {
 
   const completionPercentage = Math.round((completedFields / totalFields) * 100);
 
-  // Tab definitions
+  // Tab definitions with 7th Results & Confirmation tab
   const tabsList = [
     { id: "passion", label: i18nConfig.tabs.passion, icon: Heart, color: "text-pink-500", bg: "bg-pink-50 dark:bg-pink-950/40" },
     { id: "vocation", label: i18nConfig.tabs.vocation, icon: Globe, color: "text-indigo-500", bg: "bg-indigo-50 dark:bg-indigo-950/40" },
@@ -161,6 +239,7 @@ export function Step0Ikigai() {
     { id: "profession", label: i18nConfig.tabs.profession, icon: Briefcase, color: "text-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-950/40" },
     { id: "synthesis", label: i18nConfig.tabs.synthesis, icon: Target, color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-950/40" },
     { id: "archetype", label: i18nConfig.tabs.archetype, icon: Compass, color: "text-violet-500", bg: "bg-violet-50 dark:bg-violet-950/40" },
+    { id: "results", label: i18nConfig.tabs.results || t("step0.results_tab"), icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-950/40" },
   ];
 
   const currentTabIdx = tabsList.findIndex((t) => t.id === activeTab);
@@ -228,7 +307,7 @@ export function Step0Ikigai() {
         <div className="flex flex-wrap items-center gap-2 self-start md:self-center">
           <button
             type="button"
-            onClick={() => loadDemoData(language)}
+            onClick={() => loadDemoData(language, 0)}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-all border border-slate-300 dark:border-slate-700 shadow-xs"
           >
             <Wand2 className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
@@ -249,25 +328,23 @@ export function Step0Ikigai() {
       <div className="p-3.5 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 backdrop-blur-md">
         <div className="flex items-center justify-between text-xs font-semibold mb-2 text-slate-700 dark:text-slate-300">
           <span className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            <span>
-              {completedFields} / {totalFields} {i18nConfig.ui.progress}
-            </span>
+            <CheckCircle2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            {completedFields} / {totalFields} {i18nConfig.ui.progress}
           </span>
-          <span className="text-indigo-600 dark:text-indigo-400 font-bold">
+          <span className="font-bold text-indigo-600 dark:text-indigo-400">
             {completionPercentage}%
           </span>
         </div>
-        <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+        <div className="w-full bg-slate-200 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-500 rounded-full"
-            style={{ width: `${Math.max(5, completionPercentage)}%` }}
+            className="h-full gradient-brand rounded-full transition-all duration-300 shadow-xs"
+            style={{ width: `${completionPercentage}%` }}
           />
         </div>
       </div>
 
-      {/* Tab Navigation Controls */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
+      {/* Pillar Navigation Tabs */}
+      <div className="flex flex-wrap gap-2 p-1.5 rounded-2xl bg-slate-100/70 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800">
         {tabsList.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -276,77 +353,83 @@ export function Step0Ikigai() {
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap border ${
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-150 ${
                 isActive
-                  ? "bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-500/20 scale-[1.02]"
-                  : "bg-white/80 dark:bg-slate-900/80 text-slate-600 dark:text-slate-400 border-slate-200/80 dark:border-slate-800 hover:border-indigo-300"
+                  ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm ring-1 ring-slate-200 dark:ring-slate-700"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-800/50"
               }`}
             >
-              <Icon className={`w-3.5 h-3.5 ${isActive ? "text-white" : tab.color}`} />
+              <Icon className={`w-3.5 h-3.5 ${tab.color}`} />
               <span>{tab.label}</span>
+              {tab.id === "results" && ikigaiConfirmed && (
+                <span className="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-emerald-300" />
+              )}
             </button>
           );
         })}
       </div>
 
-      {/* Active Tab View */}
-      <div className="space-y-6">
-        {/* Render Regular Pillar Questions (Passion, Vocation, Mission, Profession, Synthesis) */}
-        {activeTab !== "archetype" && (() => {
-          const activePillarConfig = pillars.find((p) => p.id === activeTab);
-          if (!activePillarConfig) return null;
-          const Icon = PILLAR_ICONS[activePillarConfig.iconName] || Sparkles;
+      {/* Active Tab Content Area */}
+      <div className="p-6 rounded-3xl glass-card border border-slate-200/80 dark:border-slate-800 min-h-[460px]">
+        {/* Tabs 1 to 5: Standard Ikigai Pillars & Synthesis */}
+        {activeTab !== "archetype" && activeTab !== "results" && (() => {
+          const currentPillar = pillars.find((p) => p.id === activeTab);
+          if (!currentPillar) return null;
+          const Icon = PILLAR_ICONS[currentPillar.iconName] || Sparkles;
 
           return (
             <div className="space-y-6 animate-fade-in">
-              <div className="p-4 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/50 flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-                  <Icon className="w-5 h-5" />
+              <div className="flex items-start gap-3 pb-4 border-b border-slate-200/70 dark:border-slate-800">
+                <div className={`p-2.5 rounded-2xl bg-white dark:bg-slate-800 shadow-xs ${tabsList.find(t => t.id === activeTab)?.color}`}>
+                  <Icon className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-slate-900 dark:text-white">
-                    {activePillarConfig.title}
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    {activePillarConfig.desc}
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                      {currentPillar.badge}
+                    </span>
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                      {currentPillar.title}
+                    </h3>
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
+                    {currentPillar.desc}
                   </p>
                 </div>
               </div>
 
               {/* Questions Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {activePillarConfig.questions.map((q) => {
-                  const currentValue = ((ikigai as any)[q.key] as string) || "";
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {currentPillar.questions.map((q) => {
+                  const val = (ikigai[q.key] as string) || "";
                   return (
                     <div
-                      key={q.key}
-                      className="p-4 rounded-2xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-800 transition-all space-y-2 backdrop-blur-xs flex flex-col justify-between"
+                      key={String(q.key)}
+                      className="p-4 rounded-2xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-800/80 hover:border-indigo-300 dark:hover:border-indigo-800 transition-all space-y-2 shadow-2xs"
                     >
-                      <div className="space-y-1">
-                        <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
-                          {q.label}
-                        </label>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                          {q.hint}
-                        </p>
-                      </div>
+                      <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                        {q.label}
+                      </label>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 italic leading-snug">
+                        {q.hint}
+                      </p>
                       <textarea
-                        rows={3}
-                        value={currentValue}
+                        rows={2}
+                        value={val}
                         onChange={(e) => updateIkigai({ [q.key]: e.target.value })}
                         placeholder={q.placeholder}
-                        className="w-full text-xs rounded-xl p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-hidden transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600 resize-none"
+                        className="w-full px-3 py-2 rounded-xl bg-slate-50/80 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 font-sans leading-relaxed text-slate-900 dark:text-slate-100"
                       />
                     </div>
                   );
                 })}
               </div>
 
-              {/* Additional Monetization Selector if in Profession Pillar */}
+              {/* Special Monetization Blueprints for Pillar 4 */}
               {activeTab === "profession" && (
-                <div className="p-5 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-900/40 space-y-3">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-2">
-                    <Briefcase className="w-4 h-4" />
+                <div className="pt-4 border-t border-slate-200/70 dark:border-slate-800 space-y-3">
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5 uppercase tracking-wider">
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
                     <span>Select Primary Monetization Blueprint</span>
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -395,6 +478,9 @@ export function Step0Ikigai() {
                   const Icon = arch.icon;
                   const isSelected = ikigai.archetype === arch.id;
                   const localizedArchTitle = t(`archetype.${arch.id}` as any) || arch.title;
+                  const localizedDesc = t(`archetype.desc.${arch.id}` as any) || arch.desc;
+                  const localizedTone = t(`archetype.tone.${arch.id}` as any) || arch.tone;
+
                   return (
                     <button
                       key={arch.id}
@@ -424,10 +510,10 @@ export function Step0Ikigai() {
                         </span>
                       </div>
                       <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-3">
-                        {arch.desc}
+                        {localizedDesc}
                       </p>
                       <div className="inline-block px-2 py-0.5 rounded-md text-[10px] font-semibold bg-slate-100 dark:bg-slate-800/80 text-indigo-600 dark:text-indigo-400">
-                        Tone: {arch.tone}
+                        {t("archetype.tone_label")}: {localizedTone}
                       </div>
                     </button>
                   );
@@ -443,7 +529,7 @@ export function Step0Ikigai() {
               <p className="text-xs text-slate-500">{t("step0.values_desc")}</p>
 
               <div className="flex flex-wrap gap-2 pt-1">
-                {SUGGESTED_VALUES.map((val) => {
+                {suggestedValues.map((val) => {
                   const isSelected = coreValuesList.includes(val);
                   return (
                     <button
@@ -464,6 +550,190 @@ export function Step0Ikigai() {
             </div>
           </div>
         )}
+
+        {/* Tab 7: Results & Confirmation Step */}
+        {activeTab === "results" && (
+          <div className="space-y-8 animate-fade-in">
+            {/* Header Directive */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60">
+              <div className="space-y-1">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  {t("step0.results_badge")}
+                </span>
+                <h3 className="text-lg font-black text-slate-900 dark:text-white">
+                  {t("step0.results_title")}
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
+                  {t("step0.results_desc")}
+                </p>
+              </div>
+
+              {ikigaiConfirmed ? (
+                <div className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm shrink-0">
+                  <Check className="w-4 h-4" />
+                  <span>{t("step0.confirmed_badge")}</span>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={confirmIkigai}
+                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-emerald-600/20 hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>{t("step0.confirm_btn")}</span>
+                </button>
+              )}
+            </div>
+
+            {/* Core Intersection & Pilot Project Hero Callout */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-indigo-500/10 via-amber-500/10 to-purple-500/10 border border-indigo-200 dark:border-indigo-900/60 shadow-lg space-y-4">
+              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                <Target className="w-4 h-4" />
+                <span>{t("strategy.ikigai_intersection_title")}</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-5 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 space-y-1.5">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                    {t("step0.core_intersection_label")}
+                  </span>
+                  <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 font-medium leading-relaxed">
+                    {ikigai.overlap_synthesis || ikigai.coreIntersection || t("step0.results_desc")}
+                  </p>
+                </div>
+                <div className="p-5 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 space-y-1.5">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                    {t("step0.pilot_action_label")}
+                  </span>
+                  <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 font-medium leading-relaxed">
+                    {ikigai.pilot_30_days || ikigai.pilotProject30Days || "Launch a 30-day authority sprint aligned with your key strengths."}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 4 Human Dimensions Breakdown */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Pillar 1: Passion */}
+              <div className="p-5 rounded-2xl bg-white/70 dark:bg-slate-900/70 border border-pink-200/70 dark:border-pink-900/40 space-y-2">
+                <div className="flex items-center gap-2 text-xs font-bold text-pink-600 dark:text-pink-400 uppercase">
+                  <Heart className="w-4 h-4" />
+                  <span>{i18nConfig.tabs.passion}</span>
+                </div>
+                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+                  {ikigai.p1_energizing_tasks || ikigai.p1_time_loss || ikigai.passion || "—"}
+                </p>
+                {ikigai.p1_average_tuesday && (
+                  <p className="text-[11px] text-slate-500 italic pt-1 border-t border-slate-100 dark:border-slate-800">
+                    <strong>Tuesday:</strong> {ikigai.p1_average_tuesday}
+                  </p>
+                )}
+              </div>
+
+              {/* Pillar 2: Vocation */}
+              <div className="p-5 rounded-2xl bg-white/70 dark:bg-slate-900/70 border border-indigo-200/70 dark:border-indigo-900/40 space-y-2">
+                <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase">
+                  <Globe className="w-4 h-4" />
+                  <span>{i18nConfig.tabs.vocation}</span>
+                </div>
+                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+                  {ikigai.p2_effortless_skills || ikigai.p2_hard_skills || ikigai.vocation || "—"}
+                </p>
+                {ikigai.p2_recurring_praise && (
+                  <p className="text-[11px] text-slate-500 italic pt-1 border-t border-slate-100 dark:border-slate-800">
+                    <strong>Praise:</strong> {ikigai.p2_recurring_praise}
+                  </p>
+                )}
+              </div>
+
+              {/* Pillar 3: Mission */}
+              <div className="p-5 rounded-2xl bg-white/70 dark:bg-slate-900/70 border border-purple-200/70 dark:border-purple-900/40 space-y-2">
+                <div className="flex items-center gap-2 text-xs font-bold text-purple-600 dark:text-purple-400 uppercase">
+                  <Sparkles className="w-4 h-4" />
+                  <span>{i18nConfig.tabs.mission}</span>
+                </div>
+                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+                  {ikigai.p3_systemic_injustice || ikigai.p3_community_to_help || ikigai.mission || "—"}
+                </p>
+                {ikigai.p3_legacy_impact && (
+                  <p className="text-[11px] text-slate-500 italic pt-1 border-t border-slate-100 dark:border-slate-800">
+                    <strong>Legacy:</strong> {ikigai.p3_legacy_impact}
+                  </p>
+                )}
+              </div>
+
+              {/* Pillar 4: Profession */}
+              <div className="p-5 rounded-2xl bg-white/70 dark:bg-slate-900/70 border border-emerald-200/70 dark:border-emerald-900/40 space-y-2">
+                <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase">
+                  <Briefcase className="w-4 h-4" />
+                  <span>{i18nConfig.tabs.profession}</span>
+                </div>
+                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+                  {ikigai.p4_market_paid_skills || ikigai.p4_premium_assets || ikigai.profession || "—"}
+                </p>
+                {ikigai.monetizationModel && (
+                  <p className="text-[11px] text-slate-500 italic pt-1 border-t border-slate-100 dark:border-slate-800">
+                    <strong>Model:</strong> {ikigai.monetizationModel}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Archetype & Core Values Summary */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-5 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 space-y-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  {t("step0.archetype_summary_label")}
+                </span>
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl gradient-brand text-white">
+                    <Compass className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold text-slate-900 dark:text-white">
+                      {t(`archetype.${ikigai.archetype}` as any) || ikigai.archetype?.replace(/_/g, " ")}
+                    </div>
+                    <div className="text-[11px] text-indigo-600 dark:text-indigo-400 font-semibold">
+                      {t("archetype.tone_label")}: {t(`archetype.tone.${ikigai.archetype}` as any) || "Authentic"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-5 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 space-y-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  {t("step0.core_values_summary_label")}
+                </span>
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {coreValuesList.length > 0 ? (
+                    coreValuesList.map((val) => (
+                      <span
+                        key={val}
+                        className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800"
+                      >
+                        ✓ {val}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-xs text-slate-400 italic">None selected</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Full-Width Confirmation Action */}
+            <div className="pt-4 border-t border-slate-200/80 dark:border-slate-800 flex justify-end">
+              <button
+                type="button"
+                onClick={confirmIkigai}
+                className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30 hover:scale-102 active:scale-98 transition-all cursor-pointer"
+              >
+                <span>{t("step0.confirm_btn")}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Intra-Pillar Navigation Buttons */}
@@ -474,23 +744,37 @@ export function Step0Ikigai() {
           onClick={() => {
             if (currentTabIdx > 0) setActiveTab(tabsList[currentTabIdx - 1].id);
           }}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:pointer-events-none transition-all"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
         >
           <ChevronLeft className="w-4 h-4" />
-          <span>Previous Pillar</span>
+          <span>{t("step0.prev_pillar")}</span>
         </button>
 
-        <button
-          type="button"
-          disabled={currentTabIdx === tabsList.length - 1}
-          onClick={() => {
-            if (currentTabIdx < tabsList.length - 1) setActiveTab(tabsList[currentTabIdx + 1].id);
-          }}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900 disabled:opacity-30 disabled:pointer-events-none transition-all border border-indigo-200 dark:border-indigo-800"
-        >
-          <span>Next Pillar</span>
-          <ChevronRight className="w-4 h-4" />
-        </button>
+        {activeTab !== "results" ? (
+          <button
+            type="button"
+            onClick={() => {
+              if (currentTabIdx < tabsList.length - 1) setActiveTab(tabsList[currentTabIdx + 1].id);
+            }}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition-all border border-indigo-200 dark:border-indigo-800 cursor-pointer"
+          >
+            <span>
+              {activeTab === "archetype"
+                ? `${t("step0.results_tab")} →`
+                : t("step0.next_pillar")}
+            </span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={confirmIkigai}
+            className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          >
+            <Check className="w-4 h-4" />
+            <span>{t("step0.confirm_btn")}</span>
+          </button>
+        )}
       </div>
     </div>
   );

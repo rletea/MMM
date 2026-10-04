@@ -13,8 +13,11 @@ import {
   ChannelType,
   ReviewCadenceType,
 } from "../lib/types";
+import { getDemoWizardState } from "../lib/demo-presets";
 
 interface WizardStore extends WizardFormState {
+  ikigaiConfirmed: boolean;
+  confirmIkigai: () => void;
   setStep: (step: number) => void;
   nextStep: () => void;
   prevStep: () => void;
@@ -29,7 +32,7 @@ interface WizardStore extends WizardFormState {
   toggleGoal: (goal: string) => void;
   addCompetitor: (competitor: string) => void;
   removeCompetitor: (index: number) => void;
-  loadDemoData: (lang?: string) => void;
+  loadDemoData: (lang?: string, targetStep?: number) => void;
   resetWizard: () => void;
 }
 
@@ -150,12 +153,14 @@ export const useWizardStore = create<WizardStore>()(
   persist(
     (set, get) => ({
       step: 0,
+      ikigaiConfirmed: false,
       ikigai: initialIkigai,
       business: initialBusiness,
       competitive: initialCompetitive,
       audience: initialAudience,
       scope: initialScope,
 
+      confirmIkigai: () => set({ ikigaiConfirmed: true, step: 1 }),
       setStep: (step) => set({ step: Math.max(0, Math.min(5, step)) }),
       nextStep: () => set((s) => ({ step: Math.min(5, s.step + 1) })),
       prevStep: () => set((s) => ({ step: Math.max(0, s.step - 1) })),
@@ -233,228 +238,23 @@ export const useWizardStore = create<WizardStore>()(
           },
         })),
 
-      loadDemoData: (lang: string = "en") => {
-        const isRo = lang === "ro";
-        const isDe = lang === "de";
-        const isFr = lang === "fr";
-        const isEs = lang === "es";
-
-        let ikigaiDemo: IkigaiData;
-
-        if (isRo) {
-          ikigaiDemo = {
-            locale: "RO",
-            p1_time_loss: "Arhitecturarea motoarelor complexe de creștere, scrierea analizelor strategice și optimizarea sistemelor de piață",
-            p1_spare_time_reading: "Creștere organică B2B, psihologie decizională, automatizări AI, diferențiere strategică de brand",
-            p1_average_tuesday: "Dimineață dedicată creației de strategii fără întreruperi, după-amiază de consultanță strategică de nivel înalt",
-            p1_energizing_tasks: "Transformarea intuiției fondatorului în sisteme de piață clare, sistematizate și scalabile",
-            p1_childhood_passions: "Simulări de strategie, crearea de reviste și jocuri logice interactive",
-            p1_spark_debates: "De ce majoritatea agențiilor B2B vând metrici vanitoase în loc de dominanță de categorie",
-            p1_creative_outlets: "Eseuri provocatoare, design de brand minimalist și arhitectură de procese",
-            p2_effortless_skills: "Identificarea instantanee a blocajelor ascunse din poziționare și comunicare",
-            p2_sought_advice: "Stabilirea prețurilor premium, arhitectura autorității de brand, generarea de oportunități calificate",
-            p2_hard_skills: "Analiză de creștere B2B, repoziționare strategică, fluxuri editoriale multi-canal, prompt engineering",
-            p2_interpersonal_soft: "Empatie profundă, ascultare activă structurată, comunicare de impact și sinteză contrariană",
-            p2_success_patterns: "Concentrare pe canale asimetrice de distribuție, eliminarea zgomotului inutil și creare de active IP durabile",
-            p2_problem_solving: "Deconstrucție după primele principii urmată de prototipare rapidă și iterație sistemică",
-            p2_recurring_praise: "«Ați rezumat viziunea noastră pe 5 ani și ne-ați diferențiat în 1 oră mai bine decât o agenție în 6 luni»",
-            p3_systemic_injustice: "Fondatori remarcabili construiesc produse excepționale, dar rămân invizibili din cauza lipsei de strategie clară",
-            p3_community_to_help: "Fondatori B2B, consultanți de elită și antreprenori orientați spre excelență și impact",
-            p3_unlimited_resource: "Democratizarea strategiilor de CMO de nivel enterprise pentru operatori onești și ambițioși",
-            p3_immediate_needs: "Un motor previzibil de distribuție pe 30 de zile care generează autoritate și vânzări fără epuizare",
-            p3_non_negotiables: "Transparență Radicală, Eficiență Asimetrică, Măiestrie, Focalizare Neclintită",
-            p3_future_gap: "Conținutul generic generat de AI va inunda platformele; doar vocea autentică a fondatorului va mai converti",
-            p3_legacy_impact: "Sprijinirea a peste 1.000 de fondatori să își construiască afaceri durabile, extrem de profitabile și lideri de nișă",
-            p4_past_paid_services: "Servicii de Fractional CMO (5.000€/lună), workshop-uri intensive de repoziționare, audituri de conversie",
-            p4_market_paid_skills: "Design de categorie de piață, mesaje de conversie high-ticket, sisteme autonome de distribuție",
-            p4_commercial_hobbies: "Publicarea de analize de business, comunități private pentru fondatori, prototipuri software",
-            p4_high_value_roi: "Peste 2.4M€ în contracte încheiate de clienți datorită autorității organice construite",
-            p4_premium_assets: "Sistemul Integrat de Poziționare și Distribuție pe 30 de Zile cu lansare multi-canal",
-            p4_growth_niches: "Consultanță B2B asistată de inteligență artificială, tehnologie enterprise, servicii high-ticket",
-            p4_monetization_fit: "Consultanță strategică premium + Abonament lunar de optimizare continuă",
-            overlap_synthesis: "Ghidarea fondatorilor ambițioși către autoritate de piață de necontestat și clienți calificați recurenți",
-            pilot_30_days: "Lansarea unui calendar multi-canal intensiv pe 30 de zile cu analize zilnice pe LinkedIn și secvență de email",
-            timeFlyActivities: "Arhitecturarea motoarelor complexe de creștere, scrierea analizelor strategice și optimizarea sistemelor de piață",
-            naturalTopics: "Creștere organică B2B, psihologie decizională, automatizări AI, diferențiere strategică de brand",
-            idealTuesday: "Dimineață dedicată creației de strategii fără întreruperi, după-amiază de consultanță strategică de nivel înalt",
-            energizingTasks: "Transformarea intuiției fondatorului în sisteme de piață clare, sistematizate și scalabile",
-            childhoodPassions: "Simulări de strategie, crearea de reviste și jocuri logice interactive",
-            sparkDebates: "De ce majoritatea agențiilor B2B vând metrici vanitoase în loc de dominanță de categorie",
-            creativeOutlets: "Eseuri provocatoare, design de brand minimalist și arhitectură de procese",
-
-            effortlessSkills: "Identificarea instantanee a blocajelor ascunse din poziționare și comunicare",
-            soughtAdvice: "Stabilirea prețurilor premium, arhitectura autorității de brand, generarea de oportunități calificate",
-            hardSkills: "Analiză de creștere B2B, repoziționare strategică, fluxuri editoriale multi-canal, prompt engineering",
-            softSkills: "Empatie profundă, ascultare activă structurată, comunicare de impact și sinteză contrariană",
-            successPatterns: "Concentrare pe canale asimetrice de distribuție, eliminarea zgomotului inutil și creare de active IP durabile",
-            problemSolvingWay: "Deconstrucție după primele principii urmată de prototipare rapidă și iterație sistemică",
-            recurringPraise: "«Ați rezumat viziunea noastră pe 5 ani și ne-ați diferențiat în 1 oră mai bine decât o agenție în 6 luni»",
-
-            systemicProblems: "Fondatori remarcabili construiesc produse excepționale, dar rămân invizibili din cauza lipsei de strategie clară",
-            targetCommunity: "Fondatori B2B, consultanți de elită și antreprenori orientați spre excelență și impact",
-            priorityCause: "Democratizarea strategiilor de CMO de nivel enterprise pentru operatori onești și ambițioși",
-            practicalNeeds: "Un motor previzibil de distribuție pe 30 de zile care generează autoritate și vânzări fără epuizare",
-            coreValues: ["Transparență Radicală", "Eficiență Asimetrică", "Măiestrie", "Focalizare Neclintită"],
-            decadeOutlook: "Conținutul generic generat de AI va inunda platformele; doar vocea autentică a fondatorului va mai converti",
-            desiredLegacy: "Sprijinirea a peste 1.000 de fondatori să își construiască afaceri durabile, extrem de profitabile și lideri de nișă",
-
-            pastPaidServices: "Servicii de Fractional CMO (5.000€/lună), workshop-uri intensive de repoziționare, audituri de conversie",
-            highValueSkills: "Design de categorie de piață, mesaje de conversie high-ticket, sisteme autonome de distribuție",
-            commercialHobbies: "Publicarea de analize de business, comunități private pentru fondatori, prototipuri software",
-            economicImpact: "Peste 2.4M€ în contracte încheiate de clienți datorită autorității organice construite",
-            premiumOffers: "Sistemul Integrat de Poziționare și Distribuție pe 30 de Zile cu lansare multi-canal",
-            growthNiches: "Consultanță B2B asistată de inteligență artificială, tehnologie enterprise, servicii high-ticket",
-            monetizationModel: "Consultanță strategică premium + Abonament lunar de optimizare continuă",
-
-            coreIntersection: "Ghidarea fondatorilor ambițioși către autoritate de piață de necontestat și clienți calificați recurenți",
-            pilotProject30Days: "Lansarea unui calendar multi-canal intensiv pe 30 de zile cu analize zilnice pe LinkedIn și secvență de email",
-
-            passion: "Transformarea intuiției fondatorului în sisteme de piață clare și scalabile",
-            vocation: "Consultanță strategică de marketing și arhitectură de poziționare",
-            mission: "Democratizarea strategiilor de CMO de nivel enterprise pentru fondatori ambițioși",
-            profession: "Inginer de Creștere & Strateg de Poziționare",
-            archetype: "VISIONARY_DISRUPTOR",
-          };
-        } else {
-          ikigaiDemo = {
-            locale: (lang || "en").toUpperCase(),
-            p1_time_loss: "Architecting complex growth engines, writing contrarian long-form thought leadership, dissecting startup business models",
-            p1_spare_time_reading: "Product-led growth, behavioral psychology, AI automation workflows, brand moat construction",
-            p1_average_tuesday: "Morning deep-work writing thesis essays, afternoon high-leverage client strategy sessions, zero reactive meetings",
-            p1_energizing_tasks: "Translating founder intuition into systematic go-to-market playbooks and high-converting narrative structures",
-            p1_childhood_passions: "Building strategic computer simulations, storytelling, designing custom magazines and games",
-            p1_spark_debates: "Why most B2B marketing agencies sell low-ROI vanity metrics instead of category dominance",
-            p1_creative_outlets: "Writing provocative essays, visual branding design, designing minimalist workflow architectures",
-            p2_effortless_skills: "Quickly spotting underlying systemic bottlenecks in positioning and messaging that founders overlook",
-            p2_sought_advice: "Pricing high-ticket packages, personal brand authority architecture, organic inbound funnel creation",
-            p2_hard_skills: "Growth analytics, positioning teardowns, multi-channel editorial workflows, prompt engineering",
-            p2_interpersonal_soft: "Radical empathy, structured active listening, high-stakes communication, contrarian synthesis",
-            p2_success_patterns: "Focusing on asymmetric distribution channels, zero-fluff signal, and building defensible IP assets",
-            p2_problem_solving: "First-principles deconstruction followed by rapid prototyping and algorithmic iteration",
-            p2_recurring_praise: "«You summarized our entire 5-year vision and differentiated us better in 1 hour than our agency did in 6 months»",
-            p3_systemic_injustice: "Ambitious operators build world-class products but stay invisible because marketing feels dirty, noisy, or fake",
-            p3_community_to_help: "Visionary founders, boutique consultancy partners, and solopreneur builders striving for freedom",
-            p3_unlimited_resource: "Democratize elite CMO-level strategic positioning for high-integrity operators",
-            p3_immediate_needs: "A predictable 30-day organic distribution engine that builds authority without burnout",
-            p3_non_negotiables: "Radical Transparency, Asymmetric Leverage, Craftsmanship, Unapologetic Focus",
-            p3_future_gap: "Commoditized generic AI content will flood feeds; only authentic founder voice and deep domain moats will convert",
-            p3_legacy_impact: "Empowered 1,000+ independent founders to build durable, highly profitable category-leading businesses",
-            p4_past_paid_services: "Fractional CMO engagements ($10k/mo), strategic positioning intensives ($5k), cohort advisory ($2.5k)",
-            p4_market_paid_skills: "Category design, high-ticket messaging frameworks, multi-channel content system architecture",
-            p4_commercial_hobbies: "Writing breakdown newsletters, curating founder mastermind circles, SaaS prototyping",
-            p4_high_value_roi: "Client deals closed exceeding $2.4M directly attributable to organic brand authority",
-            p4_premium_assets: "30-Day Brand Positioning & Authority Operating System with complete multi-channel deployment",
-            p4_growth_niches: "AI-augmented professional advisory, enterprise developer tooling, high-ticket B2B services",
-            p4_monetization_fit: "High-ticket retainer + Performance upside + Scalable digital product ecosystem",
-            overlap_synthesis: "Empowering visionary B2B founders to achieve category authority and predictable inbound pipeline through systematic Ikigai-aligned positioning",
-            pilot_30_days: "Launch a 30-day multi-channel authority blitz with daily long-form LinkedIn teardowns and an automated email onboarding engine",
-            timeFlyActivities: "Architecting complex growth engines, writing contrarian long-form thought leadership, dissecting startup business models",
-            naturalTopics: "Product-led growth, behavioral psychology, AI automation workflows, brand moat construction",
-            idealTuesday: "Morning deep-work writing thesis essays, afternoon high-leverage client strategy sessions, zero reactive meetings",
-            energizingTasks: "Translating founder intuition into systematic go-to-market playbooks and high-converting narrative structures",
-            childhoodPassions: "Building strategic computer simulations, storytelling, designing custom magazines and games",
-            sparkDebates: "Why most B2B marketing agencies sell low-ROI vanity metrics instead of category dominance",
-            creativeOutlets: "Writing provocative essays, visual branding design, designing minimalist workflow architectures",
-
-            effortlessSkills: "Quickly spotting underlying systemic bottlenecks in positioning and messaging that founders overlook",
-            soughtAdvice: "Pricing high-ticket packages, personal brand authority architecture, organic inbound funnel creation",
-            hardSkills: "Growth analytics, positioning teardowns, multi-channel editorial workflows, prompt engineering",
-            softSkills: "Radical empathy, structured active listening, high-stakes communication, contrarian synthesis",
-            successPatterns: "Focusing on asymmetric distribution channels, zero-fluff signal, and building defensible IP assets",
-            problemSolvingWay: "First-principles deconstruction followed by rapid prototyping and algorithmic iteration",
-            recurringPraise: "«You summarized our entire 5-year vision and differentiated us better in 1 hour than our agency did in 6 months»",
-
-            systemicProblems: "Ambitious operators build world-class products but stay invisible because marketing feels dirty, noisy, or fake",
-            targetCommunity: "Visionary founders, boutique consultancy partners, and solopreneur builders striving for freedom",
-            priorityCause: "Democratize elite CMO-level strategic positioning for high-integrity operators",
-            practicalNeeds: "A predictable 30-day organic distribution engine that builds authority without burnout",
-            coreValues: ["Radical Transparency", "Asymmetric Leverage", "Craftsmanship", "Unapologetic Focus"],
-            decadeOutlook: "Commoditized generic AI content will flood feeds; only authentic founder voice and deep domain moats will convert",
-            desiredLegacy: "Empowered 1,000+ independent founders to build durable, highly profitable category-leading businesses",
-
-            pastPaidServices: "Fractional CMO engagements ($10k/mo), strategic positioning intensives ($5k), cohort advisory ($2.5k)",
-            highValueSkills: "Category design, high-ticket messaging frameworks, multi-channel content system architecture",
-            commercialHobbies: "Writing breakdown newsletters, curating founder mastermind circles, SaaS prototyping",
-            economicImpact: "Client deals closed exceeding $2.4M directly attributable to organic brand authority",
-            premiumOffers: "30-Day Brand Positioning & Authority Operating System with complete multi-channel deployment",
-            growthNiches: "AI-augmented professional advisory, enterprise developer tooling, high-ticket B2B services",
-            monetizationModel: "High-ticket retainer + Performance upside + Scalable digital product ecosystem",
-
-            coreIntersection: "Empowering visionary B2B founders to achieve category authority and predictable inbound pipeline through systematic Ikigai-aligned positioning",
-            pilotProject30Days: "Launch a 30-day multi-channel authority blitz with daily long-form LinkedIn teardowns and an automated email onboarding engine",
-
-            passion: "Building transformational growth systems for high-impact founders",
-            vocation: "Strategic marketing advisory and positioning architecture",
-            mission: "Democratize elite brand positioning for ambitious operators",
-            profession: "Growth Engineer & Brand Strategist",
-            archetype: "VISIONARY_DISRUPTOR",
-          };
-        }
-
-        set({
-          step: 5,
-          ikigai: ikigaiDemo,
-          business: {
-            businessName: isRo ? "Nexus Growth Labs România" : "Nexus Growth Labs",
-            websiteUrl: "https://nexusgrowthlabs.io",
-            businessModel: "B2B_SERVICE",
-            industry: isRo ? "Consultanță B2B & Tehnologie" : "B2B Advisory & Tech",
-            geoScope: isRo ? "Național & Global" : "Global / Remote",
-            currentStage: "SCALING",
-            monthlyBudget: 2500,
-            weeklyHours: 15,
-          },
-          competitive: {
-            competitors: isRo
-              ? ["Agenții clasice de marketing", "Generatoare AI generice", "Freelanceri fără strategie"]
-              : ["Standard Agencies", "Generic AI Copy Tools", "Freelance Copywriters"],
-            marketSaturation: "HIGH",
-            differentiator: isRo
-              ? "Un diagnostic profund de Ikigai combinat cu o arhitectură de campanie multi-canal complet automatizată ce elimină 90% din efortul de producție."
-              : "An integrated Ikigai diagnostic combined with automated multi-channel campaign architectures eliminating 90% of production overhead.",
-            retentionRate: "92%",
-          },
-          audience: {
-            icpDemographics: isRo
-              ? "Fondatori B2B și furnizori de servicii cu venituri de 20k-100k€/lună."
-              : "B2B founders and high-ticket service providers generating $20k-$100k/mo.",
-            painTriggers: isRo
-              ? [
-                  "Prezență inconsistentă din cauza timpului limitat absorbit de livrarea proiectelor",
-                  "Texte de agenție generice care sună robotic și lipsite de autenticitatea fondatorului",
-                  "Ritm scăzut de generare de lead-uri calificate din canalele organice",
-                ]
-              : [
-                  "Inconsistent social presence due to client delivery bandwidth constraints",
-                  "Generic agency copy that sounds robotic and lacks founder depth",
-                  "Low lead velocity from organic social channels",
-                ],
-            buyingObjections: isRo
-              ? [
-                  "Oare va suna ca un text generic de inteligență artificială?",
-                  "Cât timp trebuie să investesc în mod realist în fiecare săptămână?",
-                ]
-              : [
-                  "Will this sound like generic AI copy?",
-                  "How much time do I realistically need to invest each week?",
-                ],
-            existingAssets: isRo
-              ? "Profil LinkedIn fondator cu 4.200 contacte, listă de email cu 1.100 abonați."
-              : "Founder LinkedIn profile with 4,200 connections, email list of 1,100 past leads.",
-          },
-          scope: {
-            primaryGoals: isRo
-              ? ["Stabilirea Autorității de Categorie", "Generarea a 15+ oportunități calificate/lună", "Construirea unui sistem automatizat de distribuție pe 30 de zile"]
-              : ["Establish Category Authority", "Generate 15+ Inbound Inquiries/mo", "Build 30-Day Automated Distribution"],
-            reviewCadence: "MONTHLY",
-            activeChannels: ["LINKEDIN", "EMAIL", "INSTAGRAM", "TIKTOK"],
-          },
-        });
+      loadDemoData: (lang: string = "en", targetStep?: number) => {
+        const demo = getDemoWizardState(lang);
+        set((s) => ({
+          step: targetStep !== undefined ? targetStep : s.step,
+          ikigaiConfirmed: false,
+          ikigai: demo.ikigai,
+          business: demo.business,
+          competitive: demo.competitive,
+          audience: demo.audience,
+          scope: demo.scope,
+        }));
       },
 
       resetWizard: () =>
         set({
           step: 0,
+          ikigaiConfirmed: false,
           ikigai: initialIkigai,
           business: initialBusiness,
           competitive: initialCompetitive,

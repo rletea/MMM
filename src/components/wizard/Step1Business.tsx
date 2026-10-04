@@ -89,7 +89,7 @@ export function Step1Business() {
             type="text"
             value={business.businessName}
             onChange={(e) => updateBusiness({ businessName: e.target.value })}
-            placeholder="e.g. Nexus Growth Labs"
+            placeholder={t("step1.biz_placeholder") || "e.g. Nexus Growth Labs"}
             className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
@@ -117,6 +117,9 @@ export function Step1Business() {
           {BUSINESS_MODELS.map((model) => {
             const Icon = model.icon;
             const isSelected = business.businessModel === model.id;
+            const localizedTitle = t(`biz_model.${model.id}.title` as any) || model.title;
+            const localizedDesc = t(`biz_model.${model.id}.desc` as any) || model.desc;
+
             return (
               <button
                 key={model.id}
@@ -139,11 +142,11 @@ export function Step1Business() {
                     <Icon className="w-4 h-4" />
                   </div>
                   <span className="font-bold text-xs text-slate-900 dark:text-white">
-                    {model.title}
+                    {localizedTitle}
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
-                  {model.desc}
+                  {localizedDesc}
                 </p>
               </button>
             );
@@ -161,7 +164,7 @@ export function Step1Business() {
             type="text"
             value={business.industry}
             onChange={(e) => updateBusiness({ industry: e.target.value })}
-            placeholder="e.g. AI Workflow Automation, Fintech Advisory..."
+            placeholder={t("step1.industry_placeholder") || "e.g. AI Workflow Automation, Fintech Advisory..."}
             className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
@@ -175,12 +178,12 @@ export function Step1Business() {
             onChange={(e) => updateBusiness({ geoScope: e.target.value })}
             className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-            <option value="Global / Remote">Global / Remote Worldwide</option>
-            <option value="North America (US & CA)">North America (US & CA)</option>
-            <option value="Europe & UK">Europe & UK</option>
-            <option value="Asia-Pacific (APAC)">Asia-Pacific (APAC)</option>
-            <option value="Latin America">Latin America</option>
-            <option value="Local / Metro Area Only">Local / Metro Area Only</option>
+            <option value="Global / Remote">{t("biz_geo.global")}</option>
+            <option value="North America (US & CA)">{t("biz_geo.na")}</option>
+            <option value="Europe & UK">{t("biz_geo.europe")}</option>
+            <option value="Asia-Pacific (APAC)">{t("biz_geo.apac")}</option>
+            <option value="Latin America">{t("biz_geo.latam")}</option>
+            <option value="Local / Metro Area Only">{t("biz_geo.local")}</option>
           </select>
         </div>
       </div>
@@ -193,6 +196,7 @@ export function Step1Business() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           {STAGES.map((st) => {
             const isSelected = business.currentStage === st.id;
+            const localizedLabel = t(`biz_stage.${st.id}` as any) || st.label;
             return (
               <button
                 key={st.id}
@@ -204,7 +208,7 @@ export function Step1Business() {
                     : "bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-400"
                 }`}
               >
-                {st.label}
+                {localizedLabel}
               </button>
             );
           })}
@@ -219,7 +223,7 @@ export function Step1Business() {
               <DollarSign className="w-4 h-4 text-emerald-500" /> {t("step1.budget")}
             </label>
             <span className="text-sm font-extrabold text-indigo-600 dark:text-indigo-400">
-              ${business.monthlyBudget.toLocaleString()} / mo
+              ${business.monthlyBudget.toLocaleString()} {t("biz_units.per_month")}
             </span>
           </div>
           <input
@@ -244,7 +248,7 @@ export function Step1Business() {
               <Clock className="w-4 h-4 text-indigo-500" /> {t("step1.hours")}
             </label>
             <span className="text-sm font-extrabold text-indigo-600 dark:text-indigo-400">
-              {business.weeklyHours} hours / week
+              {business.weeklyHours} {t("biz_units.hours_per_week")}
             </span>
           </div>
           <input

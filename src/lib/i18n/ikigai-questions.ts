@@ -28,6 +28,7 @@ export const IKIGAI_TRANSLATIONS: Record<
       profession: string;
       synthesis: string;
       archetype: string;
+      results: string;
     };
     ui: {
       badge: string;
@@ -59,6 +60,7 @@ export const IKIGAI_TRANSLATIONS: Record<
       profession: "4. What You Can Be Paid For",
       synthesis: "5. Intersection",
       archetype: "Archetype & Values",
+      results: "Results & Confirmation",
     },
     ui: {
       badge: "Step 0 • Human-First Self-Discovery",
@@ -271,6 +273,7 @@ export const IKIGAI_TRANSLATIONS: Record<
       profession: "4. Pentru Ce Poți Fi Plătit",
       synthesis: "5. Convergență",
       archetype: "Arhetip & Valori",
+      results: "Rezultate & Confirmare",
     },
     ui: {
       badge: "Pasul 0 • Descoperire Umană",
@@ -483,6 +486,7 @@ export const IKIGAI_TRANSLATIONS: Record<
       profession: "4. Wofür Sie Bezahlt Werden",
       synthesis: "5. Schnittpunkt",
       archetype: "Archetyp & Werte",
+      results: "Ergebnisse & Bestätigung",
     },
     ui: {
       badge: "Schritt 0 • Menschliche Selbstentdeckung",
@@ -695,6 +699,7 @@ export const IKIGAI_TRANSLATIONS: Record<
       profession: "4. Ce Pour Quoi Vous Pouvez Être Payé",
       synthesis: "5. Intersection",
       archetype: "Archétype & Valeurs",
+      results: "Résultats & Confirmation",
     },
     ui: {
       badge: "Étape 0 • Découverte Humaine",
@@ -907,6 +912,7 @@ export const IKIGAI_TRANSLATIONS: Record<
       profession: "4. Per Cosa Puoi Essere Pagato",
       synthesis: "5. Intersezione",
       archetype: "Archetipo & Valori",
+      results: "Risultati & Conferma",
     },
     ui: {
       badge: "Passo 0 • Scoperta Umana",
@@ -1119,6 +1125,7 @@ export const IKIGAI_TRANSLATIONS: Record<
       profession: "4. Za Co Możesz Być Wynagradzany",
       synthesis: "5. Przecięcie",
       archetype: "Archetyp i Wartości",
+      results: "Wyniki i Potwierdzenie",
     },
     ui: {
       badge: "Krok 0 • Ludzkie Odkrycie",
@@ -1331,6 +1338,7 @@ export const IKIGAI_TRANSLATIONS: Record<
       profession: "4. Por Lo Que Puedes Ser Pagado",
       synthesis: "5. Intersección",
       archetype: "Arquetipo y Valores",
+      results: "Resultados y Confirmación",
     },
     ui: {
       badge: "Paso 0 • Descubrimiento Humano",

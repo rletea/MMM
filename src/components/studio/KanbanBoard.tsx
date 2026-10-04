@@ -82,6 +82,26 @@ export function KanbanBoard({
     }
   };
 
+  const getFormatLabel = (fmt?: string) => {
+    if (!fmt) return "";
+    switch (fmt.toLowerCase()) {
+      case "post":
+        return t("studio.format_post");
+      case "carousel":
+        return t("studio.format_carousel");
+      case "reel_script":
+      case "reel script":
+      case "video script":
+        return t("studio.format_reel_script");
+      case "newsletter":
+        return t("studio.format_newsletter");
+      case "thread":
+        return t("studio.format_thread");
+      default:
+        return fmt;
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 items-start">
       {columns.map((col) => {
@@ -120,7 +140,7 @@ export function KanbanBoard({
                         </span>
                       </div>
                       <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                        {post.format || (post as any).contentType}
+                        {getFormatLabel(post.format || (post as any).contentType)}
                       </span>
                     </div>
 
