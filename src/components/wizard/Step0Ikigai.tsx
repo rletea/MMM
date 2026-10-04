@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import { useWizardStore } from "@/store/wizard-store";
+import { useWizardStore, IKIGAI_KEY_ALIASES, REVERSE_IKIGAI_ALIASES } from "@/store/wizard-store";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { ArchetypeType } from "@/lib/types";
 import {
@@ -432,7 +432,11 @@ export function Step0Ikigai() {
               {/* Questions Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {currentPillar.questions.map((q) => {
-                  const val = (ikigai[q.key] as string) || "";
+                  const alias = IKIGAI_KEY_ALIASES[String(q.key)] || REVERSE_IKIGAI_ALIASES[String(q.key)];
+                  const val =
+                    (ikigai[q.key] as string) ||
+                    (alias && typeof ikigai[alias] === "string" ? (ikigai[alias] as string) : "") ||
+                    "";
                   return (
                     <div
                       key={String(q.key)}
@@ -447,7 +451,13 @@ export function Step0Ikigai() {
                       <textarea
                         rows={2}
                         value={val}
-                        onChange={(e) => updateIkigai({ [q.key]: e.target.value })}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          updateIkigai({
+                            [q.key]: v,
+                            ...(alias ? { [alias]: v } : {}),
+                          });
+                        }}
                         placeholder={q.placeholder}
                         className="w-full px-3 py-2 rounded-xl bg-slate-50/80 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 font-sans leading-relaxed text-slate-900 dark:text-slate-100"
                       />

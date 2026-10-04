@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
     }
 
     const userId = session.id;
-    const profile = await getUserProfile(userId, lang, session.isDemo);
+    const profile = await getUserProfile(userId, lang, session.isDemo, session.email);
 
     return NextResponse.json({
       success: true,

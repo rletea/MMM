@@ -153,6 +153,46 @@ const initialScope: ChannelScopeData = {
   activeChannels: ["LINKEDIN", "EMAIL", "INSTAGRAM"],
 };
 
+export const IKIGAI_KEY_ALIASES: Record<string, keyof IkigaiData> = {
+  p1_time_loss: "timeFlyActivities" as keyof IkigaiData,
+  p1_spare_time_reading: "naturalTopics" as keyof IkigaiData,
+  p1_average_tuesday: "idealTuesday" as keyof IkigaiData,
+  p1_energizing_tasks: "energizingTasks" as keyof IkigaiData,
+  p1_childhood_passions: "childhoodPassions" as keyof IkigaiData,
+  p1_spark_debates: "sparkDebates" as keyof IkigaiData,
+  p1_creative_outlets: "creativeOutlets" as keyof IkigaiData,
+
+  p2_effortless_skills: "effortlessSkills" as keyof IkigaiData,
+  p2_sought_advice: "soughtAdvice" as keyof IkigaiData,
+  p2_hard_skills: "hardSkills" as keyof IkigaiData,
+  p2_interpersonal_soft: "softSkills" as keyof IkigaiData,
+  p2_success_patterns: "successPatterns" as keyof IkigaiData,
+  p2_problem_solving: "problemSolvingWay" as keyof IkigaiData,
+  p2_recurring_praise: "recurringPraise" as keyof IkigaiData,
+
+  p3_systemic_injustice: "systemicProblems" as keyof IkigaiData,
+  p3_community_to_help: "targetCommunity" as keyof IkigaiData,
+  p3_unlimited_resource: "priorityCause" as keyof IkigaiData,
+  p3_immediate_needs: "practicalNeeds" as keyof IkigaiData,
+  p3_future_gap: "decadeOutlook" as keyof IkigaiData,
+  p3_legacy_impact: "desiredLegacy" as keyof IkigaiData,
+
+  p4_past_paid_services: "pastPaidServices" as keyof IkigaiData,
+  p4_market_paid_skills: "highValueSkills" as keyof IkigaiData,
+  p4_commercial_hobbies: "commercialHobbies" as keyof IkigaiData,
+  p4_high_value_roi: "economicImpact" as keyof IkigaiData,
+  p4_premium_assets: "premiumOffers" as keyof IkigaiData,
+  p4_growth_niches: "growthNiches" as keyof IkigaiData,
+  p4_monetization_fit: "monetizationModel" as keyof IkigaiData,
+
+  overlap_synthesis: "coreIntersection" as keyof IkigaiData,
+  pilot_30_days: "pilotProject30Days" as keyof IkigaiData,
+};
+
+export const REVERSE_IKIGAI_ALIASES: Record<string, keyof IkigaiData> = Object.fromEntries(
+  Object.entries(IKIGAI_KEY_ALIASES).map(([k, v]) => [v as string, k as keyof IkigaiData])
+);
+
 export const useWizardStore = create<WizardStore>()(
   persist(
     (set, get) => ({
@@ -170,13 +210,22 @@ export const useWizardStore = create<WizardStore>()(
       prevStep: () => set((s) => ({ step: Math.max(0, s.step - 1) })),
 
       updateIkigai: (data) =>
-        set((s) => ({
-          ikigai: {
-            ...s.ikigai,
-            ...data,
-            ...(data.coreValues ? { coreValues: normalizeCoreValues(data.coreValues) } : {}),
-          },
-        })),
+        set((s) => {
+          const syncedData: any = { ...data };
+          Object.entries(data).forEach(([key, val]) => {
+            const alias = IKIGAI_KEY_ALIASES[key] || REVERSE_IKIGAI_ALIASES[key];
+            if (alias && syncedData[alias] === undefined) {
+              syncedData[alias] = val;
+            }
+          });
+          return {
+            ikigai: {
+              ...s.ikigai,
+              ...syncedData,
+              ...(data.coreValues ? { coreValues: normalizeCoreValues(data.coreValues) } : {}),
+            },
+          };
+        }),
 
       updateBusiness: (data) =>
         set((s) => ({ business: { ...s.business, ...data } })),
@@ -408,9 +457,20 @@ export const useWizardStore = create<WizardStore>()(
     {
       name: "mmm_wizard_state_v1",
       onRehydrateStorage: () => (state) => {
-        if (state?.ikigai?.coreValues) {
+        if (!state?.ikigai) return;
+        if (state.ikigai.coreValues) {
           state.ikigai.coreValues = normalizeCoreValues(state.ikigai.coreValues);
         }
+        // Bidirectional sync between legacy and AG-SPEC keys on load
+        Object.entries(IKIGAI_KEY_ALIASES).forEach(([newK, oldK]) => {
+          const nVal = state.ikigai[newK as keyof IkigaiData];
+          const oVal = state.ikigai[oldK as keyof IkigaiData];
+          if ((!nVal || (typeof nVal === "string" && !nVal.trim())) && oVal && typeof oVal === "string" && oVal.trim()) {
+            (state.ikigai as any)[newK] = oVal;
+          } else if ((!oVal || (typeof oVal === "string" && !oVal.trim())) && nVal && typeof nVal === "string" && nVal.trim()) {
+            (state.ikigai as any)[oldK] = nVal;
+          }
+        });
       },
     }
   )

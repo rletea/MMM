@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { useWizardStore } from "@/store/wizard-store";
+import { useWizardStore, IKIGAI_KEY_ALIASES } from "@/store/wizard-store";
 import { Step0Ikigai } from "@/components/wizard/Step0Ikigai";
 import { Step1Business } from "@/components/wizard/Step1Business";
 import { Step2Competitive } from "@/components/wizard/Step2Competitive";
@@ -45,27 +45,34 @@ export default function WizardPage() {
         const json = await res.json();
         if (!isMounted) return;
 
-        if (json?.authenticated && json?.data) {
+        if (json?.authenticated && json?.data?.ikigai) {
           setHasServerProfile(true);
           setServerProfileData(json.data);
 
-          // If this is the initial load and store has <= 2 answered fields, auto-hydrate from DB!
-          if (!hasAutoHydrated.current) {
-            const currentIk = useWizardStore.getState().ikigai;
-            const filledCount = Object.entries(currentIk).filter(
-              ([k, v]) => k.startsWith("p") && typeof v === "string" && v.trim().length > 0
-            ).length;
+          const dbFilledCount = Object.entries(json.data.ikigai).filter(
+            ([k, v]) =>
+              (k.startsWith("p") || Object.keys(IKIGAI_KEY_ALIASES).includes(k)) &&
+              typeof v === "string" &&
+              v.trim().length > 0
+          ).length;
 
-            if (filledCount <= 2 && json.data.ikigai) {
-              hydrateFromProfile(json.data);
-              hasAutoHydrated.current = true;
-              setRestoreMessage(
-                language === "ro"
-                  ? "Răspunsurile tale salvate au fost sincronizate din baza de date!"
-                  : "Your previously saved answers have been restored from your account!"
-              );
-              setTimeout(() => setRestoreMessage(null), 6000);
-            }
+          const currentIk = useWizardStore.getState().ikigai;
+          const currentFilledCount = Object.entries(currentIk).filter(
+            ([k, v]) =>
+              (k.startsWith("p") || Object.keys(IKIGAI_KEY_ALIASES).includes(k)) &&
+              typeof v === "string" &&
+              v.trim().length > 0
+          ).length;
+
+          if (dbFilledCount > 0 && (!hasAutoHydrated.current || currentFilledCount <= 2)) {
+            hydrateFromProfile(json.data);
+            hasAutoHydrated.current = true;
+            setRestoreMessage(
+              language === "ro"
+                ? "Răspunsurile tale salvate au fost sincronizate din baza de date!"
+                : "Your previously saved answers have been restored from your account!"
+            );
+            setTimeout(() => setRestoreMessage(null), 6000);
           }
         }
       } catch (err) {
